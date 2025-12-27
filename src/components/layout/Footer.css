@@ -1,0 +1,51 @@
+/* Footer */
+.footer {
+  background-color: var(--card-bg);
+  border-top: 1px solid var(--border-color);
+  padding: 30px 0;
+  margin-top: 60px;
+}
+
+.footer-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footer-text {
+  color: var(--text-secondary);
+  margin: 0;
+  font-size: 14px;
+}
+
+.footer-links {
+  display: flex;
+  gap: 24px;
+}
+
+.footer-link {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.2s ease;
+}
+
+.footer-link:hover {
+  color: var(--primary-accent);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .footer-container {
+    flex-direction: column;
+    gap: 20px;
+    padding: 0 20px;
+  }
+
+  .footer-links {
+    gap: 16px;
+  }
+}

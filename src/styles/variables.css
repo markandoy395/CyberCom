@@ -1,0 +1,141 @@
+/* ============================================
+   CSS VARIABLES - DARK MODE (DEFAULT)
+============================================ */
+:root {
+  /* Primary Colors */
+  --primary-bg: #0a0e27;
+  --secondary-bg: #151b3b;
+  --card-bg: #1a2238;
+  --elevated-surface: #222d4a;
+
+  /* Accent Colors */
+  --primary-accent: #00d4ff;
+  --secondary-accent: #7c3aed;
+  --success-green: #10b981;
+  --error-red: #ef4444;
+  --warning-orange: #f59e0b;
+  --info-blue: #3b82f6;
+
+  /* Text Colors */
+  --text-primary: #ffffff;
+  --text-secondary: #a0aec0;
+  --text-muted: #718096;
+  --text-link: #00d4ff;
+
+  /* Difficulty Colors */
+  --difficulty-easy: #10b981;
+  --difficulty-medium: #f59e0b;
+  --difficulty-hard: #ef4444;
+
+  /* UI Elements */
+  --border-color: #2d3748;
+  --hover-state: #2d4a6f;
+  --active-state: #1e3a5f;
+  --disabled-state: #4a5568;
+  --shadow: rgba(0, 0, 0, 0.3);
+
+  /* Category Colors */
+  --category-forensics: #8b5cf6;
+  --category-crypto: #ec4899;
+  --category-web: #06b6d4;
+  --category-binary: #f97316;
+  --category-reverse: #14b8a6;
+  --category-misc: #6366f1;
+
+  /* Leaderboard */
+  --rank-gold: #fbbf24;
+  --rank-silver: #94a3b8;
+  --rank-bronze: #cd7f32;
+  --current-user-highlight: #1e3a8a;
+
+  /* Score Display */
+  --score-increase: #10b981;
+  --score-bg: #1a2238;
+
+  /* Badges */
+  --badge-first-blood: #ef4444;
+  --badge-first-blood-glow: #fca5a5;
+  --badge-category-master: #8b5cf6;
+  --badge-category-master-glow: #c4b5fd;
+  --badge-speed-demon: #f59e0b;
+  --badge-speed-demon-glow: #fcd34d;
+  --badge-perfect-score: #10b981;
+  --badge-perfect-score-glow: #6ee7b7;
+
+  /* Admin Dashboard */
+  --admin-panel-bg: #111827;
+  --danger-zone: #7f1d1d;
+  --success-actions: #065f46;
+  --info-cards: #1e3a8a;
+}
+
+/* ============================================
+   LIGHT MODE VARIABLES
+============================================ */
+[data-theme="light"] {
+  /* Primary Colors */
+  --primary-bg: #f8fafc;
+  --secondary-bg: #ffffff;
+  --card-bg: #ffffff;
+  --elevated-surface: #f1f5f9;
+
+  /* Accent Colors */
+  --primary-accent: #0284c7;
+  --secondary-accent: #7c3aed;
+  --success-green: #059669;
+  --error-red: #dc2626;
+  --warning-orange: #d97706;
+  --info-blue: #2563eb;
+
+  /* Text Colors */
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --text-link: #0284c7;
+
+  /* Difficulty Colors */
+  --difficulty-easy: #059669;
+  --difficulty-medium: #d97706;
+  --difficulty-hard: #dc2626;
+
+  /* UI Elements */
+  --border-color: #e2e8f0;
+  --hover-state: #e0f2fe;
+  --active-state: #bae6fd;
+  --disabled-state: #cbd5e1;
+  --shadow: rgba(0, 0, 0, 0.1);
+
+  /* Category Colors */
+  --category-forensics: #7c3aed;
+  --category-crypto: #db2777;
+  --category-web: #0891b2;
+  --category-binary: #ea580c;
+  --category-reverse: #0d9488;
+  --category-misc: #4f46e5;
+
+  /* Leaderboard */
+  --rank-gold: #f59e0b;
+  --rank-silver: #9ca3af;
+  --rank-bronze: #92400e;
+  --current-user-highlight: #dbeafe;
+
+  /* Score Display */
+  --score-increase: #059669;
+  --score-bg: #f0f9ff;
+
+  /* Badges - Same for both themes */
+  --badge-first-blood: #ef4444;
+  --badge-first-blood-glow: #fca5a5;
+  --badge-category-master: #8b5cf6;
+  --badge-category-master-glow: #c4b5fd;
+  --badge-speed-demon: #f59e0b;
+  --badge-speed-demon-glow: #fcd34d;
+  --badge-perfect-score: #10b981;
+  --badge-perfect-score-glow: #6ee7b7;
+
+  /* Admin Dashboard */
+  --admin-panel-bg: #f9fafb;
+  --danger-zone: #fee2e2;
+  --success-actions: #d1fae5;
+  --info-cards: #dbeafe;
+}

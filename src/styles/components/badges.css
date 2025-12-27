@@ -1,0 +1,68 @@
+/* ============================================
+   BADGE COMPONENTS
+============================================ */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.badge:hover {
+  transform: scale(1.05);
+}
+
+.badge-first-blood {
+  background-color: var(--badge-first-blood);
+  color: white;
+  box-shadow: 0 0 20px var(--badge-first-blood-glow);
+}
+
+.badge-category-master {
+  background-color: var(--badge-category-master);
+  color: white;
+  box-shadow: 0 0 20px var(--badge-category-master-glow);
+}
+
+.badge-speed-demon {
+  background-color: var(--badge-speed-demon);
+  color: white;
+  box-shadow: 0 0 20px var(--badge-speed-demon-glow);
+}
+
+.badge-perfect-score {
+  background-color: var(--badge-perfect-score);
+  color: white;
+  box-shadow: 0 0 20px var(--badge-perfect-score-glow);
+}
+
+/* ============================================
+   TEXT COMPONENTS
+============================================ */
+.text-primary {
+  color: var(--text-primary);
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+.text-link {
+  color: var(--text-link);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.text-link:hover {
+  text-decoration: underline;
+  filter: brightness(1.2);
+}

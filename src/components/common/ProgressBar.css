@@ -1,0 +1,82 @@
+/* Progress Bar */
+.progress-bar {
+  width: 100%;
+  background-color: var(--elevated-surface);
+  border-radius: 999px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.6s ease;
+  position: relative;
+}
+
+/* Color Variants */
+.progress-fill-primary {
+  background-color: var(--primary-accent);
+}
+
+.progress-fill-forensics {
+  background-color: var(--category-forensics);
+}
+
+.progress-fill-crypto {
+  background-color: var(--category-crypto);
+}
+
+.progress-fill-web {
+  background-color: var(--category-web);
+}
+
+.progress-fill-binary {
+  background-color: var(--category-binary);
+}
+
+.progress-fill-reverse {
+  background-color: var(--category-reverse);
+}
+
+.progress-fill-misc {
+  background-color: var(--category-misc);
+}
+
+.progress-fill-success {
+  background-color: var(--success-green);
+}
+
+.progress-fill-warning {
+  background-color: var(--warning-orange);
+}
+
+.progress-fill-error {
+  background-color: var(--error-red);
+}
+
+/* Animated Progress Fill */
+.progress-fill::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}

@@ -1,0 +1,371 @@
+/* Team Account Creator Styles — Premium Redesign */
+
+.team-creator {
+  padding: 0;
+}
+
+.creator-header {
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.creator-header h2 {
+  margin: 0 0 4px 0;
+  font-size: 20px;
+  color: var(--text-primary);
+  font-weight: 800;
+  letter-spacing: -0.3px;
+}
+
+.creator-header p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.creator-header button {
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-left: 20px;
+}
+
+.teams-list-section {
+  margin-top: 24px;
+}
+
+.team-creator .empty-state {
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--text-muted);
+  background: var(--card-bg);
+  border-radius: 14px;
+  border: 2px dashed var(--border-color);
+  transition: border-color 0.3s ease;
+}
+
+.team-creator .empty-state:hover {
+  border-color: var(--primary-accent);
+}
+
+/* Team Form Modal Backdrop */
+.team-form-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: fadeIn 0.3s ease-out;
+  padding: 20px;
+  overflow: hidden;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Team Form Modal */
+.team-form-modal {
+  background-color: var(--card-bg);
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  max-width: 960px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Modal Header */
+.team-form-modal .modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border-color);
+  gap: 16px;
+  background-color: var(--card-bg);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.team-form-modal .header-left {
+  flex: 1;
+}
+
+.team-form-modal .header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Modal Close Button */
+.team-form-modal .btn-close {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.team-form-modal .btn-close:hover {
+  background-color: var(--input-bg);
+  color: var(--error-red);
+  transform: rotate(90deg);
+}
+
+.form-wrapper {
+  width: 100%;
+  padding: 24px;
+}
+
+/* Team Form Styles */
+.team-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-weight: 700;
+  color: var(--text-primary);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+}
+
+.form-input {
+  padding: 12px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: var(--card-bg);
+  color: var(--text-primary);
+  font-size: 14px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-input:hover {
+  border-color: rgba(2, 132, 199, 0.35);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--primary-accent);
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.10);
+}
+
+.form-input::placeholder {
+  color: var(--text-muted);
+}
+
+.members-section {
+  margin-top: 16px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
+}
+
+.members-section h3 {
+  margin: 0 0 16px 0;
+  font-size: 14px;
+  color: var(--text-primary);
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.team-form-modal .member-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+  margin-bottom: 12px;
+  align-items: flex-end;
+  padding: 16px;
+  background: var(--elevated-surface);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.team-form-modal .member-row:hover {
+  border-color: rgba(2, 132, 199, 0.25);
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.06);
+}
+
+.password-input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.password-input-group .form-input {
+  padding-right: 42px;
+}
+
+.toggle-password-btn {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: all 0.2s ease;
+  border-radius: 6px;
+}
+
+.toggle-password-btn:hover {
+  color: var(--primary-accent);
+  background: rgba(2, 132, 199, 0.08);
+}
+
+.toggle-password-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+  justify-content: flex-end;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
+}
+
+.team-form-modal .btn {
+  padding: 11px 22px;
+  border-radius: 10px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  font-family: inherit;
+}
+
+.team-form-modal .btn-primary {
+  background: linear-gradient(135deg, var(--primary-accent) 0%, #0369a1 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+}
+
+.team-form-modal .btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(2, 132, 199, 0.35);
+}
+
+.team-form-modal .btn-primary:active {
+  transform: translateY(0);
+}
+
+.team-form-modal .btn-secondary {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.team-form-modal .btn-secondary:hover {
+  border-color: var(--text-primary);
+  color: var(--text-primary);
+  background: var(--elevated-surface);
+}
+
+.team-form-modal .btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .team-form-modal-backdrop {
+    padding: 0;
+  }
+
+  .team-form-modal {
+    max-width: 100%;
+    border-radius: 8px 8px 0 0;
+    max-height: 100vh;
+    height: 100%;
+  }
+
+  .team-form-modal .modal-header {
+    padding: 12px 16px;
+  }
+
+  .form-wrapper {
+    padding: 16px;
+  }
+
+  .team-form-modal .member-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .team-form-modal .btn {
+    width: 100%;
+    justify-content: center;
+    padding: 13px 16px;
+  }
+
+  .form-input {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .members-section h3 {
+    font-size: 13px;
+  }
+}

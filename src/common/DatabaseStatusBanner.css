@@ -1,0 +1,70 @@
+.database-status-banner {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 12000;
+  width: min(calc(100vw - 32px), 640px);
+  pointer-events: none;
+  animation: databaseBannerSlideIn 0.25s ease-out;
+}
+
+.database-status-banner__content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  border: 1px solid rgba(239, 68, 68, 0.45);
+  background:
+    linear-gradient(135deg, rgba(127, 29, 29, 0.96), rgba(153, 27, 27, 0.94));
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(12px);
+  color: #fff5f5;
+  pointer-events: auto;
+}
+
+.database-status-banner__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 18px;
+  color: #fecaca;
+}
+
+.database-status-banner__message {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: center;
+}
+
+@keyframes databaseBannerSlideIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+@media (max-width: 768px) {
+  .database-status-banner {
+    top: 12px;
+    width: min(calc(100vw - 20px), 640px);
+  }
+
+  .database-status-banner__content {
+    padding: 12px 14px;
+    gap: 8px;
+  }
+
+  .database-status-banner__message {
+    font-size: 13px;
+  }
+}

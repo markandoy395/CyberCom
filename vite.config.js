@@ -23,13 +23,18 @@ export default defineConfig({
     },
   },
   server: {
-    port: 3000,
+    host: "0.0.0.0", // allows access via local IP
+    port: 5173,
     proxy: {
       "/api": {
-        target: "http://localhost:8080", // Your PHP backend (XAMPP)
+        target: "http://localhost:3000", // Node.js/Express backend - always on 3000
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.replace(/^\/api/, "/api"),
+        rewrite: (path) => {
+          // Direct proxy - no rewriting needed for Express
+          // Path /api/submissions -> /api/submissions
+          return path;
+        },
       },
     },
   },
@@ -44,6 +49,7 @@ export default defineConfig({
       },
     },
   },
+
   optimizeDeps: {
     include: ["react", "react-dom", "react-router-dom"],
   },

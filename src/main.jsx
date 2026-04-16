@@ -1,19 +1,21 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
-import App from "./App.jsx";
-import { ThemeProvider } from "./context/ThemeProvider.jsx";
-import { AuthProvider } from "./context/AuthProvider.jsx";
+import { preventInspect } from "./utils/preventInspect";
+import { displayAttribution } from "./utils/attribution";
+import App from "./App";
 import "./styles/index.css";
+
+// Prevent developer tools inspection
+preventInspect();
+
+// Display attribution
+displayAttribution();
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
-      <ThemeProvider>
-        <AuthProvider>
-          <App />
-        </AuthProvider>
-      </ThemeProvider>
+      <App />
     </BrowserRouter>
   </React.StrictMode>
 );

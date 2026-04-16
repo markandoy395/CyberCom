@@ -1,0 +1,496 @@
+// Mock Challenges Data - Expanded with 40+ challenges
+export const mockChallenges = [
+  // FORENSICS CHALLENGES
+  {
+    id: 1,
+    title: "Hidden Message",
+    description:
+      "Find the hidden message in this image file using forensic techniques.",
+    fullDescription:
+      "This challenge requires you to analyze an image file and extract hidden data. You'll need to use steganography tools to uncover the secret message.",
+    category: 3,
+    difficulty: "easy",
+    solveCount: 245,
+    personalBestTime: "5m 23s",
+    firstBloodSolver: null,
+    hints: ["Look at the metadata", "Try using strings command"],
+    attachment: { type: "link", name: "Steganography Tools Guide", url: "https://github.com/topics/steganography" },
+  },
+  {
+    id: 2,
+    title: "Memory Dump Analysis",
+    description: "Analyze this memory dump to find the flag.",
+    fullDescription:
+      "A memory dump from a compromised system. Use forensics tools like Volatility to extract the flag.",
+    category: 3,
+    difficulty: "medium",
+    solveCount: 89,
+    hints: ["Use Volatility framework", "Check running processes"],
+    attachment: { type: "link", name: "Volatility Framework Documentation", url: "https://www.volatilityfoundation.org/" },
+  },
+  {
+    id: 3,
+    title: "Corrupted Image",
+    description: "Repair this corrupted image file to reveal the flag.",
+    fullDescription:
+      "The image header has been modified. Fix the magic bytes and file structure to view it.",
+    category: 3,
+    difficulty: "easy",
+    solveCount: 156,
+    hints: ["Check the file signature", "PNG magic bytes are 89 50 4E 47"],
+    attachment: { type: "file", name: "broken.png", url: "/resources/challenges/3/broken.png" },
+  },
+  {
+    id: 4,
+    title: "Network Traffic",
+    description: "Analyze this packet capture to find suspicious activity.",
+    fullDescription:
+      "A PCAP file containing network traffic. Find the exfiltrated data.",
+    category: 3,
+    difficulty: "hard",
+    solveCount: 34,
+    hints: [
+      "Use Wireshark",
+      "Look for HTTP POST requests",
+      "Follow TCP streams",
+    ],
+    attachment: { type: "link", name: "Wireshark Documentation", url: "https://www.wireshark.org/docs/" },
+  },
+  {
+    id: 5,
+    title: "Disk Image Investigation",
+    description: "Extract deleted files from this disk image.",
+    fullDescription:
+      "A forensic disk image. Recover deleted files to find the flag.",
+    category: 3,
+    difficulty: "medium",
+    solveCount: 67,
+    hints: [
+      "Use Autopsy or FTK Imager",
+      "Check deleted files",
+      "Look in slack space",
+    ],
+    attachment: { type: "file", name: "disk.dd", url: "/resources/challenges/5/disk.dd" },
+  },
+
+  // CRYPTOGRAPHY CHALLENGES
+  {
+    id: 6,
+    title: "Caesar Shift",
+    description:
+      "Solve this Caesar cipher message.",
+    fullDescription:
+      "A classic Caesar cipher challenge. The message has been shifted by an unknown number of positions.",
+    category: 2,
+    difficulty: "easy",
+    solveCount: 312,
+    hints: ["Try all 26 possible shifts", "Look for common English words"],
+    attachment: { type: "link", name: "NIST Cryptographic Hash Functions", url: "https://csrc.nist.gov/projects/hash-functions/" },
+  },
+  {
+    id: 7,
+    title: "Base64 Madness",
+    description: "Decode this multiple-encoded message.",
+    fullDescription:
+      "The flag has been encoded multiple times. Keep decoding until you find it!",
+    category: 2,
+    difficulty: "easy",
+    solveCount: 198,
+    hints: ["Decode multiple times", "Try Base64, Base32, Hex"],
+    attachment: { type: "link", name: "Base64 Encoder/Decoder", url: "https://www.base64decode.org/" },
+  },
+  {
+    id: 8,
+    title: "RSA Challenge",
+    description: "Break this weak RSA cipher.",
+    fullDescription:
+      "Small prime numbers were used. Factor N to recover the message.",
+    category: 2,
+    difficulty: "medium",
+    solveCount: 76,
+    hints: ["Factor the modulus N", "Use RsaCtfTool", "Primes are small"],
+    attachment: { type: "link", name: "RsaCtfTool GitHub", url: "https://github.com/Ganapati/RsaCtfTool" },
+  },
+  {
+    id: 9,
+    title: "Vigenere Cipher",
+    description: "Crack this Vigenere cipher without the key.",
+    fullDescription:
+      "A polyalphabetic substitution cipher. Use frequency analysis to break it.",
+    category: 2,
+    difficulty: "medium",
+    solveCount: 54,
+    hints: [
+      "Find the key length first",
+      "Use Kasiski examination",
+      "Try frequency analysis",
+    ],
+    attachment: { type: "file", name: "vigenere.txt", url: "/resources/challenges/9/vigenere.txt" },
+  },
+  {
+    id: 10,
+    title: "AES ECB Mode",
+    description: "Exploit the ECB mode weakness.",
+    fullDescription:
+      "AES in ECB mode has been used improperly. Exploit the block pattern.",
+    category: 2,
+    difficulty: "hard",
+    solveCount: 28,
+    hints: [
+      "ECB mode encrypts identical blocks identically",
+      "Look for repeating patterns",
+    ],
+    attachment: { type: "file", name: "aes_ciphertext.bin", url: "/resources/challenges/10/aes_ciphertext.bin" },
+  },
+  {
+    id: 11,
+    title: "XOR Cipher",
+    description: "Break this XOR cipher.",
+    fullDescription:
+      "A message encoded with XOR and a repeating key. Find the key and decode.",
+    category: 2,
+    difficulty: "easy",
+    solveCount: 143,
+    hints: ["XOR with common characters", "Key is short and repeating"],
+    attachment: { type: "file", name: "xor_encoded.bin", url: "/resources/challenges/11/xor_encoded.bin" },
+  },
+
+  // WEB EXPLOITATION CHALLENGES
+  {
+    id: 12,
+    title: "SQL Injection",
+    description: "Exploit this vulnerable login form to gain admin access.",
+    fullDescription:
+      "A web application with a SQL injection vulnerability in the login form.",
+    category: 1,
+    difficulty: "medium",
+    solveCount: 187,
+    hints: ["Try common SQL injection payloads", "OR 1=1 is your friend"],
+    attachment: { type: "link", name: "OWASP SQL Injection Guide", url: "https://owasp.org/www-community/attacks/SQL_Injection" },
+  },
+  {
+    id: 13,
+    title: "XSS Stored",
+    description: "Find and exploit a stored XSS vulnerability.",
+    fullDescription:
+      "Inject JavaScript that will execute for other users viewing the page.",
+    category: 1,
+    difficulty: "easy",
+    solveCount: 134,
+    hints: ["Try injecting in comment fields", "Use <script> tags"],
+    attachment: { type: "link", name: "OWASP XSS Prevention Cheat Sheet", url: "https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html" },
+  },
+  {
+    id: 14,
+    title: "Directory Traversal",
+    description: "Read files outside the web root using path traversal.",
+    fullDescription: "Exploit improper input validation to read /etc/passwd.",
+    category: 1,
+    difficulty: "easy",
+    solveCount: 167,
+    hints: ["Try ../ sequences", "URL encode if necessary"],
+    attachment: { type: "link", name: "OWASP SQL Injection Guide", url: "https://owasp.org/www-community/attacks/SQL_Injection" },
+  },
+  {
+    id: 15,
+    title: "CSRF Attack",
+    description: "Craft a CSRF attack to change admin password.",
+    fullDescription:
+      "No CSRF tokens are being used. Create a malicious page that changes the password.",
+    category: 1,
+    difficulty: "medium",
+    solveCount: 45,
+    hints: ["Create an HTML form", "Auto-submit with JavaScript"],
+    attachment: { type: "file", name: "csrf_target.html", url: "/resources/challenges/15/csrf_target.html" },
+  },
+  {
+    id: 16,
+    title: "Command Injection",
+    description: "Execute arbitrary commands on the server.",
+    fullDescription:
+      "A ping utility that doesn't properly sanitize input. Inject your own commands.",
+    category: 1,
+    difficulty: "hard",
+    solveCount: 56,
+    hints: [
+      "Try command separators like ; && ||",
+      "Use backticks or $()",
+      "Read the flag file",
+    ],
+    attachment: { type: "file", name: "ping_service.php", url: "/resources/challenges/16/ping_service.php" },
+  },
+  {
+    id: 17,
+    title: "JWT Token Manipulation",
+    description: "Modify the JWT token to gain admin privileges.",
+    fullDescription: "Weak signing algorithm allows you to forge tokens.",
+    category: 1,
+    difficulty: "medium",
+    solveCount: 78,
+    hints: [
+      "Check the algorithm in the header",
+      'Try "none" algorithm',
+      "Decode and modify claims",
+    ],
+    attachment: { type: "link", name: "JWT.io - JSON Web Tokens", url: "https://jwt.io/" },
+  },
+  {
+    id: 18,
+    title: "XML External Entity",
+    description: "Exploit XXE to read server files.",
+    fullDescription:
+      "XML parser is vulnerable to XXE attacks. Read internal files.",
+    category: 1,
+    difficulty: "hard",
+    solveCount: 34,
+    hints: [
+      "Define external entities",
+      "Read file:///etc/passwd",
+      "Use SYSTEM keyword",
+    ],
+    attachment: { type: "link", name: "OWASP XXE Prevention", url: "https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html" },
+  },
+
+  // BINARY EXPLOITATION CHALLENGES
+  {
+    id: 19,
+    title: "Buffer Overflow",
+    description:
+      "Exploit a buffer overflow vulnerability to execute arbitrary code.",
+    fullDescription: "This binary has a classic buffer overflow vulnerability.",
+    category: 5,
+    difficulty: "hard",
+    solveCount: 42,
+    hints: [
+      "Check the stack layout",
+      "You'll need to find the offset",
+      "Overwrite return address",
+    ],
+    attachment: { type: "file", name: "vuln_binary", url: "/resources/challenges/19/vuln_binary" },
+  },
+  {
+    id: 20,
+    title: "Format String",
+    description: "Exploit a format string vulnerability.",
+    fullDescription:
+      "Printf is called with user-controlled format string. Read and write memory.",
+    category: 5,
+    difficulty: "hard",
+    solveCount: 31,
+    hints: ["Use %x to read stack", "Use %n to write memory", "Find the GOT"],
+    attachment: { type: "file", name: "format.elf", url: "/resources/challenges/20/format.elf" },
+  },
+  {
+    id: 21,
+    title: "Shellcode Execution",
+    description: "Write and execute shellcode to get a shell.",
+    fullDescription:
+      "You control execution. Write shellcode that spawns /bin/sh.",
+    category: 5,
+    difficulty: "hard",
+    solveCount: 27,
+    hints: ["Write x86/x64 assembly", "Use system calls", "Avoid null bytes"],
+    attachment: { type: "file", name: "shellcode_runner", url: "/resources/challenges/21/shellcode_runner" },
+  },
+  {
+    id: 22,
+    title: "Integer Overflow",
+    description: "Exploit an integer overflow to bypass checks.",
+    fullDescription:
+      "Arithmetic overflow allows you to allocate less memory than expected.",
+    category: 5,
+    difficulty: "medium",
+    solveCount: 38,
+    hints: [
+      "Cause integer to wrap around",
+      "Make negative number positive",
+      "Bypass size checks",
+    ],
+    attachment: { type: "file", name: "overflow.c", url: "/resources/challenges/22/overflow.c" },
+  },
+  {
+    id: 23,
+    title: "Return-to-libc",
+    description: "Bypass NX protection using return-to-libc.",
+    fullDescription:
+      "Stack is non-executable. Chain libc functions to get a shell.",
+    category: 5,
+    difficulty: "hard",
+    solveCount: 19,
+    hints: [
+      "Find libc base address",
+      "Use system() function",
+      'Pass "/bin/sh" as argument',
+    ],
+    attachment: { type: "file", name: "ret2libc", url: "/resources/challenges/23/ret2libc" },
+  },
+
+  // REVERSE ENGINEERING CHALLENGES
+  {
+    id: 24,
+    title: "Crackme",
+    description: "Reverse engineer this binary to find the correct password.",
+    fullDescription:
+      "A simple crackme challenge. Find the password checking algorithm.",
+    category: 4,
+    difficulty: "medium",
+    solveCount: 94,
+    hints: ["Use a disassembler like Ghidra", "Look for string comparisons"],
+    attachment: { type: "link", name: "Ghidra Reverse Engineering Tool", url: "https://ghidra-sre.org/" },
+  },
+  {
+    id: 25,
+    title: "License Key Checker",
+    description: "Generate a valid license key for this software.",
+    fullDescription:
+      "Reverse the key validation algorithm and create your own key.",
+    category: 4,
+    difficulty: "medium",
+    solveCount: 63,
+    hints: [
+      "Use IDA or Ghidra",
+      "Trace the validation logic",
+      "Implement the algorithm",
+    ],
+    attachment: { type: "link", name: "IDA Disassembler", url: "https://www.hex-rays.com/ida-pro/" },
+  },
+  {
+    id: 26,
+    title: "Obfuscated Code",
+    description: "Deobfuscate this Python code to find the flag.",
+    fullDescription:
+      "Heavily obfuscated Python script. Clean it up to understand what it does.",
+    category: 4,
+    difficulty: "easy",
+    solveCount: 112,
+    hints: [
+      "Use Python decompilers",
+      "Beautify the code",
+      "Run it in a debugger",
+    ],
+    attachment: { type: "link", name: "Decompyle++ Python Decompiler", url: "https://github.com/zrax/pycdc" },
+  },
+  {
+    id: 27,
+    title: "Android APK Analysis",
+    description: "Reverse this Android app to extract the flag.",
+    fullDescription:
+      "An APK file with the flag hidden inside. Decompile and analyze.",
+    category: 4,
+    difficulty: "medium",
+    solveCount: 47,
+    hints: [
+      "Use APKTool or jadx",
+      "Check strings.xml",
+      "Look in assets folder",
+    ],
+    attachment: { type: "link", name: "APKTool - Android Reverse Engineering", url: "https://ibotpeaches.github.io/Apktool/" },
+  },
+  {
+    id: 28,
+    title: "Virtual Machine",
+    description: "Reverse this custom VM bytecode.",
+    fullDescription:
+      "A custom virtual machine executing bytecode. Understand the instruction set.",
+    category: 4,
+    difficulty: "hard",
+    solveCount: 15,
+    hints: [
+      "Analyze the VM implementation",
+      "Create an instruction table",
+      "Trace execution",
+    ],
+    attachment: { type: "file", name: "vm_bytecode.bin", url: "/resources/challenges/28/vm_bytecode.bin" },
+  },
+  {
+    id: 29,
+    title: "Stripped Binary",
+    description: "Analyze this stripped ELF binary.",
+    fullDescription:
+      "All symbols have been stripped. Reconstruct the logic manually.",
+    category: 4,
+    difficulty: "hard",
+    solveCount: 23,
+    hints: [
+      "Look for function prologues",
+      "Identify libc calls",
+      "Follow control flow",
+    ],
+    attachment: { type: "file", name: "stripped", url: "/resources/challenges/29/stripped" },
+  },
+
+  {
+    id: 38,
+    title: "Substitution Cipher",
+    description: "Break this monoalphabetic substitution cipher.",
+    fullDescription: "Each letter is replaced by another letter consistently.",
+    category: 2,
+    difficulty: "easy",
+    solveCount: 134,
+    hints: [
+      "Use frequency analysis",
+      "Common letters: E, T, A, O",
+      "Look for patterns",
+    ],
+    attachment: { type: "file", name: "substitution.txt", url: "/resources/challenges/38/substitution.txt" },
+  },
+  {
+    id: 39,
+    title: "Race Condition",
+    description: "Exploit a race condition in file operations.",
+    fullDescription:
+      "TOCTOU vulnerability allows you to change files between check and use.",
+    category: 5,
+    difficulty: "hard",
+    solveCount: 12,
+    hints: [
+      "Time of check to time of use",
+      "Use symbolic links",
+      "Automate with script",
+    ],
+    attachment: { type: "file", name: "race_binary", url: "/resources/challenges/39/race_binary" },
+  },
+  {
+    id: 40,
+    title: "Prototype Pollution",
+    description: "Exploit prototype pollution in this Node.js app.",
+    fullDescription: "Modify Object.prototype to gain admin access.",
+    category: 1,
+    difficulty: "hard",
+    solveCount: 29,
+    hints: ["Target __proto__", "Pollute isAdmin property", "Use JSON payload"],
+    attachment: { type: "file", name: "prototype_app.js", url: "/resources/challenges/40/prototype_app.js" },
+  },
+  {
+    id: 41,
+    title: "Side Channel Attack",
+    description: "Use timing analysis to extract the password.",
+    fullDescription:
+      "Password comparison has timing leaks. Measure response times.",
+    category: 2,
+    difficulty: "hard",
+    solveCount: 16,
+    hints: [
+      "Measure response times",
+      "Character-by-character comparison",
+      "Use statistics",
+    ],
+    attachment: { type: "file", name: "timing_vulnerable.py", url: "/resources/challenges/41/timing_vulnerable.py" },
+  },
+  {
+    id: 42,
+    title: "PDF Forensics",
+    description: "Extract hidden data from this PDF file.",
+    fullDescription:
+      "PDF contains hidden layers and metadata. Extract everything.",
+    category: 3,
+    difficulty: "medium",
+    solveCount: 81,
+    hints: [
+      "Use pdfinfo and pdfimages",
+      "Check PDF structure",
+      "Look for streams",
+    ],
+    attachment: { type: "file", name: "document.pdf", url: "/resources/challenges/42/document.pdf" },
+  },
+];

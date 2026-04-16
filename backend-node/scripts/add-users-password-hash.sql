@@ -1,0 +1,3 @@
+-- Deprecated for practice auth.
+-- Practice accounts now live in `practice_users`.
+-- Run `backend-node/scripts/add-practice-users-table.sql` instead.

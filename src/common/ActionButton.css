@@ -1,0 +1,130 @@
+/* Action Button - Reusable button component with loading state */
+
+.action-btn {
+  padding: 8px 12px;
+  display: inline-flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 12px;
+  color: white;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  white-space: nowrap !important;
+  flex-wrap: nowrap !important;
+  width: auto !important;
+}
+
+/* Icon and text styling - keep them inline within flex row */
+.action-btn svg {
+  flex-shrink: 0;
+  height: 12px;
+  width: 12px;
+  display: inline-block;
+}
+
+/* Variant - Danger (Red) */
+.action-btn-danger {
+  background-color: #ef4444;
+}
+
+.action-btn-danger:hover:not(:disabled) {
+  background-color: #dc2626;
+  transform: scale(1.02);
+}
+
+.action-btn-danger:active:not(:disabled) {
+  transform: scale(1);
+}
+
+/* Variant - Success (Green) */
+.action-btn-success {
+  background-color: #22c55e;
+}
+
+.action-btn-success:hover:not(:disabled) {
+  background-color: #16a34a;
+  transform: scale(1.02);
+}
+
+.action-btn-success:active:not(:disabled) {
+  transform: scale(1);
+}
+
+/* Variant - Primary (Blue) */
+.action-btn-primary {
+  background-color: #3b82f6;
+}
+
+.action-btn-primary:hover:not(:disabled) {
+  background-color: #2563eb;
+  transform: scale(1.02);
+}
+
+.action-btn-primary:active:not(:disabled) {
+  transform: scale(1);
+}
+
+/* Variant - Secondary (Gray) */
+.action-btn-secondary {
+  background-color: var(--input-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.action-btn-secondary:hover:not(:disabled) {
+  background-color: var(--border-color);
+  transform: scale(1.02);
+}
+
+.action-btn-secondary:active:not(:disabled) {
+  transform: scale(1);
+}
+
+/* Disabled and Loading states */
+.action-btn:disabled {
+  background-color: #d1d5db;
+  color: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.action-btn-loading {
+  opacity: 0.7;
+}
+
+.action-btn-spinner {
+  display: inline-block;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Size variants - override width if needed */
+.action-btn-sm {
+  padding: 6px 10px;
+  font-size: 11px;
+}
+
+.action-btn-lg {
+  padding: 10px 14px;
+  font-size: 13px;
+}
+
+/* Focus state for accessibility */
+.action-btn:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}

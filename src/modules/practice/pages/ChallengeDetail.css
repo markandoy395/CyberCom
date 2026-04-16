@@ -1,0 +1,459 @@
+/* Challenge Detail Page */
+.challenge-detail {
+  min-height: 100vh;
+  background-color: var(--primary-bg);
+  padding: 20px 0;
+}
+
+.challenge-detail-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 30px;
+}
+
+/* Loading State */
+.challenge-detail-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 20px;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid var(--border-color);
+  border-top-color: var(--primary-accent);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Not Found State */
+.challenge-detail-not-found {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+}
+
+.not-found-content {
+  text-align: center;
+}
+
+.not-found-content h1 {
+  font-size: 32px;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+}
+
+.not-found-content p {
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+  font-size: 16px;
+}
+
+/* Header Section */
+.challenge-header {
+  margin-bottom: 40px;
+  padding: 30px;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  color: var(--primary-accent);
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 20px;
+  padding: 0;
+  transition: color 0.2s ease;
+}
+
+.back-button:hover {
+  color: var(--primary-accent);
+  text-decoration: underline;
+}
+
+.challenge-meta {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.category-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+/* Category Colors */
+.category-forensics {
+  background-color: rgba(100, 200, 150, 0.2);
+  color: #64c896;
+}
+
+.category-crypto {
+  background-color: rgba(100, 150, 255, 0.2);
+  color: #6496ff;
+}
+
+.category-web {
+  background-color: rgba(255, 100, 100, 0.2);
+  color: #ff6464;
+}
+
+.category-binary {
+  background-color: rgba(200, 100, 255, 0.2);
+  color: #c864ff;
+}
+
+.category-reverse {
+  background-color: rgba(255, 150, 100, 0.2);
+  color: #ff9664;
+}
+
+.category-misc {
+  background-color: rgba(100, 200, 255, 0.2);
+  color: #64c8ff;
+}
+
+.difficulty-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.difficulty-easy {
+  background-color: rgba(0, 200, 100, 0.2);
+  color: #00c864;
+}
+
+.difficulty-medium {
+  background-color: rgba(200, 150, 0, 0.2);
+  color: #ffa500;
+}
+
+.difficulty-hard {
+  background-color: rgba(255, 0, 100, 0.2);
+  color: #ff0064;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-badge.status-solved {
+  background-color: rgba(0, 200, 100, 0.15);
+  color: #00c864;
+}
+
+.status-badge.status-in-progress {
+  background-color: rgba(200, 150, 0, 0.15);
+  color: #ffa500;
+}
+
+.status-badge.status-unsolved {
+  background-color: rgba(100, 100, 100, 0.15);
+  color: var(--text-secondary);
+}
+
+.challenge-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.challenge-description {
+  font-size: 16px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* Content Grid */
+.challenge-content-grid {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 30px;
+}
+
+/* Main Content */
+.challenge-main {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.detail-section {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 24px;
+}
+
+.detail-section h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+
+.detail-section p {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  font-size: 15px;
+}
+
+/* Hint Section */
+.hint-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.hint-toggle {
+  padding: 6px 12px;
+  background-color: var(--elevated-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: var(--primary-accent);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.hint-toggle:hover {
+  background-color: var(--hover-state);
+}
+
+.hint-toggle.active {
+  background-color: var(--primary-accent);
+  color: white;
+}
+
+.hint-content {
+  background-color: var(--elevated-surface);
+  border-left: 4px solid var(--primary-accent);
+  padding: 16px;
+  border-radius: 4px;
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* Tags */
+.tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.tag {
+  display: inline-block;
+  padding: 6px 12px;
+  background-color: var(--elevated-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.tag:hover {
+  background-color: var(--primary-accent);
+  color: white;
+  border-color: var(--primary-accent);
+}
+
+/* Sidebar */
+.challenge-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  height: fit-content;
+  position: sticky;
+  top: 100px;
+}
+
+/* Stat Cards */
+.stat-card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--primary-accent);
+}
+
+.points-card {
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(0, 212, 255, 0.05));
+}
+
+.solves-card {
+  background: linear-gradient(135deg, rgba(100, 200, 150, 0.1), rgba(100, 200, 150, 0.05));
+}
+
+.personal-best-card {
+  background: linear-gradient(135deg, rgba(255, 150, 0, 0.1), rgba(255, 150, 0, 0.05));
+}
+
+/* Button */
+.btn-full {
+  width: 100%;
+}
+
+.btn-lg {
+  padding: 12px 16px;
+  font-size: 15px;
+}
+
+/* Info Box */
+.info-box {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.info-box h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.info-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.info-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.info-list li:last-child {
+  border-bottom: none;
+}
+
+.info-list .label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.info-list .value {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.capitalize {
+  text-transform: capitalize;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .challenge-content-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .challenge-sidebar {
+    position: static;
+  }
+
+  .challenge-detail-container {
+    padding: 0 20px;
+  }
+
+  .challenge-title {
+    font-size: 26px;
+  }
+}
+
+@media (max-width: 768px) {
+  .challenge-header {
+    padding: 20px;
+  }
+
+  .challenge-detail-container {
+    padding: 0 15px;
+  }
+
+  .challenge-meta {
+    flex-direction: column;
+  }
+
+  .category-badge,
+  .difficulty-badge,
+  .status-badge {
+    flex: 0 0 auto;
+  }
+
+  .challenge-title {
+    font-size: 22px;
+  }
+
+  .challenge-description {
+    font-size: 15px;
+  }
+
+  .detail-section {
+    padding: 16px;
+  }
+
+  .detail-section h2 {
+    font-size: 16px;
+  }
+
+  .stat-value {
+    font-size: 24px;
+  }
+}

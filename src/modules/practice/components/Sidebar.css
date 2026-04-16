@@ -1,0 +1,420 @@
+/* Practice Sidebar */
+.practice-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+/* Sidebar Title Container */
+.sidebar-title-container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* Sidebar Toggle Button */
+.sidebar-toggle-btn {
+  background-color: transparent;
+  color: var(--primary-accent);
+  border: none;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: none;
+  z-index: 10;
+  flex-shrink: 0;
+  margin-bottom: 8px;
+  position: sticky;
+  top: 0;
+}
+
+.sidebar-toggle-btn:hover {
+  color: rgba(0, 255, 200, 0.8);
+  transform: scale(1.1);
+}
+
+.sidebar-toggle-btn:active {
+  transform: scale(0.95);
+}
+
+.sidebar-toggle-expanded {
+  position: sticky;
+  top: 0;
+}
+
+/* Collapsed Sidebar */
+.practice-sidebar-collapsed {
+  gap: 0;
+  align-items: center;
+  padding: 12px 0;
+  position: relative;
+}
+
+.practice-sidebar-collapsed .sidebar-toggle-btn {
+  position: sticky;
+  top: 0;
+  margin-bottom: 12px;
+  width: 28px;
+  height: 28px;
+  font-size: 14px;
+}
+
+.sidebar-icon-group {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-left: 3px solid transparent;
+}
+
+.sidebar-icon-group:hover {
+  border-left-color: var(--primary-accent);
+}
+
+.sidebar-icon {
+  font-size: 28px;
+  transition: transform 0.2s ease;
+}
+
+.sidebar-icon-group:hover .sidebar-icon {
+  transform: scale(1.1);
+}
+
+/* Focused Section */
+.sidebar-section.focused {
+  background-color: rgba(0, 255, 200, 0.1);
+  border-color: var(--primary-accent);
+  box-shadow: 0 0 12px rgba(0, 255, 200, 0.2);
+}
+
+/* Sidebar Section */
+.sidebar-section {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.sidebar-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.sidebar-empty {
+  font-size: 13px;
+  text-align: center;
+  padding: 20px 10px;
+}
+
+/* Recent Attempts */
+.recent-attempts {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.recent-attempts::-webkit-scrollbar {
+  width: 6px;
+}
+
+.recent-attempts::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.recent-attempts::-webkit-scrollbar-thumb {
+  background-color: var(--border-color);
+  border-radius: 3px;
+  transition: background-color 0.2s ease;
+}
+
+.recent-attempts::-webkit-scrollbar-thumb:hover {
+  background-color: var(--text-secondary);
+}
+
+.recent-attempt-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background-color: var(--elevated-surface);
+  border-radius: 6px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.recent-attempt-item:hover {
+  background-color: var(--elevated-surface);
+  border-color: var(--primary-accent);
+  transform: translateX(4px);
+}
+
+.attempt-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.attempt-name {
+  color: var(--text-primary);
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.attempt-time {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+/* Status Badge in Sidebar */
+.recent-attempt-item .status-badge {
+  font-size: 18px;
+  padding: 6px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.recent-attempt-item .status-solved {
+  background-color: transparent;
+  color: var(--success-green);
+}
+
+.recent-attempt-item .status-in_progress,
+.recent-attempt-item .status-unsolved {
+  background-color: transparent;
+  color: var(--text-muted);
+}
+
+/* Category Progress */
+.category-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.progress-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.progress-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.progress-icon {
+  font-size: 18px;
+}
+
+.progress-name {
+  flex: 1;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.progress-percentage {
+  color: var(--primary-accent);
+  font-weight: 700;
+  font-size: 13px;
+}
+
+/* Achievement Badges */
+.achievement-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.achievement-badges .badge {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--card-bg);
+  border: 2px solid var(--primary-accent);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 24px;
+  box-shadow: 0 0 12px rgba(0, 255, 200, 0.3);
+  position: relative;
+}
+
+.achievement-badges .badge:hover {
+  transform: scale(1.1);
+  background: var(--card-bg);
+  box-shadow: 0 0 20px rgba(0, 255, 200, 0.5);
+}
+
+.achievement-badges .badge .badge-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary-accent);
+  z-index: 2;
+  position: relative;
+  margin-bottom: 2px;
+}
+
+/* Badge Progress Circle */
+.badge-progress-circle {
+  position: absolute;
+  width: 56px;
+  height: 56px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(90deg);
+  z-index: 1;
+}
+
+.progress-bg {
+  stroke: rgba(255, 255, 255, 0.25);
+  fill: none;
+}
+
+.progress-ring {
+  stroke: var(--primary-accent);
+  fill: none;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.3s ease;
+  filter: drop-shadow(0 0 4px rgba(0, 255, 200, 0.6));
+}
+
+/* Badge Tooltip */
+.badge-tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--card-bg);
+  border: 1px solid var(--primary-accent);
+  border-radius: 8px;
+  padding: 12px;
+  width: 200px;
+  margin-bottom: 8px;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.badge-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: var(--primary-accent);
+}
+
+.tooltip-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary-accent);
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.tooltip-progress {
+  margin-bottom: 8px;
+}
+
+.tooltip-progress span {
+  font-size: 12px;
+  color: var(--text-secondary);
+  display: block;
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.tooltip-requirement {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.4;
+}
+
+/* Badge Animations */
+.achievement-badges .badge-first-blood:hover .badge-icon {
+  animation: pulse-badge 0.6s ease-in-out;
+}
+
+.achievement-badges .badge-speed-demon:hover .badge-icon {
+  animation: spin-badge 0.8s linear;
+}
+
+.achievement-badges .badge-category-master:hover .badge-icon {
+  animation: bounce-badge 0.6s ease-in-out;
+}
+
+@keyframes pulse-badge {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+}
+
+@keyframes spin-badge {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes bounce-badge {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+/* Mobile Responsive */
+@media (max-width: 1200px) {
+  .practice-sidebar {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar-section {
+    padding: 16px;
+  }
+
+  .sidebar-title {
+    font-size: 15px;
+  }
+}

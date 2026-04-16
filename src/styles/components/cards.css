@@ -13,11 +13,3 @@
 .card:hover {
   box-shadow: 0 4px 12px var(--shadow);
 }
-
-.card-elevated {
-  background-color: var(--elevated-surface);
-}
-
-.card-secondary {
-  background-color: var(--secondary-bg);
-}

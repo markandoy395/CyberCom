@@ -1,0 +1,23 @@
+CREATE TABLE IF NOT EXISTS competition_live_monitor (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    competition_id INT NOT NULL,
+    team_id INT NOT NULL,
+    team_member_id INT NOT NULL,
+    current_challenge_id INT NULL,
+    activity_status ENUM('idle', 'solving') NOT NULL DEFAULT 'idle',
+    is_tab_active BOOLEAN NOT NULL DEFAULT 1,
+    last_tab_blur TIMESTAMP NULL,
+    current_challenge_viewed_at TIMESTAMP NULL,
+    last_activity_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    last_heartbeat_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (competition_id) REFERENCES competitions(id) ON DELETE CASCADE,
+    FOREIGN KEY (team_id) REFERENCES competition_teams(id) ON DELETE CASCADE,
+    FOREIGN KEY (team_member_id) REFERENCES competition_team_members(id) ON DELETE CASCADE,
+    FOREIGN KEY (current_challenge_id) REFERENCES challenges(id) ON DELETE SET NULL,
+    UNIQUE KEY unique_live_monitor_member (team_member_id),
+    INDEX idx_live_monitor_competition (competition_id),
+    INDEX idx_live_monitor_competition_activity (competition_id, last_heartbeat_at),
+    INDEX idx_live_monitor_competition_status (competition_id, activity_status, is_tab_active)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

@@ -1,0 +1,491 @@
+/* Competition Create Modal — b_jPA8vyNiFS8 Design System */
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes tooltipFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Shell ─── */
+.competition-create-modal.admin-modal-panel {
+  max-width: 540px;
+  background-color: #ffffff !important;
+  color: #1e293b !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 12px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  font-family: "Poppins", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  padding: 0;
+}
+
+.competition-create-modal .spinner-icon {
+  animation: spin 1s linear infinite;
+}
+
+/* ─── Lucide icon utilities ─── */
+.icon-primary { color: #0284c7; flex-shrink: 0; }
+.icon-muted   { color: #64748b; flex-shrink: 0; }
+.icon-accent  { color: #7c3aed; flex-shrink: 0; }
+.asterisk     { color: #ef4444; margin-left: 2px; }
+
+/* ─── Header ─── */
+.competition-create-modal .modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 24px 24px 8px 24px;
+  border-bottom: none;
+}
+
+.competition-create-modal .modal-header h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  letter-spacing: -0.025em;
+}
+
+.competition-create-modal .modal-subtitle {
+  margin: 6px 0 0 0;
+  font-size: 14px;
+  color: #475569;
+  line-height: 1.5;
+}
+
+.competition-create-modal .modal-close-btn {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.competition-create-modal .modal-close-btn:hover {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+/* ─── Form ─── */
+.competition-create-modal .competition-form {
+  padding: 16px 24px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.competition-create-modal .form-error {
+  background-color: #fef2f2;
+  border: 1px solid #fca5a5;
+  color: #dc2626;
+  padding: 12px 16px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  animation: slideDown 0.2s ease-out;
+}
+
+.competition-create-modal .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.competition-create-modal .form-group label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.competition-create-modal .form-description {
+  font-size: 13px;
+  color: #475569;
+  margin: -2px 0 2px 0;
+}
+
+.competition-create-modal .form-group input,
+.competition-create-modal .form-group textarea {
+  padding: 8px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background-color: #ffffff;
+  color: #0f172a;
+  font-family: inherit;
+  font-size: 14px;
+  transition: all 0.15s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+.competition-create-modal .form-group input::placeholder,
+.competition-create-modal .form-group textarea::placeholder {
+  color: #94a3b8;
+}
+.competition-create-modal .form-group input:focus,
+.competition-create-modal .form-group textarea:focus {
+  outline: none;
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+}
+
+.competition-create-modal .form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.competition-create-modal .char-count {
+  font-size: 13px;
+  color: #64748b;
+}
+
+/* Per-field validation */
+.competition-create-modal .form-group.has-error input,
+.competition-create-modal .form-group.has-error textarea {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.competition-create-modal .field-error {
+  font-size: 13px;
+  color: #ef4444;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+.competition-create-modal .form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* ─── Buttons ─── */
+.competition-create-modal .form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.competition-create-modal .btn-secondary,
+.competition-create-modal .btn-success {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.competition-create-modal .btn-secondary {
+  border: 1px solid #e2e8f0;
+  background-color: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+.competition-create-modal .btn-secondary:hover:not(:disabled) {
+  background-color: #f8fafc;
+}
+
+.competition-create-modal .btn-success {
+  border: none;
+  background-color: #0284c7;
+  color: #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  min-width: 160px;
+}
+.competition-create-modal .btn-success:hover:not(:disabled) {
+  background-color: #0369a1;
+}
+.competition-create-modal .btn-success:disabled,
+.competition-create-modal .btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ─── Advanced Scoring Accordion ─── */
+.advanced-scoring-section {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.btn-toggle-scoring {
+  padding: 14px 16px;
+  background-color: #ffffff;
+  color: #0f172a;
+  border: none;
+  font-weight: 500;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+.btn-toggle-scoring:hover {
+  background-color: #f8fafc;
+}
+.btn-toggle-scoring .chevron-right {
+  margin-left: auto;
+}
+
+/* ─── Scoring Container ─── */
+.premium-scoring-container {
+  padding: 0 16px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.premium-scoring-container .instruction {
+  font-size: 14px;
+  color: #475569;
+  line-height: 1.5;
+  margin: 0;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 16px;
+}
+
+.premium-scoring-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.premium-scoring-header label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.premium-weight-labels {
+  display: flex;
+  justify-content: space-between;
+  color: #475569;
+  font-size: 14px;
+}
+
+/* ─── Custom Slider (matches the Tailwind template) ─── */
+.premium-slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 6px;
+  background: linear-gradient(to right, #0284c7 var(--slider-fill, 80%), #e0f2fe var(--slider-fill, 80%));
+  border-radius: 999px;
+  outline: none;
+  margin: 4px 0;
+  cursor: pointer;
+}
+.premium-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid #0284c7;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  transition: box-shadow 0.15s ease;
+}
+.premium-slider::-webkit-slider-thumb:hover {
+  box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.15);
+}
+.premium-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid #0284c7;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.premium-slider-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.premium-tag {
+  background-color: #f1f5f9;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+  color: #0f172a;
+  font-size: 13px;
+}
+
+/* ─── Scoring Params Table ─── */
+.premium-scoring-table {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  margin: 0 16px 16px 16px;
+  overflow: visible;
+}
+
+.premium-table-header {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  background-color: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  border-radius: 8px 8px 0 0;
+  overflow: visible;
+}
+
+.premium-table-body {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  background-color: #ffffff;
+  border-radius: 0 0 8px 8px;
+  overflow: hidden;
+}
+
+.premium-cell {
+  padding: 12px;
+  border-right: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  color: #0f172a;
+}
+.premium-cell:last-child {
+  border-right: none;
+}
+
+.premium-table-header .premium-cell {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 500;
+  gap: 4px;
+}
+
+.premium-input-cell {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: #ffffff;
+  color: #0f172a;
+  transition: all 0.15s ease;
+  box-sizing: border-box;
+}
+.premium-input-cell:focus {
+  outline: none;
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+}
+
+.premium-subtext {
+  font-size: 12px;
+  color: #0284c7;
+  font-weight: 500;
+}
+
+/* ─── InfoTooltip (CSS-only, matches Radix/Tailwind design) ─── */
+.info-tooltip-trigger {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: help;
+}
+
+.info-tooltip-icon {
+  color: #94a3b8;
+  transition: color 0.15s ease;
+  flex-shrink: 0;
+}
+.info-tooltip-trigger:hover .info-tooltip-icon {
+  color: #475569;
+}
+
+.info-tooltip-content {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #0f172a;
+  color: #f8fafc;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+  padding: 8px 12px;
+  border-radius: 6px;
+  width: max-content;
+  max-width: 250px;
+  z-index: 100;
+  text-align: center;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  animation: tooltipFadeIn 0.15s ease-out;
+}
+
+/* Tooltip arrow */
+.info-tooltip-content::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: #0f172a;
+}
+
+.info-tooltip-trigger:hover .info-tooltip-content {
+  display: block;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 600px) {
+  .competition-create-modal .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .premium-table-header,
+  .premium-table-body {
+    grid-template-columns: 1fr;
+  }
+
+  .premium-cell {
+    border-right: none;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .premium-cell:last-child {
+    border-bottom: none;
+  }
+}

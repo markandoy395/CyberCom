@@ -1,0 +1,455 @@
+/* Team Management / Users Tab Styles */
+
+/* Active Competition Display */
+.active-competition-display {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, var(--card-bg) 0%, rgba(2, 132, 199, 0.04) 100%);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  margin-bottom: 24px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.active-competition-display:hover {
+  border-color: var(--primary-accent);
+  box-shadow: 0 4px 16px rgba(2, 132, 199, 0.08);
+}
+
+.competition-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.info-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--primary-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  white-space: nowrap;
+  background: rgba(2, 132, 199, 0.08);
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+.competition-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.2px;
+}
+
+.competition-status {
+  display: flex;
+  gap: 8px;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.25s ease;
+}
+
+.status-badge.active {
+  background: rgba(5, 150, 105, 0.10);
+  color: var(--success-green);
+  border: 1px solid rgba(5, 150, 105, 0.25);
+}
+
+/* Team Competition Required Message */
+.competition-required-message {
+  padding: 60px 40px;
+  text-align: center;
+  background: linear-gradient(135deg, var(--card-bg) 0%, rgba(2, 132, 199, 0.03) 100%);
+  border: 2px dashed var(--border-color);
+  border-radius: 20px;
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 24px;
+  transition: border-color 0.3s ease;
+}
+
+.competition-required-message:hover {
+  border-color: var(--primary-accent);
+}
+
+.competition-required-message .message-icon {
+  font-size: 56px;
+  margin-bottom: 20px;
+  opacity: 0.6;
+  color: var(--warning-orange);
+  animation: gentlePulse 2.5s ease-in-out infinite;
+}
+
+@keyframes gentlePulse {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.08); opacity: 0.85; }
+}
+
+.competition-required-message h3 {
+  color: var(--text-primary);
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 10px 0;
+  letter-spacing: -0.3px;
+}
+
+.competition-required-message p {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin: 0;
+  max-width: 380px;
+  line-height: 1.6;
+}
+
+.team-selector-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.team-selector-section label {
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+.team-selector-section label .required {
+  color: var(--error-red);
+  margin-left: 4px;
+  font-weight: 700;
+}
+
+.competition-select {
+  flex: 1;
+  min-width: 250px;
+  padding: 10px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background-color: var(--card-bg);
+  color: var(--text-primary);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: inherit;
+}
+
+.competition-select:hover {
+  border-color: var(--primary-accent);
+}
+
+.competition-select:focus {
+  outline: none;
+  border-color: var(--primary-accent);
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.10);
+}
+
+/* Teams Container */
+.teams-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Team Card */
+.team-card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.team-card:hover {
+  border-color: var(--primary-accent);
+  box-shadow: 0 6px 20px rgba(2, 132, 199, 0.10);
+  transform: translateY(-1px);
+}
+
+/* Team Header */
+.team-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s ease;
+}
+
+.team-header:hover {
+  background: rgba(2, 132, 199, 0.03);
+}
+
+.team-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.expand-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  color: var(--text-secondary);
+  transition: all 0.25s ease;
+}
+
+.team-header:hover .expand-icon {
+  color: var(--primary-accent);
+}
+
+.team-name {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.team-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  background: rgba(2, 132, 199, 0.08);
+  color: var(--primary-accent);
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.team-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-badge.status-active {
+  background: rgba(5, 150, 105, 0.10);
+  color: var(--success-green);
+  border: 1px solid rgba(5, 150, 105, 0.20);
+}
+
+.status-badge.status-inactive {
+  background: rgba(148, 163, 184, 0.10);
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
+}
+
+.status-badge.status-completed {
+  background: rgba(37, 99, 235, 0.10);
+  color: var(--info-blue);
+  border: 1px solid rgba(37, 99, 235, 0.20);
+}
+
+/* Members List */
+.members-list {
+  background: var(--elevated-surface);
+  border-top: 1px solid var(--border-color);
+  padding: 16px;
+}
+
+.members-header {
+  display: grid;
+  grid-template-columns: 1.2fr 1.5fr 1fr 1fr 1.2fr;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--card-bg);
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.member-row {
+  display: grid;
+  grid-template-columns: 1.2fr 1.5fr 1fr 1fr 1.2fr;
+  gap: 12px;
+  padding: 12px 14px;
+  align-items: center;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: var(--card-bg);
+  margin-bottom: 6px;
+  font-size: 13px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.member-row:hover {
+  border-color: var(--primary-accent);
+  background: rgba(2, 132, 199, 0.03);
+  transform: translateX(2px);
+}
+
+.member-username {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.member-email {
+  color: var(--text-secondary);
+  font-size: 12px;
+  word-break: break-word;
+}
+
+.role-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  text-align: center;
+  letter-spacing: 0.3px;
+}
+
+.role-badge.role-captain {
+  background: rgba(37, 99, 235, 0.10);
+  color: var(--info-blue);
+  border: 1px solid rgba(37, 99, 235, 0.20);
+}
+
+.role-badge.role-co-captain {
+  background: rgba(124, 58, 237, 0.10);
+  color: var(--secondary-accent);
+  border: 1px solid rgba(124, 58, 237, 0.20);
+}
+
+.role-badge.role-member {
+  background: rgba(148, 163, 184, 0.10);
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
+}
+
+.role-badge.role-leader {
+  background: rgba(220, 38, 38, 0.10);
+  color: var(--error-red);
+  border: 1px solid rgba(220, 38, 38, 0.20);
+}
+
+.member-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.status-dot.online {
+  background-color: var(--success-green);
+  box-shadow: 0 0 6px rgba(5, 150, 105, 0.5);
+}
+
+.status-dot.offline {
+  background-color: var(--text-muted);
+}
+
+.status-dot.idle {
+  background-color: var(--warning-orange);
+  box-shadow: 0 0 6px rgba(217, 119, 6, 0.5);
+}
+
+.last-login {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+/* Empty States */
+.loading-state,
+.no-members {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.empty-state {
+  padding: 60px 40px;
+  text-align: center;
+  background: var(--card-bg);
+  border-radius: 16px;
+  border: 2px dashed var(--border-color);
+  min-height: 260px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.3s ease;
+}
+
+.empty-state:hover {
+  border-color: var(--primary-accent);
+}
+
+.empty-state i {
+  font-size: 48px;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+  opacity: 0.4;
+}
+
+.empty-state h4 {
+  color: var(--text-primary);
+  margin-bottom: 10px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.empty-state p {
+  color: var(--text-secondary);
+  margin-bottom: 0;
+  max-width: 400px;
+  line-height: 1.6;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .members-header,
+  .member-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .members-header span:nth-child(n + 3),
+  .member-row > span:nth-child(n + 3) {
+    display: none;
+  }
+
+  .team-info {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

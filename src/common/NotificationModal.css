@@ -1,0 +1,286 @@
+/* Notification Modal - Reusable Component for All Notification Types */
+
+/* Base Modal Styling */
+.notification-modal {
+  position: fixed;
+  background: white;
+  border-radius: 12px;
+  padding: 20px 24px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+  z-index: 99999;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  max-width: min(90vw, 500px);
+  width: auto;
+  min-width: 280px;
+  box-sizing: border-box;
+  animation: slideInFromRight 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: auto;
+}
+
+/* Animation for modal appearance - slides in from right */
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(500px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Animation for modal disappearance - slides out to right */
+@keyframes slideOutToRight {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(500px);
+  }
+}
+
+/* Notification Type - Success */
+.notification-modal.notification-success {
+  background-color: #f0fdf4;
+}
+
+.notification-modal.notification-success .notification-icon {
+  color: #10b981;
+}
+
+/* Notification Type - Error */
+.notification-modal.notification-error {
+  background-color: #fef2f2;
+}
+
+.notification-modal.notification-error .notification-icon {
+  color: #ef4444;
+}
+
+/* Notification Type - Warning */
+.notification-modal.notification-warning {
+  background-color: #fffbeb;
+}
+
+.notification-modal.notification-warning .notification-icon {
+  color: #f59e0b;
+}
+
+/* Notification Type - Info */
+.notification-modal.notification-info {
+  background-color: #eff6ff;
+}
+
+.notification-modal.notification-info .notification-icon {
+  color: #3b82f6;
+}
+
+/* Icon Wrapper */
+.notification-icon-wrapper {
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+
+.notification-icon {
+  font-size: 24px;
+  transition: transform 0.3s ease;
+}
+
+/* Content Area */
+.notification-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.notification-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  line-height: 1.4;
+}
+
+.notification-message {
+  margin: 0;
+  font-size: 14px;
+  color: #4b5563;
+  line-height: 1.5;
+}
+
+/* Close Button */
+.notification-close-btn {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  transition: color 0.2s ease, transform 0.2s ease;
+  margin-top: -2px;
+}
+
+.notification-close-btn:hover {
+  color: #374151;
+  transform: scale(1.1);
+}
+
+.notification-close-btn:active {
+  transform: scale(0.95);
+}
+
+/* Action Buttons */
+.notification-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.notification-action-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: #3b82f6;
+  color: white;
+}
+
+.notification-action-btn:hover {
+  background-color: #2563eb;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.notification-action-btn:active {
+  transform: translateY(0);
+}
+
+/* ========== POSITIONS ========== */
+
+/* Center Position */
+.notification-modal.notification-center {
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%);
+}
+
+/* Top Center Position */
+.notification-modal.notification-top-center {
+  top: 24px !important;
+  left: 50% !important;
+  transform: translateX(-50%);
+}
+
+/* Top Right Position */
+.notification-modal.notification-top-right {
+  top: 24px !important;
+  right: 24px !important;
+  left: auto !important;
+}
+
+/* Bottom Right Position */
+.notification-modal.notification-bottom-right {
+  bottom: 24px !important;
+  right: 24px !important;
+  left: auto !important;
+  top: auto !important;
+}
+
+/* Bottom Left Position */
+.notification-modal.notification-bottom-left {
+  bottom: 24px !important;
+  left: 24px !important;
+  right: auto !important;
+  top: auto !important;
+}
+
+/* Top Left Position */
+.notification-modal.notification-top-left {
+  top: 24px !important;
+  left: 24px !important;
+  right: auto !important;
+}
+
+/* ========== RESPONSIVE DESIGN ========== */
+
+@media (max-width: 640px) {
+  .notification-modal {
+    max-width: calc(100vw - 32px);
+    min-width: auto;
+  }
+
+  .notification-modal.notification-center {
+    width: 90vw;
+    max-width: 90vw;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .notification-modal.notification-top-right,
+  .notification-modal.notification-bottom-right,
+  .notification-modal.notification-top-left,
+  .notification-modal.notification-bottom-left,
+  .notification-modal.notification-top-center {
+    left: 16px !important;
+    right: 16px !important;
+    width: auto;
+    max-width: none;
+    transform: none !important;
+  }
+
+  .notification-icon {
+    font-size: 20px;
+  }
+
+  .notification-title {
+    font-size: 15px;
+  }
+
+  .notification-message {
+    font-size: 13px;
+  }
+}
+
+/* ========== ACCESSIBILITY ========== */
+
+@media (prefers-reduced-motion: reduce) {
+  .notification-modal {
+    animation: none;
+  }
+
+  .notification-icon,
+  .notification-close-btn,
+  .notification-action-btn {
+    transition: none;
+  }
+}
+
+/* Focus states for keyboard navigation */
+.notification-close-btn:focus,
+.notification-action-btn:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: more) {
+  .notification-modal {
+    border-left-width: 6px;
+  }
+
+  .notification-title {
+    font-weight: 700;
+  }
+}

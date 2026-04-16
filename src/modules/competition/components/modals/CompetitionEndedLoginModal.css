@@ -1,0 +1,258 @@
+/* ===== COMPETITION ENDED LOGIN MODAL STYLES ===== */
+
+.competition-ended-login-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5000;
+  backdrop-filter: blur(10px);
+  animation: fadeInOverlay 0.3s ease-out;
+}
+
+@keyframes fadeInOverlay {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.competition-ended-login-modal {
+  background: var(--card-bg);
+  border: 2px solid var(--border-color);
+  border-radius: 20px;
+  padding: 48px 40px;
+  max-width: 520px;
+  width: 90%;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+  animation: slideInDown 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Header Section */
+.ended-login-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.ended-login-icon {
+  font-size: 64px;
+  display: inline-block;
+  margin-bottom: 16px;
+  animation: bounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.ended-login-title {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+  letter-spacing: -0.8px;
+  background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Content Section */
+.ended-login-content {
+  margin-bottom: 32px;
+}
+
+.ended-login-main-text {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 16px 0;
+  line-height: 1.5;
+}
+
+.ended-login-message {
+  padding: 20px;
+  background: rgba(255, 107, 107, 0.08);
+  border-left: 4px solid #ff6b6b;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.ended-login-secondary-text {
+  font-size: 15px;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* Info Box */
+.ended-login-info-box {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px;
+  background: var(--elevated-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.info-item:hover {
+  border-color: #ff6b6b;
+  background: rgba(255, 107, 107, 0.04);
+  transform: translateX(4px);
+}
+
+.info-item .info-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+  line-height: 1.4;
+  min-width: 24px;
+}
+
+.info-item p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Actions */
+.ended-login-actions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.btn-go-home,
+.btn-close-modal {
+  flex: 1;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  min-height: 48px;
+}
+
+.btn-go-home {
+  background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+  color: white;
+  box-shadow: 0 8px 20px rgba(255, 107, 107, 0.3);
+}
+
+.btn-go-home:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(255, 107, 107, 0.4);
+}
+
+.btn-go-home:active {
+  transform: translateY(0);
+}
+
+.btn-close-modal {
+  background: var(--border-color);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.btn-close-modal:hover {
+  background: var(--elevated-surface);
+  border-color: var(--primary-accent);
+}
+
+/* Footer */
+.ended-login-footer {
+  text-align: center;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
+}
+
+.footer-message {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0;
+  font-style: italic;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  .competition-ended-login-modal {
+    padding: 32px 24px;
+    max-width: 95%;
+  }
+
+  .ended-login-title {
+    font-size: 28px;
+  }
+
+  .ended-login-icon {
+    font-size: 48px;
+  }
+
+  .ended-login-main-text {
+    font-size: 16px;
+  }
+
+  .ended-login-actions {
+    flex-direction: column;
+  }
+
+  .btn-go-home,
+  .btn-close-modal {
+    width: 100%;
+  }
+}
+
+/* Dark Mode */
+[data-theme="dark"] .competition-ended-login-modal {
+  background: var(--card-bg);
+  border-color: rgba(255, 107, 107, 0.2);
+}
+
+[data-theme="dark"] .ended-login-message {
+  background: rgba(255, 107, 107, 0.1);
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion) {
+  .competition-ended-login-overlay,
+  .competition-ended-login-modal,
+  .ended-login-icon {
+    animation: none;
+    transition: none;
+  }
+}

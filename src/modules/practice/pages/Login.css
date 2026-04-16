@@ -1,0 +1,228 @@
+/* Login Page */
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    135deg,
+    var(--primary-bg) 0%,
+    var(--secondary-bg) 100%
+  );
+  padding: 20px;
+}
+
+.login-container {
+  width: 100%;
+  max-width: 450px;
+}
+
+.login-card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 40px;
+  box-shadow: 0 8px 32px var(--shadow);
+}
+
+/* Login Header */
+.login-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.login-logo-image {
+  width: 100px;
+  height: 100px;
+  margin-bottom: 16px;
+  object-fit: contain;
+}
+
+.login-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.login-subtitle {
+  color: var(--text-secondary);
+  font-size: 16px;
+  margin: 0;
+}
+
+/* Login Form */
+.login-form {
+  margin-top: 24px;
+}
+
+.login-mode-toggle {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-bottom: 20px;
+  padding: 6px;
+  background-color: var(--elevated-surface);
+  border-radius: 12px;
+}
+
+.login-mode-btn {
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-secondary);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.login-mode-btn.active {
+  background-color: var(--card-bg);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+  box-shadow: 0 6px 18px var(--shadow);
+}
+
+.login-mode-btn:hover {
+  color: var(--primary-accent);
+}
+
+.login-form .form-group {
+  margin-bottom: 20px;
+}
+
+.login-form button {
+  margin-top: 24px;
+}
+
+/* Rules Agreement Section */
+.rules-agreement-section {
+  margin-bottom: 20px;
+  padding: 12px;
+  background-color: var(--elevated-surface);
+  border-radius: 8px;
+}
+
+.rules-checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.rules-checkbox {
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  cursor: pointer;
+  accent-color: var(--primary-accent);
+}
+
+.rules-checkbox-label {
+  font-size: 14px;
+  color: var(--text-primary);
+  cursor: pointer;
+  flex: 1;
+  min-width: 150px;
+}
+
+.rules-checkbox-label:hover {
+  color: var(--primary-accent);
+}
+
+.rules-checkbox:checked + .rules-checkbox-label {
+  color: var(--primary-accent);
+  font-weight: 500;
+}
+
+.rules-link {
+  background: none;
+  border: none;
+  color: var(--primary-accent);
+  font-size: 12px;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.rules-link:hover {
+  color: var(--accent-bright);
+}
+
+/* Remember Me Section */
+.remember-me-section {
+  margin-bottom: 20px;
+  padding: 12px;
+  background-color: var(--elevated-surface);
+  border-radius: 8px;
+}
+
+.remember-me-checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.remember-checkbox {
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  cursor: pointer;
+  accent-color: var(--primary-accent);
+}
+
+.remember-checkbox-label {
+  font-size: 14px;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.remember-checkbox-label:hover {
+  color: var(--primary-accent);
+}
+
+.remember-checkbox:checked + .remember-checkbox-label {
+  color: var(--primary-accent);
+  font-weight: 500;
+}
+
+/* Disabled Submit Button */
+button[type="submit"]:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+button[type="submit"]:disabled:hover {
+  background-color: var(--primary-accent);
+}
+
+/* Login Footer */
+.login-footer {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border-color);
+  text-align: center;
+}
+
+.login-footer p {
+  font-size: 13px;
+  margin: 8px 0;
+}
+
+/* Mobile Responsive */
+@media (max-width: 480px) {
+  .login-card {
+    padding: 30px 24px;
+  }
+
+  .login-title {
+    font-size: 24px;
+  }
+
+  .login-logo {
+    font-size: 48px;
+  }
+}

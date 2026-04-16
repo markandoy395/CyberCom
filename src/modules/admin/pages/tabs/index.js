@@ -1,0 +1,10 @@
+export { default as OverviewTab } from "./overview/OverviewTab";
+export { default as PracticeChallengesTab } from "./practice-challenges/PracticeChallengesTab";
+export { default as CompetitionChallengesTab } from "./competition-challenges/CompetitionChallengesTab";
+export { default as UsersTab } from "./users/UsersTab";
+export { default as CompetitionsTab } from "./competitions/CompetitionsTab";
+export { default as RankingsTab } from "./rankings/RankingsTab";
+export { default as LiveMonitorTab } from "./live-monitor/LiveMonitorTab";
+export { default as RulesTab } from "./rules/RulesTab";
+export { default as PracticeRulesTab } from "./practice-rules/PracticeRulesTab";
+export { default as SelectChallengesTab } from "./select-challenges/SelectChallengesTab";

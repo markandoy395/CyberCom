@@ -1,0 +1,171 @@
+/* Competition Login Page */
+.competition-login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--primary-bg);
+  padding: 20px;
+}
+
+.competition-login-container {
+  width: 100%;
+  max-width: 450px;
+}
+
+.competition-login-card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 40px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Header */
+.competition-login-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.competition-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.competition-subtitle {
+  color: var(--text-secondary);
+  font-size: 15px;
+  margin: 0;
+}
+
+/* Form */
+.competition-login-form {
+  margin-top: 24px;
+}
+
+.competition-login-form .form-group {
+  margin-bottom: 20px;
+}
+
+/* Info Note */
+.competition-note {
+  padding: 12px 16px;
+  background-color: var(--secondary-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  margin-bottom: 24px;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.competition-note p {
+  margin: 0;
+}
+
+.competition-note-strong {
+  margin-top: 8px !important;
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+/* Rules Agreement Section */
+.rules-agreement-section {
+  margin-bottom: 24px;
+}
+
+.rules-checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 12px 16px;
+  background-color: var(--elevated-surface);
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  transition: border-color 0.3s ease;
+}
+
+.rules-checkbox-wrapper:has(input:checked) {
+  border-color: var(--primary-accent);
+  background-color: rgba(0, 255, 136, 0.05);
+}
+
+.rules-checkbox {
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  cursor: pointer;
+  accent-color: var(--primary-accent);
+}
+
+.rules-checkbox-label {
+  font-size: 14px;
+  color: var(--text-primary);
+  cursor: pointer;
+  margin: 0;
+  flex: 1;
+  min-width: 150px;
+}
+
+.rules-link {
+  background: none;
+  border: none;
+  color: var(--primary-accent);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  transition: color 0.3s ease;
+  white-space: nowrap;
+}
+
+.rules-link:hover {
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.rules-link:active {
+  transform: scale(0.98);
+}
+
+/* Action Buttons */
+.competition-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.competition-actions .btn {
+  flex: 1;
+}
+
+.competition-actions .btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: var(--disabled-state, #888);
+  transform: none;
+}
+
+.competition-actions .btn:disabled:hover {
+  background-color: var(--disabled-state, #888);
+  box-shadow: none;
+  transform: none;
+}
+
+/* Mobile Responsive */
+@media (max-width: 480px) {
+  .competition-login-card {
+    padding: 30px 24px;
+  }
+
+  .competition-title {
+    font-size: 24px;
+  }
+
+  .competition-actions {
+    flex-direction: column;
+  }
+}

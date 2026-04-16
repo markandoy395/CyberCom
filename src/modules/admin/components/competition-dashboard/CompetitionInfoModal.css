@@ -1,0 +1,203 @@
+/* ═══════════════════════════════════════════════════════
+   Competition Info Modal — Premium Design
+   ═══════════════════════════════════════════════════════ */
+
+.competition-info-modal {
+  max-width: 720px;
+}
+
+.competition-info-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-color);
+  gap: 16px;
+  background: linear-gradient(135deg, var(--card-bg) 0%, rgba(0, 212, 255, 0.02) 100%);
+}
+
+.competition-info-modal-title {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.competition-info-modal-title h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: "Poppins", sans-serif;
+}
+
+.competition-info-modal-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.12), rgba(59, 130, 246, 0.12));
+  color: var(--primary-accent);
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.competition-info-modal-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 16px;
+}
+
+.competition-info-modal-close:hover {
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #f87171;
+  transform: rotate(90deg);
+}
+
+.competition-info-modal-body {
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* ── Dashboard Info Trigger Buttons ── */
+.dashboard-info-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  padding: 20px 24px;
+}
+
+.dashboard-info-btn {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 22px;
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  background: var(--card-bg);
+  color: var(--text-primary);
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: "Poppins", sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+.dashboard-info-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent 40%, rgba(255, 255, 255, 0.03) 60%, transparent 80%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.dashboard-info-btn:hover::before {
+  opacity: 1;
+}
+
+.dashboard-info-btn:hover {
+  transform: translateY(-4px);
+  border-color: rgba(99, 102, 241, 0.3);
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(99, 102, 241, 0.08);
+}
+
+.dashboard-info-btn:active {
+  transform: translateY(-1px);
+}
+
+/* Icon */
+.dashboard-info-btn-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  color: #fff;
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.dashboard-info-btn:hover .dashboard-info-btn-icon {
+  transform: scale(1.08);
+}
+
+.dashboard-info-btn-icon.analytics {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 50%, #4338ca 100%);
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+}
+
+.dashboard-info-btn-icon.checklist {
+  background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+}
+
+/* Text */
+.dashboard-info-btn-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.dashboard-info-btn-title {
+  font-family: "Poppins", sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dashboard-info-btn-subtitle {
+  font-family: "Poppins", sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  opacity: 0.85;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .dashboard-info-buttons {
+    grid-template-columns: 1fr;
+    padding: 16px 20px;
+  }
+
+  .dashboard-info-btn {
+    padding: 16px 18px;
+    border-radius: 14px;
+  }
+
+  .dashboard-info-btn-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    font-size: 18px;
+  }
+}

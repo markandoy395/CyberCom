@@ -1,0 +1,597 @@
+/* Admin Login Container */
+.admin-login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0a0e27 0%, #151b3b 100%);
+  padding: 20px;
+  font-family: "Poppins", sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Animated background elements */
+.admin-login-container::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(0, 212, 255, 0.1) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: floatBg 8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes floatBg {
+  0%, 100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(30px, -30px);
+  }
+}
+
+/* Admin Login Card */
+.admin-login-card {
+  width: 100%;
+  max-width: 400px;
+  background-color: #1a2238;
+  border: 2px solid #2d3748;
+  border-radius: 12px;
+  padding: 40px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  z-index: 1;
+  animation: slideUpCard 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideUpCard {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.admin-login-card:hover {
+  border-color: #00d4ff;
+  box-shadow: 0 15px 50px rgba(0, 212, 255, 0.15);
+  transform: translateY(-4px);
+}
+
+/* Header */
+.admin-login-header {
+  text-align: center;
+  margin-bottom: 32px;
+  animation: fadeInDown 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.1s both;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.admin-login-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, #00d4ff, #00b8ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientShift 4s ease-in-out infinite;
+}
+
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.admin-login-subtitle {
+  font-size: 14px;
+  color: #a0aec0;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Form */
+.admin-login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 24px;
+  animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.2s both;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Form Group */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.form-group:focus-within label {
+  color: #00d4ff;
+  text-shadow: 0 0 8px rgba(0, 212, 255, 0.3);
+}
+
+.form-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #a0aec0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.form-input {
+  padding: 12px 16px;
+  background-color: #222d4a;
+  border-width: 2px;
+  border-style: solid;
+  border-color: #2d3748;
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 15px;
+  font-family: "Poppins", sans-serif;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #00d4ff;
+  background-color: #2d3748;
+  box-shadow: 0 0 12px rgba(0, 212, 255, 0.2), inset 0 0 8px rgba(0, 212, 255, 0.05);
+  transform: translateY(-2px);
+}
+
+.form-input::placeholder {
+  color: #718096;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.form-input:focus::placeholder {
+  color: #a0aec0;
+}
+
+.form-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Login Button */
+.admin-login-button {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #00d4ff 0%, #0284c7 100%);
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 8px;
+  position: relative;
+  overflow: hidden;
+  animation: slideInButton 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.3s both;
+}
+
+@keyframes slideInButton {
+  from {
+    opacity: 0;
+    transform: scaleX(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+.admin-login-button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.admin-login-button:hover:not(:disabled)::before {
+  width: 300px;
+  height: 300px;
+}
+
+.admin-login-button:hover:not(:disabled) {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 12px 30px rgba(0, 212, 255, 0.4);
+}
+
+.admin-login-button:active:not(:disabled) {
+  transform: translateY(-1px) scale(1);
+}
+
+.admin-login-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Error Message */
+.admin-login-error {
+  padding: 12px 16px;
+  background-color: rgba(239, 68, 68, 0.1);
+  border: 2px solid #ef4444;
+  border-radius: 8px;
+  color: #ef4444;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 8px;
+  animation: slideInError 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideInError {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Info Section */
+.admin-login-info {
+  padding: 16px;
+  background-color: #222d4a;
+  border: 1px solid #2d3748;
+  border-radius: 8px;
+  text-align: center;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.4s both;
+}
+
+.admin-login-info:hover {
+  border-color: #00d4ff;
+  box-shadow: inset 0 0 12px rgba(0, 212, 255, 0.05);
+}
+
+.info-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #a0aec0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 8px 0;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.info-text {
+  font-size: 13px;
+  color: #718096;
+  margin: 4px 0;
+  font-family: "JetBrains Mono", monospace;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 4px 8px;
+  background-color: rgba(0, 212, 255, 0.05);
+  border-radius: 4px;
+}
+
+.admin-login-info:hover .info-text {
+  color: #00d4ff;
+  background-color: rgba(0, 212, 255, 0.1);
+}
+
+/* Light Mode */
+[data-theme="light"] .admin-login-container {
+  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+}
+
+[data-theme="light"] .admin-login-container::before {
+  background: radial-gradient(circle, rgba(2, 132, 199, 0.08) 0%, transparent 70%);
+}
+
+[data-theme="light"] .admin-login-card {
+  background-color: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .admin-login-card:hover {
+  border-color: #0284c7;
+  box-shadow: 0 15px 50px rgba(2, 132, 199, 0.15);
+  transform: translateY(-4px);
+}
+
+[data-theme="light"] .admin-login-title {
+  color: #1e293b;
+  background: linear-gradient(135deg, #0284c7, #00a8e8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+[data-theme="light"] .admin-login-subtitle {
+  color: #475569;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="light"] .admin-login-header:hover .admin-login-subtitle {
+  color: #0284c7;
+}
+
+[data-theme="light"] .form-label {
+  color: #475569;
+}
+
+[data-theme="light"] .form-group:focus-within label {
+  color: #0284c7;
+  text-shadow: 0 0 8px rgba(2, 132, 199, 0.2);
+}
+
+[data-theme="light"] .form-input {
+  background-color: #f1f5f9;
+  border-color: #e2e8f0;
+  color: #1e293b;
+}
+
+[data-theme="light"] .form-input:focus {
+  border-color: #0284c7;
+  background-color: #e0f2fe;
+  box-shadow: 0 0 12px rgba(2, 132, 199, 0.2), inset 0 0 8px rgba(2, 132, 199, 0.05);
+  transform: translateY(-2px);
+}
+
+[data-theme="light"] .form-input::placeholder {
+  color: #cbd5e1;
+}
+
+[data-theme="light"] .form-input:focus::placeholder {
+  color: #0284c7;
+}
+
+[data-theme="light"] .admin-login-button {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+}
+
+[data-theme="light"] .admin-login-button:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+[data-theme="light"] .admin-login-button:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 12px 30px rgba(2, 132, 199, 0.3);
+}
+
+[data-theme="light"] .admin-login-error {
+  background-color: rgba(220, 38, 38, 0.08);
+  border-color: #dc2626;
+  color: #dc2626;
+  animation: slideInError 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="light"] .admin-login-info {
+  background-color: #f1f5f9;
+  border-color: #e2e8f0;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="light"] .admin-login-info:hover {
+  border-color: #0284c7;
+  box-shadow: inset 0 0 12px rgba(2, 132, 199, 0.05);
+}
+
+[data-theme="light"] .info-title {
+  color: #475569;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="light"] .admin-login-info:hover .info-title {
+  color: #0284c7;
+}
+
+[data-theme="light"] .info-text {
+  color: #64748b;
+  background-color: rgba(2, 132, 199, 0.05);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="light"] .admin-login-info:hover .info-text {
+  color: #0284c7;
+  background-color: rgba(2, 132, 199, 0.1);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .admin-login-card {
+    padding: 24px;
+  }
+
+  .admin-login-title {
+    font-size: 24px;
+  }
+}
+
+/* Checkbox for Remember Me */
+.form-group.checkbox {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0;
+  padding: 0;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.form-checkbox {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #00d4ff;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.checkbox-label {
+  margin: 0;
+  font-size: 14px;
+  color: #a0aec0;
+  cursor: pointer;
+  text-transform: none;
+  letter-spacing: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 500;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.checkbox-label:hover {
+  color: #00d4ff;
+}
+
+[data-theme="light"] .form-checkbox {
+  accent-color: #0284c7;
+}
+
+[data-theme="light"] .checkbox-label {
+  color: #475569;
+}
+
+[data-theme="light"] .checkbox-label:hover {
+  color: #0284c7;
+}
+
+/* Success Message */
+.admin-login-success {
+  padding: 12px 16px;
+  background-color: rgba(34, 197, 94, 0.1);
+  border: 2px solid #22c55e;
+  border-radius: 8px;
+  color: #22c55e;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 8px;
+  animation: slideInSuccess 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideInSuccess {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+[data-theme="light"] .admin-login-success {
+  background-color: rgba(34, 197, 94, 0.08);
+  border-color: #16a34a;
+  color: #16a34a;
+}
+
+/* Footer with Register/Login Link */
+.admin-login-footer {
+  text-align: center;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #2d3748;
+  animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.5s both;
+}
+
+.footer-text {
+  font-size: 14px;
+  color: #a0aec0;
+  margin: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.register-link {
+  color: #00d4ff;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  margin-left: 4px;
+}
+
+.register-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #00d4ff;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.register-link:hover {
+  color: #0084d4;
+}
+
+.register-link:hover::after {
+  width: 100%;
+}
+
+[data-theme="light"] .admin-login-footer {
+  border-top-color: #e2e8f0;
+}
+
+[data-theme="light"] .footer-text {
+  color: #475569;
+}
+
+[data-theme="light"] .register-link {
+  color: #0284c7;
+}
+
+[data-theme="light"] .register-link::after {
+  background-color: #0284c7;
+}
+
+[data-theme="light"] .register-link:hover {
+  color: #0369a1;
+}

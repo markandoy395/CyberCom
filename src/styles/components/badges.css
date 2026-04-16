@@ -54,15 +54,3 @@
 .text-muted {
   color: var(--text-muted);
 }
-
-.text-link {
-  color: var(--text-link);
-  text-decoration: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.text-link:hover {
-  text-decoration: underline;
-  filter: brightness(1.2);
-}

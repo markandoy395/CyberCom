@@ -1,0 +1,209 @@
+/* Practice Rules Modal and Banner */
+
+/* Modal Overlay */
+.rules-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Modal */
+.rules-modal {
+  background-color: var(--card-bg);
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Modal Header */
+.rules-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 24px;
+  border-bottom: 2px solid var(--border-color);
+  background: linear-gradient(135deg, rgba(0, 255, 136, 0.05), rgba(34, 197, 94, 0.05));
+}
+
+.rules-icon {
+  font-size: 28px;
+  color: var(--primary-accent);
+  flex-shrink: 0;
+}
+
+.rules-modal-header h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+/* Modal Content */
+.rules-modal-content {
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.rules-intro {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0 0 16px 0;
+  line-height: 1.6;
+}
+
+/* Rules List */
+.rules-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rule-item {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  background-color: var(--elevated-surface);
+  border-radius: 8px;
+  border-left: 4px solid var(--primary-accent);
+}
+
+.rule-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  border-radius: 50%;
+  background-color: var(--primary-accent);
+  color: white;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.rule-text {
+  flex: 1;
+  font-size: 14px;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+/* Modal Footer */
+.rules-modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border-color);
+  background-color: var(--elevated-surface);
+}
+
+.btn-block {
+  width: 100%;
+}
+
+/* Banner */
+.rules-banner {
+  background: linear-gradient(135deg, rgba(0, 255, 136, 0.1), rgba(34, 197, 94, 0.05));
+  border: 2px solid var(--primary-accent);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 24px;
+}
+
+.banner-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.banner-icon {
+  font-size: 20px;
+  color: var(--primary-accent);
+  flex-shrink: 0;
+}
+
+.banner-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.banner-text strong {
+  font-size: 14px;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.banner-text span {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .rules-modal {
+    max-width: 100%;
+    width: 95%;
+    max-height: 90vh;
+  }
+
+  .rules-modal-header {
+    padding: 16px;
+  }
+
+  .rules-modal-content {
+    padding: 16px;
+  }
+
+  .rules-modal-footer {
+    padding: 12px 16px;
+  }
+
+  .rules-modal-header h2 {
+    font-size: 18px;
+  }
+
+  .rule-item {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .rule-number {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+}

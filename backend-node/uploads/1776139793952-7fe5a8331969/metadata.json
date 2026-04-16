@@ -1,0 +1,13 @@
+{
+  "uploadId": "1776139793952-7fe5a8331969",
+  "createdAt": 1776139793974,
+  "files": [
+    {
+      "path": "rogue_tower.pcap",
+      "name": "rogue_tower.pcap",
+      "url": "/api/uploads/1776139793952-7fe5a8331969/rogue_tower.pcap",
+      "size": 3232,
+      "sha256": "f45499cb4e32307aff6f0ffdd3be6c2e6aab825793ee2c8172de01db78dc0658"
+    }
+  ]
+}

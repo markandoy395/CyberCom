@@ -1,0 +1,20 @@
+{
+  "uploadId": "1776179877338-8404008fc42c",
+  "createdAt": 1776179877368,
+  "files": [
+    {
+      "path": "capture.pcap",
+      "name": "capture.pcap",
+      "url": "/api/uploads/1776179877338-8404008fc42c/capture.pcap",
+      "size": 13163,
+      "sha256": "20bb979be5e787b7b47bd701463e67f26074d37f3ea4ab699f777e46c83af187"
+    },
+    {
+      "path": "picopico.key",
+      "name": "picopico.key",
+      "url": "/api/uploads/1776179877338-8404008fc42c/picopico.key",
+      "size": 1704,
+      "sha256": "6c4fc13bfd37fbfe17aacef18a9c4d82b58abf10111665b8a524d7e7aad2b4cb"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "uploadId": "1776135021257-a58f7f0a9540",
+  "createdAt": 1776135021267,
+  "files": [
+    {
+      "path": "encrypted-messages.txt",
+      "name": "encrypted-messages.txt",
+      "url": "/api/uploads/1776135021257-a58f7f0a9540/encrypted-messages.txt",
+      "size": 11178,
+      "sha256": "6c2fc8055f6a0e07daeae95696cd11512b2bd4d07584e499743bd7aecba7227f"
+    }
+  ]
+}

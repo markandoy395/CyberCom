@@ -1,0 +1,13 @@
+{
+  "uploadId": "1776180754997-a692443152e1",
+  "createdAt": 1776180755097,
+  "files": [
+    {
+      "path": "Windows_Logs.evtx",
+      "name": "Windows_Logs.evtx",
+      "url": "/api/uploads/1776180754997-a692443152e1/Windows_Logs.evtx",
+      "size": 7409664,
+      "sha256": "5d49544f57fa84e59f355723f1b9dd7ef3d0507f460616a8eaf3cc7d0ba58728"
+    }
+  ]
+}

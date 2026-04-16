@@ -1,0 +1,13 @@
+{
+  "uploadId": "1776172338428-e7dd335ea9b6",
+  "createdAt": 1776172338451,
+  "files": [
+    {
+      "path": "network-dump.flag.pcap",
+      "name": "network-dump.flag.pcap",
+      "url": "/api/uploads/1776172338428-e7dd335ea9b6/network-dump.flag.pcap",
+      "size": 778,
+      "sha256": "f475d990a2da67e28e7f5e6ee55207ce94334981a6e6f3b9ef3216ff8c90816e"
+    }
+  ]
+}

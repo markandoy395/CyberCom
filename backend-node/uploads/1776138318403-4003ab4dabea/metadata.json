@@ -1,0 +1,13 @@
+{
+  "uploadId": "1776138318403-4003ab4dabea",
+  "createdAt": 1776138318457,
+  "files": [
+    {
+      "path": "red.png",
+      "name": "red.png",
+      "url": "/api/uploads/1776138318403-4003ab4dabea/red.png",
+      "size": 796,
+      "sha256": "5dc6a8eb53aaaa4d088dfb2d497a6836cc1de8247ac447f26b96415c9f76b951"
+    }
+  ]
+}

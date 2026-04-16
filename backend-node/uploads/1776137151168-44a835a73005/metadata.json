@@ -1,0 +1,13 @@
+{
+  "uploadId": "1776137151168-44a835a73005",
+  "createdAt": 1776137151177,
+  "files": [
+    {
+      "path": "file",
+      "name": "file",
+      "url": "/api/uploads/1776137151168-44a835a73005/file",
+      "size": 8745,
+      "sha256": "753f87d73aade0a75b998d1f0e372ec1821b896d0f0d56703475ccc0dd790a26"
+    }
+  ]
+}

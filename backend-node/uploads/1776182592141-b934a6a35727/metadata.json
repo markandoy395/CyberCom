@@ -1,0 +1,13 @@
+{
+  "uploadId": "1776182592141-b934a6a35727",
+  "createdAt": 1776182592171,
+  "files": [
+    {
+      "path": "capture.pcap",
+      "name": "capture.pcap",
+      "url": "/api/uploads/1776182592141-b934a6a35727/capture.pcap",
+      "size": 112318,
+      "sha256": "fe93e5022a8a1cfe68de4a283ddf96fa7a7f6449433fec755e0d82ce86635444"
+    }
+  ]
+}

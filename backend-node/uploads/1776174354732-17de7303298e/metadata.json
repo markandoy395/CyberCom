@@ -1,0 +1,13 @@
+{
+  "uploadId": "1776174354732-17de7303298e",
+  "createdAt": 1776174354749,
+  "files": [
+    {
+      "path": "encoded.bmp",
+      "name": "encoded.bmp",
+      "url": "/api/uploads/1776174354732-17de7303298e/encoded.bmp",
+      "size": 1507414,
+      "sha256": "59c796f15a643f84bfcbb63e487dac0a1d8badadc3ad536d5cf7208498fd8fff"
+    }
+  ]
+}

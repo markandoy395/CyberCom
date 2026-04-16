@@ -1,0 +1,13 @@
+{
+  "uploadId": "1776186261185-4c97d70526dc",
+  "createdAt": 1776186261197,
+  "files": [
+    {
+      "path": "suspicious.zip",
+      "name": "suspicious.zip",
+      "url": "/api/uploads/1776186261185-4c97d70526dc/suspicious.zip",
+      "size": 11848,
+      "sha256": "e5363af3d609e9262fb47ee88792c247af854c3d61836db33dd49bf990aabd3e"
+    }
+  ]
+}

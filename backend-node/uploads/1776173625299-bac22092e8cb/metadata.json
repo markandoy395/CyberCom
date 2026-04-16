@@ -1,0 +1,13 @@
+{
+  "uploadId": "1776173625299-bac22092e8cb",
+  "createdAt": 1776173625315,
+  "files": [
+    {
+      "path": "dolls.jpg",
+      "name": "dolls.jpg",
+      "url": "/api/uploads/1776173625299-bac22092e8cb/dolls.jpg",
+      "size": 651613,
+      "sha256": "d3d924436bf76c25d237ef2f6ea20b14bae6ef364ad99f0af67d7d30773e9e96"
+    }
+  ]
+}

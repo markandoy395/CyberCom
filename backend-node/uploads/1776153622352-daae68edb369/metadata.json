@@ -1,0 +1,13 @@
+{
+  "uploadId": "1776153622352-daae68edb369",
+  "createdAt": 1776153622358,
+  "files": [
+    {
+      "path": "message.txt",
+      "name": "message.txt",
+      "url": "/api/uploads/1776153622352-daae68edb369/message.txt",
+      "size": 135,
+      "sha256": "3f1c1b52a68c9fdc0c24061d823d7b8ba3d180e569089c9bdf498a3c664aedf5"
+    }
+  ]
+}

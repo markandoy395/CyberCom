@@ -1,0 +1,13 @@
+{
+  "uploadId": "1776136452171-257333a134ed",
+  "createdAt": 1776136452177,
+  "files": [
+    {
+      "path": "digits.bin",
+      "name": "digits.bin",
+      "url": "/api/uploads/1776136452171-257333a134ed/digits.bin",
+      "size": 71000,
+      "sha256": "640dfe4518ee9ec1e380ab4d62d54fe4561699733382edabf1218a09b0d127c6"
+    }
+  ]
+}

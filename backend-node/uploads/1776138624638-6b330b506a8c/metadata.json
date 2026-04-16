@@ -1,0 +1,13 @@
+{
+  "uploadId": "1776138624638-6b330b506a8c",
+  "createdAt": 1776138624647,
+  "files": [
+    {
+      "path": "img.jpg",
+      "name": "img.jpg",
+      "url": "/api/uploads/1776138624638-6b330b506a8c/img.jpg",
+      "size": 73504,
+      "sha256": "b3a021a03d49327aa285e65e7904fc8027f80af8d5152664cd02d7035173e3c8"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "uploadId": "1776185331440-fbe2999ca807",
+  "createdAt": 1776185331532,
+  "files": [
+    {
+      "path": "dds1-alpine.flag.img.gz",
+      "name": "dds1-alpine.flag.img.gz",
+      "url": "/api/uploads/1776185331440-fbe2999ca807/dds1-alpine.flag.img.gz",
+      "size": 29768911,
+      "sha256": "ab0d7047e93747d40126afa744745767162361fe07d4e861f2d9a4b4450b2436"
+    }
+  ]
+}

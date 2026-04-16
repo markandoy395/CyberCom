@@ -1,0 +1,13 @@
+{
+  "uploadId": "1776135902505-8bbe72e56738",
+  "createdAt": 1776135902511,
+  "files": [
+    {
+      "path": "public-key.txt",
+      "name": "public-key.txt",
+      "url": "/api/uploads/1776135902505-8bbe72e56738/public-key.txt",
+      "size": 2495,
+      "sha256": "3007d65e352f97479856f580d7089be97d2661a17188a8e95cdef5f86c91b358"
+    }
+  ]
+}

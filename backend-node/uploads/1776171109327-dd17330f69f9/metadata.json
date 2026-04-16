@@ -1,0 +1,13 @@
+{
+  "uploadId": "1776171109327-dd17330f69f9",
+  "createdAt": 1776171109359,
+  "files": [
+    {
+      "path": "wpa-ing_out.pcap",
+      "name": "wpa-ing_out.pcap",
+      "url": "/api/uploads/1776171109327-dd17330f69f9/wpa-ing_out.pcap",
+      "size": 1000774,
+      "sha256": "8b5f308efa7a02a0b9e03e524165cb54980d3175152442102a68c845d4119233"
+    }
+  ]
+}

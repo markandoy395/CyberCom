@@ -1,0 +1,13 @@
+{
+  "uploadId": "1776136904502-7c981fc5a002",
+  "createdAt": 1776136904524,
+  "files": [
+    {
+      "path": "logs.txt",
+      "name": "logs.txt",
+      "url": "/api/uploads/1776136904502-7c981fc5a002/logs.txt",
+      "size": 1592256,
+      "sha256": "7b6f0299cabf5cba93c59a567ffa79488132d1c61675355d2201a1679830ef09"
+    }
+  ]
+}

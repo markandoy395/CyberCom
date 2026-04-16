@@ -1,0 +1,13 @@
+{
+  "uploadId": "1776138477686-3206b30062c0",
+  "createdAt": 1776138477701,
+  "files": [
+    {
+      "path": "myNetworkTraffic.pcap",
+      "name": "myNetworkTraffic.pcap",
+      "url": "/api/uploads/1776138477686-3206b30062c0/myNetworkTraffic.pcap",
+      "size": 1452,
+      "sha256": "1a45af95e36a566bbc07c269bfc61676f42e25067a4bb1084be6945afd5c9c4f"
+    }
+  ]
+}

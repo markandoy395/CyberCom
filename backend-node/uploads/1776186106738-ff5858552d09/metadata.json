@@ -1,0 +1,20 @@
+{
+  "uploadId": "1776186106738-ff5858552d09",
+  "createdAt": 1776186106785,
+  "files": [
+    {
+      "path": "packets.pcap",
+      "name": "packets.pcap",
+      "url": "/api/uploads/1776186106738-ff5858552d09/packets.pcap",
+      "size": 19160,
+      "sha256": "d99c85c63ec19c085b26ed74a42459531919691c07759d4fed80624f98ff3536"
+    },
+    {
+      "path": "encrypt.py",
+      "name": "encrypt.py",
+      "url": "/api/uploads/1776186106738-ff5858552d09/encrypt.py",
+      "size": 484,
+      "sha256": "fcd23d9039d178c0ee35aa089eb264f15d7e374dde20449bdef2edf194a57573"
+    }
+  ]
+}

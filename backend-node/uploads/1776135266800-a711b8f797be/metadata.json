@@ -1,0 +1,13 @@
+{
+  "uploadId": "1776135266800-a711b8f797be",
+  "createdAt": 1776135266810,
+  "files": [
+    {
+      "path": "private.key",
+      "name": "private.key",
+      "url": "/api/uploads/1776135266800-a711b8f797be/private.key",
+      "size": 887,
+      "sha256": "3b832b735a69c67715cd91583a4399a520a33940e9b7488613e4a719dbe066c2"
+    }
+  ]
+}

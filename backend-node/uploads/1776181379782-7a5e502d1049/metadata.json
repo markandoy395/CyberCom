@@ -1,0 +1,20 @@
+{
+  "uploadId": "1776181379782-7a5e502d1049",
+  "createdAt": 1776181379893,
+  "files": [
+    {
+      "path": "capture.pcapng",
+      "name": "capture.pcapng",
+      "url": "/api/uploads/1776181379782-7a5e502d1049/capture.pcapng",
+      "size": 29969912,
+      "sha256": "547c9860dfef822bc1ce0d1bad55b132a6efe9152c3ab18f7093d0fc652b74eb"
+    },
+    {
+      "path": "send.py",
+      "name": "send.py",
+      "url": "/api/uploads/1776181379782-7a5e502d1049/send.py",
+      "size": 1227,
+      "sha256": "b352eb93dccc3711d8d38c446eb625dc3b4bcf2e64fc2b32a56ef228a04dca2f"
+    }
+  ]
+}

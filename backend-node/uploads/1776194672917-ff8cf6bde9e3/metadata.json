@@ -1,0 +1,13 @@
+{
+  "uploadId": "1776194672917-ff8cf6bde9e3",
+  "createdAt": 1776194672922,
+  "files": [
+    {
+      "path": "input.txt",
+      "name": "input.txt",
+      "url": "/api/uploads/1776194672917-ff8cf6bde9e3/input.txt",
+      "size": 74,
+      "sha256": "633fa8e922dd3145506b6aa88553cd779724c3ae4503f274a6e51c4cf9499893"
+    }
+  ]
+}

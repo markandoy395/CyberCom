@@ -1,0 +1,13 @@
+{
+  "uploadId": "1776136625499-790e86f373a1",
+  "createdAt": 1776136625514,
+  "files": [
+    {
+      "path": "confidential.pdf",
+      "name": "confidential.pdf",
+      "url": "/api/uploads/1776136625499-790e86f373a1/confidential.pdf",
+      "size": 182705,
+      "sha256": "2b773c614ec2cd42ebae37ed08c9db7176377910bc87a26206c148b5aa709529"
+    }
+  ]
+}

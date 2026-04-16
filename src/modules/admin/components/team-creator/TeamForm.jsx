@@ -29,6 +29,9 @@ const TeamForm = ({
 
       <div className="members-section">
         <h3>Team Members (up to 4)</h3>
+        <p className="members-help-text">
+          Roles auto-fill as Captain, Co-Captain, then Member. You can still change any role manually.
+        </p>
         {members.map((member, index) => (
           <div key={index} className="member-row">
             <input
@@ -60,7 +63,6 @@ const TeamForm = ({
               <option value="captain">Captain</option>
               <option value="co-captain">Co-Captain</option>
               <option value="member">Member</option>
-              <option value="leader">Leader</option>
             </select>
             <div className="password-input-group">
               <input

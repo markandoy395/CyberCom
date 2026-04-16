@@ -208,6 +208,13 @@
   letter-spacing: 0.3px;
 }
 
+.members-help-text {
+  margin: -4px 0 16px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
 .team-form-modal .member-row {
   display: grid;
   grid-template-columns: repeat(5, 1fr);

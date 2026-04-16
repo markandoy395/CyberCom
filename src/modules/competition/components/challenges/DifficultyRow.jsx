@@ -6,7 +6,8 @@ const DifficultyRow = memo(({
   challenges, 
   selectedCategory,
   onChallengeClick,
-  scrollContainerRef
+  scrollContainerRef,
+  competitionScoring,
 }) => {
   const difficultyLabel = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
   const isFirstRow = difficulty === "hard";
@@ -24,6 +25,7 @@ const DifficultyRow = memo(({
               key={`${difficulty}-${challenge.id}`}
               challenge={challenge}
               onChallengeClick={onChallengeClick}
+              competitionScoring={competitionScoring}
             />
           ))}
           {challenges.length === 0 && (

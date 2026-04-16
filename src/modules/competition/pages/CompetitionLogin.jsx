@@ -234,7 +234,7 @@ const CompetitionLogin = () => {
           <NotificationModal
             notification={notification}
             onDismiss={() => setNotification(null)}
-            duration={5000}
+            duration={3000}
           />
 
           <form onSubmit={handleSubmit} className="competition-login-form">

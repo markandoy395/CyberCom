@@ -9,7 +9,15 @@ export const useAutoLogoutTimer = (isActive = true, logoutDelaySeconds = 300, on
   const [timeRemaining, setTimeRemaining] = useState(logoutDelaySeconds);
   const [isExpired, setIsExpired] = useState(false);
   const timerIntervalRef = useRef(null);
+  const deadlineRef = useRef(null);
   const hasLoggedOutRef = useRef(false);
+
+  const clearTimer = useCallback(() => {
+    if (timerIntervalRef.current) {
+      clearInterval(timerIntervalRef.current);
+      timerIntervalRef.current = null;
+    }
+  }, []);
 
   const handleLogout = useCallback(() => {
     if (hasLoggedOutRef.current) return;
@@ -33,46 +41,65 @@ export const useAutoLogoutTimer = (isActive = true, logoutDelaySeconds = 300, on
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   }, []);
 
+  const syncTimeRemaining = useCallback(() => {
+    if (!deadlineRef.current) {
+      setTimeRemaining(0);
+      return;
+    }
+
+    const nextTimeRemaining = Math.max(
+      Math.ceil((deadlineRef.current - Date.now()) / 1000),
+      0
+    );
+
+    setTimeRemaining((currentTimeRemaining) => (
+      currentTimeRemaining === nextTimeRemaining
+        ? currentTimeRemaining
+        : nextTimeRemaining
+    ));
+
+    if (nextTimeRemaining <= 0) {
+      setIsExpired(true);
+      clearTimer();
+      handleLogout();
+    }
+  }, [clearTimer, handleLogout]);
+
   useEffect(() => {
-    if (!isActive) return;
+    clearTimer();
 
-    timerIntervalRef.current = setInterval(() => {
-      setTimeRemaining((prev) => {
-        if (prev <= 1) {
-          setIsExpired(true);
-          if (timerIntervalRef.current) {
-            clearInterval(timerIntervalRef.current);
-          }
-          // Auto logout when timer expires
-          handleLogout();
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
+    if (!isActive) {
+      deadlineRef.current = null;
+      setTimeRemaining(logoutDelaySeconds);
+      setIsExpired(false);
+      return undefined;
+    }
 
-    return () => {
-      if (timerIntervalRef.current) {
-        clearInterval(timerIntervalRef.current);
-      }
-    };
-  }, [isActive, handleLogout]);
+    hasLoggedOutRef.current = false;
+    setIsExpired(false);
+    deadlineRef.current = Date.now() + (logoutDelaySeconds * 1000);
+    setTimeRemaining(logoutDelaySeconds);
+    syncTimeRemaining();
+
+    // Update frequently and derive the visible second from the real deadline.
+    timerIntervalRef.current = setInterval(syncTimeRemaining, 250);
+
+    return clearTimer;
+  }, [clearTimer, isActive, logoutDelaySeconds, syncTimeRemaining]);
 
   const cancelLogout = useCallback(() => {
-    if (timerIntervalRef.current) {
-      clearInterval(timerIntervalRef.current);
-    }
+    clearTimer();
+    deadlineRef.current = null;
     hasLoggedOutRef.current = false;
     setTimeRemaining(logoutDelaySeconds);
     setIsExpired(false);
-  }, [logoutDelaySeconds]);
+  }, [clearTimer, logoutDelaySeconds]);
 
   const forceLogout = useCallback(() => {
-    if (timerIntervalRef.current) {
-      clearInterval(timerIntervalRef.current);
-    }
+    clearTimer();
+    deadlineRef.current = null;
     handleLogout();
-  }, [handleLogout]);
+  }, [clearTimer, handleLogout]);
 
   return {
     timeRemaining,

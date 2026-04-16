@@ -1,8 +1,17 @@
 import { memo, createElement } from "react";
 import { CATEGORIES } from "../../../../utils/constants";
 import { BiCheckCircle } from "../../../../utils/icons";
+import { formatCompetitionPoints } from "../../utils/scoringUtils";
 
-const ChallengeCard = memo(({ challenge, onChallengeClick }) => {
+const ChallengeCard = memo(({ challenge, onChallengeClick, competitionScoring }) => {
+  const pointsDisplay = formatCompetitionPoints(challenge.points, {
+    solverCount: challenge.solverCount,
+    isSolved: challenge.status === "solved",
+    competitionStartDate: competitionScoring?.startDate,
+    competitionEndDate: competitionScoring?.endDate,
+    scoringSettings: competitionScoring?.scoringSettings,
+  });
+
   // Use category from challenge data if available, otherwise lookup from CATEGORIES or use default
   let displayCategory = challenge.category;
   
@@ -64,9 +73,9 @@ const ChallengeCard = memo(({ challenge, onChallengeClick }) => {
       <h3 className="challenge-card-title">{challenge.title}</h3>
 
       {/* Points Badge */}
-      <div className="challenge-card-points">
-        <span>{challenge.points} pts</span>
-        <span className="points-hint" title="Final points based on decay formula">*</span>
+      <div className="challenge-card-points" title={pointsDisplay.tooltipText}>
+        <span className="challenge-card-points-value">{pointsDisplay.displayText}</span>
+        <span className="challenge-card-points-note">{pointsDisplay.helperText}</span>
       </div>
 
       {/* Description */}

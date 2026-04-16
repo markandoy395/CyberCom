@@ -288,7 +288,7 @@ const CompetitionChallengeUploader = () => {
       height: '100vh',
       overflow: 'hidden',
     }}>
-      <NotificationModal notification={notification} onDismiss={handleDismissNotification} duration={5000} />
+      <NotificationModal notification={notification} onDismiss={handleDismissNotification} duration={3000} />
 
       <div className="uploader-header" style={{ display: 'flex', flexDirection: 'column', gap: '16px', flexShrink: 0, padding: '0' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px' }}>

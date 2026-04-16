@@ -4,7 +4,7 @@
  * A reusable popup notification component that:
  * - Supports multiple types: success, error, warning, info
  * - Uses elegant icons for each type
- * - Auto-dismisses after specified duration (default: 4s)
+ * - Auto-dismisses after specified duration (default: 3s)
  * - Appears on the top-right of screen by default
  * - Overlays all other modals
  * - No close button - dismisses automatically
@@ -18,7 +18,7 @@ import NotificationModal from './NotificationModal';
 export default function ExampleComponent() {
   const [notification, setNotification] = useState(null);
 
-  // Example 1: Show success notification (auto-dismisses in 4 seconds)
+  // Example 1: Show success notification (auto-dismisses in 3 seconds)
   const showSuccess = () => {
     setNotification({
       type: 'success',
@@ -74,11 +74,11 @@ export default function ExampleComponent() {
 
   return (
     <>
-      {/* Notification Modal Component - Auto-dismisses in 4 seconds */}
+      {/* Notification Modal Component - Auto-dismisses in 3 seconds */}
       <NotificationModal
         notification={notification}
         onDismiss={() => setNotification(null)}
-        duration={4000}
+        duration={3000}
         position="bottom-right"
       />
 
@@ -144,7 +144,7 @@ const positions = {
  * @param {Function} onDismiss - Callback when notification is dismissed
  * 
  * @param {number} duration - Auto-dismiss timeout in milliseconds
- *   - Default: 4000 (4 seconds)
+ *   - Default: 3000 (3 seconds)
  *   - Set to null or 0 to disable auto-dismiss
  *   - Notification automatically dismisses after this duration
  * 
@@ -181,7 +181,7 @@ const positions = {
 //     try {
 //       const response = await fetch('/api/submit', { method: 'POST', body: data });
 //       if (response.ok) {
-//         // Notification will auto-dismiss after 4 seconds
+//         // Notification will auto-dismiss after 3 seconds
 //         setNotification({
 //           type: 'success',
 //           title: 'Success',
@@ -202,7 +202,7 @@ const positions = {
 //       <NotificationModal
 //         notification={notification}
 //         onDismiss={() => setNotification(null)}
-//         duration={4000}
+//         duration={3000}
 //         position="bottom-right"
 //       />
 //       <form onSubmit={handleSubmit}>

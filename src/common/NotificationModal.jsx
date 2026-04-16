@@ -20,7 +20,7 @@ import {
  * @param {string} props.notification.title - Notification title
  * @param {string} props.notification.message - Notification message
  * @param {Function} props.onDismiss - Callback when notification is dismissed
- * @param {number} [props.duration=4000] - Auto-dismiss duration in ms (null to disable)
+ * @param {number} [props.duration=3000] - Auto-dismiss duration in ms (null to disable)
  * @param {string} [props.position='bottom-right'] - Position: 'center', 'top-center', 'top-right', 'bottom-right'
  * @param {boolean} [props.showCloseButton=true] - Show close button
  * @param {Function} [props.onAction] - Callback for action button
@@ -34,7 +34,7 @@ import {
  *     <NotificationModal 
  *       notification={notification}
  *       onDismiss={() => setNotification(null)}
- *       duration={4000}
+ *       duration={3000}
  *       position="top-right"
  *     />
  *     <button onClick={() => setNotification({
@@ -50,21 +50,25 @@ import {
 const NotificationModal = ({
   notification,
   onDismiss,
-  duration = 4000,
+  duration = 3000,
   position = 'top-right',
   onAction = null,
   actionLabel = null,
 }) => {
+  const resolvedDuration = notification?.duration ?? duration;
+  const resolvedAction = notification?.onAction ?? onAction;
+  const resolvedActionLabel = notification?.actionLabel ?? actionLabel;
+
   // Auto-dismiss notification after specified duration
   useEffect(() => {
-    if (notification && duration) {
+    if (notification && resolvedDuration > 0) {
       const timer = setTimeout(() => {
         onDismiss?.();
-      }, duration);
+      }, resolvedDuration);
 
       return () => clearTimeout(timer);
     }
-  }, [notification, duration, onDismiss]);
+  }, [notification, resolvedDuration, onDismiss]);
 
   if (!notification) return null;
 
@@ -98,17 +102,17 @@ const NotificationModal = ({
           <p className="notification-message">{notification.message}</p>
         )}
 
-        {(onAction) && (
+        {resolvedAction && (
           <div className="notification-actions">
-            {onAction && actionLabel && (
+            {resolvedActionLabel && (
               <button 
                 className="notification-action-btn"
                 onClick={() => {
-                  onAction();
+                  resolvedAction();
                   onDismiss?.();
                 }}
               >
-                {actionLabel}
+                {resolvedActionLabel}
               </button>
             )}
           </div>

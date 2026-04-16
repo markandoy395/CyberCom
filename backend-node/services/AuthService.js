@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { query } from '../config/database.js';
-import { isDatabaseUnavailableError } from '../utils/databaseErrors.js';
+import { getDatabaseClientErrorMessage } from '../utils/databaseErrors.js';
 import TeamService from './TeamService.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
@@ -79,8 +79,9 @@ export class AuthService {
       };
     } catch (error) {
       logError('loginAdmin error', error);
+      const databaseMessage = getDatabaseClientErrorMessage(error);
 
-      return invalid(isDatabaseUnavailableError(error) ? error.message : 'Authentication failed');
+      return invalid(databaseMessage || 'Authentication failed');
     }
   }
 
@@ -176,8 +177,9 @@ export class AuthService {
       };
     } catch (error) {
       logError('loginPracticeUser error', error);
+      const databaseMessage = getDatabaseClientErrorMessage(error);
 
-      return invalid(isDatabaseUnavailableError(error) ? error.message : 'Practice login failed');
+      return invalid(databaseMessage || 'Practice login failed');
     }
   }
 
@@ -235,8 +237,9 @@ export class AuthService {
       }
 
       logError('registerPracticeUser error', error);
+      const databaseMessage = getDatabaseClientErrorMessage(error);
 
-      return invalid(isDatabaseUnavailableError(error) ? error.message : 'Practice registration failed');
+      return invalid(databaseMessage || 'Practice registration failed');
     }
   }
 

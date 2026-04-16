@@ -1,9 +1,9 @@
 import 'dotenv/config.js';
 import mysql from 'mysql2/promise.js';
 
-// Validate required environment variables are set
-const requiredEnvVars = ['DB_USER', 'DB_PASSWORD', 'DB_NAME'];
-const missingEnvVars = requiredEnvVars.filter(varName => !process.env[varName]);
+// Allow an intentionally blank DB password for local MySQL setups such as XAMPP.
+const requiredEnvVars = ['DB_USER', 'DB_NAME'];
+const missingEnvVars = requiredEnvVars.filter(varName => !String(process.env[varName] || '').trim());
 if (missingEnvVars.length > 0) {
   throw new Error(`Missing required environment variables: ${missingEnvVars.join(', ')}. Please check your .env file.`);
 }

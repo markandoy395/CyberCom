@@ -579,7 +579,7 @@ export const Admin = () => {
         onToggleCollapse={setIsSidebarCollapsed}
       />
       <div className="admin-dashboard">
-      <NotificationModal notification={notification} onDismiss={() => setNotification(null)} duration={5000} />
+      <NotificationModal notification={notification} onDismiss={() => setNotification(null)} duration={3000} />
 
       {/* Confirmation Modal */}
       <ConfirmationModal

@@ -11,6 +11,7 @@ import {
   apiPost,
   API_ENDPOINTS,
 } from "../../../utils/api";
+import { setCompetitionInspectAllowed } from "../../../utils/preventInspect";
 import "./CompetitionDashboard.css";
 
 const HEARTBEAT_INTERVAL_MS = 20000;
@@ -29,6 +30,9 @@ const defaultCompetitionData = {
   competitionId: null,
   competitionStatus: null,
   username: "",
+  startDate: null,
+  endDate: null,
+  scoringSettings: null,
 };
 
 const CompetitionDashboard = () => {
@@ -161,6 +165,10 @@ const CompetitionDashboard = () => {
       return;
     }
 
+    if (typeof navigator !== "undefined" && navigator.onLine === false) {
+      return;
+    }
+
     const now = Date.now();
 
     if (!force && now - lastHeartbeatAtRef.current < 5000) {
@@ -179,6 +187,10 @@ const CompetitionDashboard = () => {
     } catch (error) {
       if (error?.data?.errorCode === COMPETITION_ACCESS_REVOKED_ERROR_CODE) {
         void handleCompetitionAccessRevoked(error.data?.error || error.message);
+        return;
+      }
+
+      if (error?.isTransientNetworkError) {
         return;
       }
 
@@ -234,6 +246,10 @@ const CompetitionDashboard = () => {
   }, [confirmMemberOnline]);
 
   const fetchCompetitionChallenges = useCallback(async (competitionId, teamId = null) => {
+    if (typeof navigator !== "undefined" && navigator.onLine === false) {
+      return;
+    }
+
     try {
       const queryString = teamId ? `?team_id=${teamId}` : "";
       const data = await apiGet(`/competitions/${competitionId}/challenges${queryString}`);
@@ -251,6 +267,10 @@ const CompetitionDashboard = () => {
   }, []);
 
   const fetchCompetitionDetails = useCallback(async competitionId => {
+    if (typeof navigator !== "undefined" && navigator.onLine === false) {
+      return;
+    }
+
     try {
       const data = await apiGet(`/competitions/${competitionId}`);
 
@@ -262,6 +282,9 @@ const CompetitionDashboard = () => {
           ...current,
           competitionName: nextCompetitionName,
           competitionStatus: nextCompetitionStatus,
+          startDate: data.data.start_date || null,
+          endDate: data.data.end_date || null,
+          scoringSettings: data.data.scoring_settings || null,
         }));
         setCompetitionSession(current => {
           if (!current) {
@@ -279,6 +302,9 @@ const CompetitionDashboard = () => {
             ...current,
             competitionStatus: nextCompetitionStatus,
             competitionName: nextCompetitionName,
+            startDate: data.data.start_date || null,
+            endDate: data.data.end_date || null,
+            scoringSettings: data.data.scoring_settings || null,
           };
 
           localStorage.setItem("competitionSession", JSON.stringify(nextSession));
@@ -330,6 +356,9 @@ const CompetitionDashboard = () => {
         competitionId: parsed.competitionId,
         competitionStatus: parsed.competitionStatus || null,
         username: parsed.username,
+        startDate: parsed.startDate || null,
+        endDate: parsed.endDate || null,
+        scoringSettings: parsed.scoringSettings || null,
       }));
 
       if (parsed.competitionId) {
@@ -375,6 +404,14 @@ const CompetitionDashboard = () => {
     sessionTeamId,
     setupHeartbeat,
   ]);
+
+  useEffect(() => {
+    setCompetitionInspectAllowed(Boolean(selectedChallenge));
+
+    return () => {
+      setCompetitionInspectAllowed(false);
+    };
+  }, [selectedChallenge]);
 
   const activeChallengeId = hasRequiredFullScreenShare ? (selectedChallenge?.id || null) : null;
 
@@ -658,6 +695,11 @@ const CompetitionDashboard = () => {
             onSelectChallenge={handleChallengeSelection}
             challenges={challenges}
             competitionStatus={competitionData.competitionStatus}
+            competitionScoring={{
+              startDate: competitionData.startDate,
+              endDate: competitionData.endDate,
+              scoringSettings: competitionData.scoringSettings,
+            }}
           />
         )}
       </div>

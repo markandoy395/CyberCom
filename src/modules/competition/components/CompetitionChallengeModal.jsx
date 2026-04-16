@@ -6,9 +6,18 @@ import ChallengeHints from "./modal/ChallengeHints";
 import ChallengeResources from "./modal/ChallengeResources";
 import ChallengeSubmissionForm from "./modal/ChallengeSubmissionForm";
 import { useSubmission } from "../hooks/useSubmission";
+import {
+  formatCompetitionPoints,
+  getScoringExplanation,
+} from "../utils/scoringUtils";
 import "./CompetitionChallengeModal.css";
 
-const CompetitionChallengeModal = ({ challenge, onClose, competitionStatus }) => {
+const CompetitionChallengeModal = ({
+  challenge,
+  onClose,
+  competitionStatus,
+  competitionScoring,
+}) => {
   const [selectedHintIndex, setSelectedHintIndex] = useState(null);
   const {
     flag,
@@ -29,6 +38,14 @@ const CompetitionChallengeModal = ({ challenge, onClose, competitionStatus }) =>
     : CATEGORIES.find((cat) => cat.id === challenge.category);
   const isAlreadySolved = challenge.status === "solved";
   const isCompetitionDone = competitionStatus === 'done';
+  const pointsDisplay = formatCompetitionPoints(challenge.points, {
+    solverCount: challenge.solverCount,
+    attempts: Math.max(attempts, 0) + 1,
+    isSolved: isAlreadySolved,
+    competitionStartDate: competitionScoring?.startDate,
+    competitionEndDate: competitionScoring?.endDate,
+    scoringSettings: competitionScoring?.scoringSettings,
+  });
 
   // Cleanup on unmount and ESC key
   useEffect(() => {
@@ -119,10 +136,22 @@ const CompetitionChallengeModal = ({ challenge, onClose, competitionStatus }) =>
 
         {/* Points */}
         {challenge.points && (
-          <div className="modal-points">
-            <span className="points-label">POINTS:</span>
-            <span className="points-value">{challenge.points}</span>
-          </div>
+          <>
+            <div className="modal-points">
+              <span className="points-label">
+                {isAlreadySolved || !pointsDisplay.projectedScore ? "MAX POINTS:" : "LIVE SCORE NOW:"}
+              </span>
+              <span className="points-value">
+                {isAlreadySolved ? challenge.points : pointsDisplay.displayText}
+              </span>
+            </div>
+            <div
+              className="competition-points-explanation"
+              title={getScoringExplanation()}
+            >
+              {pointsDisplay.helperText}
+            </div>
+          </>
         )}
 
         {/* Hints and Resources Side-by-Side */}

@@ -3,12 +3,14 @@
  */
 import { useState } from 'react';
 
+const AUTO_ROLE_SEQUENCE = ['captain', 'co-captain', 'member', 'member'];
 const DEFAULT_MEMBER = {
   username: '',
   name: '',
   email: '',
   password: '',
   role: 'member',
+  roleMode: 'auto',
 };
 const AUTO_EMAIL_DOMAIN = 'cybercom.local';
 const createDefaultMembers = () => Array.from({ length: 4 }, () => ({ ...DEFAULT_MEMBER }));
@@ -60,6 +62,45 @@ const shouldReplaceAutoValue = (currentValue, previousAutoValue) => {
 
   return !trimmedCurrentValue || trimmedCurrentValue === trimmedPreviousAutoValue;
 };
+const hasMemberInput = member => [
+  member.username,
+  member.name,
+  member.email,
+  member.password,
+].some(value => String(value || '').trim());
+const getAutoRoleForPosition = position => (
+  AUTO_ROLE_SEQUENCE[position] || 'member'
+);
+const applyAutoRoles = members => {
+  let activeMemberIndex = 0;
+
+  return members.map(member => {
+    if (!hasMemberInput(member)) {
+      if (member.roleMode === 'manual') {
+        return member;
+      }
+
+      return {
+        ...member,
+        role: 'member',
+        roleMode: 'auto',
+      };
+    }
+
+    const rolePosition = activeMemberIndex;
+    activeMemberIndex += 1;
+
+    if (member.roleMode === 'manual') {
+      return member;
+    }
+
+    return {
+      ...member,
+      role: getAutoRoleForPosition(rolePosition),
+      roleMode: 'auto',
+    };
+  });
+};
 
 export const useTeamForm = () => {
   const [formData, setFormData] = useState({
@@ -94,8 +135,16 @@ export const useTeamForm = () => {
         }
       }
 
+      if (field === 'role') {
+        nextMember.roleMode = 'manual';
+      }
+
       newMembers[index] = nextMember;
-      return { ...prev, members: newMembers };
+
+      return {
+        ...prev,
+        members: applyAutoRoles(newMembers),
+      };
     });
   };
 

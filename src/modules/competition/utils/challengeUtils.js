@@ -252,6 +252,7 @@ export const transformChallengeData = (apiData) => {
       hints: hints,
       difficulty: challenge.difficulty,
       points: challenge.competition_points || challenge.points || 100,
+      solverCount: Number.parseInt(challenge.solver_count, 10) || 0,
       flag: challenge.flag,
       attachments: attachments,
       status: isTeamSolved(challenge)

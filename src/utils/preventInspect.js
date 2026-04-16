@@ -1,56 +1,56 @@
+let isCompetitionInspectAllowed = false;
+const PREVENT_INSPECT_INITIALIZED_KEY = "__cybercomPreventInspectInitialized";
+
 const isCompetitionRoute = () => {
   const { pathname } = window.location;
 
   return pathname.includes('/competition/dashboard') || pathname.includes('/competition/login');
 };
 
+const shouldBlockCompetitionInspect = () => isCompetitionRoute() && !isCompetitionInspectAllowed;
+
+export const setCompetitionInspectAllowed = (allowed) => {
+  isCompetitionInspectAllowed = Boolean(allowed);
+};
+
 export const preventInspect = () => {
-  if (!import.meta.env.PROD) {
+  if (typeof window === "undefined" || typeof document === "undefined") {
     return;
   }
 
-  const syncCompetitionMode = () => {
-    inCompetitionMode = isCompetitionRoute();
-  };
+  if (window[PREVENT_INSPECT_INITIALIZED_KEY]) {
+    return;
+  }
 
-  let inCompetitionMode = isCompetitionRoute();
-
-  window.addEventListener('popstate', syncCompetitionMode);
-
-  const originalPushState = window.history.pushState;
-  window.history.pushState = function pushState(...args) {
-    syncCompetitionMode();
-
-    return originalPushState.apply(this, args);
-  };
+  window[PREVENT_INSPECT_INITIALIZED_KEY] = true;
 
   document.addEventListener('contextmenu', e => {
-    if (inCompetitionMode) {
+    if (shouldBlockCompetitionInspect()) {
       e.preventDefault();
     }
-  });
+  }, true);
 
   const keysPressed = new Set();
 
   document.addEventListener('keydown', e => {
-    const isDashboard = window.location.pathname.includes('/competition/dashboard');
-    if (!isDashboard) {
+    if (!shouldBlockCompetitionInspect()) {
       return;
     }
 
-    keysPressed.add(e.key.toLowerCase());
+    const normalizedKey = String(e.key || "").toLowerCase();
+    keysPressed.add(normalizedKey);
     keysPressed.add(e.code?.toLowerCase());
 
     if (
-      e.key === 'F12' ||
-      (e.ctrlKey && e.shiftKey && e.key === 'I') ||
-      (e.ctrlKey && e.shiftKey && e.key === 'C') ||
-      (e.ctrlKey && e.shiftKey && e.key === 'J') ||
-      (e.ctrlKey && e.key === 'l') ||
-      (e.metaKey && e.key === 'l') ||
-      e.key === 'Tab' ||
-      (e.metaKey && e.key === 'Tab') ||
-      ((keysPressed.has('meta') || keysPressed.has('win') || keysPressed.has('os')) && e.key === 'Tab')
+      normalizedKey === 'f12' ||
+      (e.ctrlKey && e.shiftKey && normalizedKey === 'i') ||
+      (e.ctrlKey && e.shiftKey && normalizedKey === 'c') ||
+      (e.ctrlKey && e.shiftKey && normalizedKey === 'j') ||
+      (e.ctrlKey && normalizedKey === 'l') ||
+      (e.metaKey && normalizedKey === 'l') ||
+      normalizedKey === 'tab' ||
+      (e.metaKey && normalizedKey === 'tab') ||
+      ((keysPressed.has('meta') || keysPressed.has('win') || keysPressed.has('os')) && normalizedKey === 'tab')
     ) {
       e.preventDefault();
       e.stopPropagation();
@@ -58,7 +58,7 @@ export const preventInspect = () => {
   }, true);
 
   document.addEventListener('keyup', e => {
-    keysPressed.delete(e.key.toLowerCase());
+    keysPressed.delete(String(e.key || "").toLowerCase());
     keysPressed.delete(e.code?.toLowerCase());
   });
 };

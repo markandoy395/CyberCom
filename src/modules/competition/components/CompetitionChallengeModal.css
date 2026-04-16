@@ -84,6 +84,14 @@
   font-weight: 600;
 }
 
+.competition-points-explanation {
+  margin-top: -8px;
+  margin-bottom: 20px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
 /* Disable input when attempts exceeded */
 .flag-input:disabled {
   opacity: 0.6;

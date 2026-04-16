@@ -100,7 +100,7 @@ const Login = () => {
           <NotificationModal
             notification={notification}
             onDismiss={handleDismissNotification}
-            duration={5000}
+            duration={3000}
           />
 
           <form onSubmit={handleSubmit} className="login-form">

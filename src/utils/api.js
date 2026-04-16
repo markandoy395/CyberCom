@@ -39,6 +39,19 @@ const shouldMaskServiceUnavailableForParticipant = (endpoint, status) => (
   && isCompetitionClientRoute()
   && !isAdminEndpoint(endpoint)
 );
+const isBrowserOffline = () => (
+  typeof navigator !== 'undefined' && navigator.onLine === false
+);
+const isTransientFetchFailure = error => {
+  if (!error) {
+    return false;
+  }
+
+  const message = typeof error?.message === 'string' ? error.message : String(error);
+
+  return error?.name === 'TypeError'
+    && /failed to fetch|networkerror|load failed/i.test(message);
+};
 
 const parseStoredJson = (value, scope) => {
   if (!value) {
@@ -202,6 +215,15 @@ export const apiCall = async (endpoint, options = {}) => {
     console.debug('[API] Token found, adding to x-admin-token header');
   }
 
+  if (isBrowserOffline()) {
+    const offlineError = new Error('Browser is offline');
+    offlineError.name = 'NetworkRequestError';
+    offlineError.code = 'NETWORK_OFFLINE';
+    offlineError.isNetworkError = true;
+    offlineError.isTransientNetworkError = true;
+    throw offlineError;
+  }
+
   try {
     const response = await fetch(url, {
       ...options,
@@ -210,6 +232,17 @@ export const apiCall = async (endpoint, options = {}) => {
 
     return response;
   } catch (error) {
+    if (isTransientFetchFailure(error)) {
+      const networkError = new Error('Request interrupted by a network change');
+      networkError.name = 'NetworkRequestError';
+      networkError.code = isBrowserOffline() ? 'NETWORK_OFFLINE' : 'NETWORK_CHANGED';
+      networkError.isNetworkError = true;
+      networkError.isTransientNetworkError = true;
+      networkError.cause = error;
+      console.warn(`[API] Transient network error on ${endpoint}`);
+      throw networkError;
+    }
+
     console.error('[API] Fetch error:', error);
     throw error;
   }

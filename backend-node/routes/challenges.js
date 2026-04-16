@@ -225,6 +225,13 @@ router.get('/competitions/:competitionId/challenges', attachCompetitionMemberIfP
               cc.id AS competition_challenges_id,
               cat.name AS category_name,
               c.category_id,
+              (
+                SELECT COUNT(DISTINCT s.team_id)
+                FROM submissions s
+                WHERE s.challenge_id = c.id
+                AND s.is_correct = 1
+                AND ((s.competition_id IS NULL AND cc.competition_id IS NULL) OR s.competition_id = cc.competition_id)
+              ) AS solver_count,
               CASE
                 WHEN ? IS NOT NULL AND EXISTS (
                   SELECT 1

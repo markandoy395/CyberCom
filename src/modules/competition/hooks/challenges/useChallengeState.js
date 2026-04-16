@@ -54,6 +54,7 @@ export const useChallengeState = (parentChallenges = [], parentSelectedChallenge
       fullDescription: challenge.full_description || challenge.fullDescription || null,
       difficulty: challenge.difficulty,
       points: challenge.competition_points || challenge.points || null,
+      solverCount: challenge.solver_count || challenge.solverCount || 0,
       status: challenge.status,
       teamSolved: challenge.team_solved || false,
       categoryId: challenge.category_id || challenge.category?.id || null,

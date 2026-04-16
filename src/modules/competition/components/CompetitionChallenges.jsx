@@ -9,7 +9,8 @@ const CompetitionChallenges = ({
   selectedChallenge: parentSelectedChallenge = null,
   onSelectChallenge = () => {},
   challenges: parentChallenges = [],
-  competitionStatus = null
+  competitionStatus = null,
+  competitionScoring = null,
 }) => {
   const {
     challenges,
@@ -110,6 +111,7 @@ const CompetitionChallenges = ({
           selectedCategory={selectedCategory}
           onChallengeClick={handleChallengeClick}
           scrollContainerRef={scrollContainerRef}
+          competitionScoring={competitionScoring}
         />
 
         <DifficultyRow
@@ -117,6 +119,7 @@ const CompetitionChallenges = ({
           challenges={filteredChallenges.medium}
           selectedCategory={selectedCategory}
           onChallengeClick={handleChallengeClick}
+          competitionScoring={competitionScoring}
         />
 
         <DifficultyRow
@@ -124,6 +127,7 @@ const CompetitionChallenges = ({
           challenges={filteredChallenges.easy}
           selectedCategory={selectedCategory}
           onChallengeClick={handleChallengeClick}
+          competitionScoring={competitionScoring}
         />
       </div>
 
@@ -132,6 +136,7 @@ const CompetitionChallenges = ({
           challenge={selectedChallenge}
           onClose={handleCloseModal}
           competitionStatus={competitionStatus}
+          competitionScoring={competitionScoring}
         />
       )}
     </div>

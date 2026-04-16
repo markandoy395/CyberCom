@@ -7,7 +7,7 @@ import { useState, useCallback } from 'react';
  * @param {number} autoDismissMs - Auto dismiss timeout in milliseconds (0 = no auto dismiss)
  * @param {string} position - Default position: 'center', 'top-center', 'top-right', etc.
  */
-const useNotification = (autoDismissMs = 4000, position = 'top-center') => {
+const useNotification = (autoDismissMs = 3000, position = 'top-center') => {
   const [notification, setNotification] = useState(null);
 
   const show = useCallback((type, title, message, actionLabel = null, onAction = null) => {

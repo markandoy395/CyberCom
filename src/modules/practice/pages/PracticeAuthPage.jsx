@@ -139,7 +139,7 @@ const PracticeAuthPage = () => {
           <NotificationModal
             notification={notification}
             onDismiss={handleDismissNotification}
-            duration={5000}
+            duration={3000}
           />
 
           <div className="login-mode-toggle" role="tablist" aria-label="Practice auth mode">

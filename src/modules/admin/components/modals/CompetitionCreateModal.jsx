@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { apiPost, API_ENDPOINTS } from '../../../../utils/api';
+import ActionButton from '../../../../common/ActionButton';
 import {
   DEFAULT_COMPETITION_FORM,
   MAX_COMPETITION_DURATION_HOURS,
@@ -10,7 +11,7 @@ import './BaseModal.css';
 import './CompetitionCreateModal.css';
 import {
   LuSettings2, LuTrophy, LuFileText, LuCalendar, LuUsers,
-  LuCheck, LuX, LuCircleHelp, LuChevronDown, LuChevronUp, LuLoader
+  LuCheck, LuX, LuCircleHelp, LuChevronDown, LuChevronUp
 } from 'react-icons/lu';
 
 /** Pure-CSS tooltip wrapper — hover the ? icon to reveal content */
@@ -79,7 +80,7 @@ const CompetitionCreateModal = ({ closeModal, onCompetitionCreated }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = {};
-    const durationMs = getCompetitionDurationMs();
+    const competitionDurationMs = getCompetitionDurationMs();
 
     if (!formData.name.trim()) newErrors.name = 'Competition name is required';
     if (!formData.startDate) newErrors.startDate = 'Start date is required';
@@ -87,7 +88,7 @@ const CompetitionCreateModal = ({ closeModal, onCompetitionCreated }) => {
     if (formData.startDate && formData.endDate && new Date(formData.startDate) >= new Date(formData.endDate)) {
       newErrors.endDate = 'End date must be after start date';
     }
-    if (durationMs !== null && durationMs > MAX_COMPETITION_DURATION_MS) {
+    if (competitionDurationMs !== null && competitionDurationMs > MAX_COMPETITION_DURATION_MS) {
       newErrors.endDate = `Competition duration cannot exceed ${MAX_COMPETITION_DURATION_HOURS} hours`;
     }
 
@@ -101,7 +102,7 @@ const CompetitionCreateModal = ({ closeModal, onCompetitionCreated }) => {
 
     try {
 
-      const response = await apiPost(API_ENDPOINTS.COMPETITIONS_CREATE, {
+      const response = await apiPost(API_ENDPOINTS.ADMIN_COMPETITIONS_CREATE, {
         name: formData.name,
         description: formData.description,
         start_date: formData.startDate,
@@ -290,6 +291,7 @@ const CompetitionCreateModal = ({ closeModal, onCompetitionCreated }) => {
                     onChange={handleWeightSliderChange}
                     disabled={loading}
                     className="premium-slider"
+                    style={{ '--slider-fill': `${Math.round((formData.scoringSettings?.solverWeight || 0.8) * 100)}%` }}
                   />
                   <div className="premium-slider-footer">
                     <span>Recommended: 80/20</span>
@@ -326,7 +328,7 @@ const CompetitionCreateModal = ({ closeModal, onCompetitionCreated }) => {
                     </div>
                     <div className="premium-cell">
                       <input type="number" step="1" min="0" name="minScoreFloor" value={formData.scoringSettings?.minScoreFloor || ''} onChange={handleChangeScoring} disabled={loading} className="premium-input-cell" />
-                      <span className="premium-subtext">Rec: 20</span>
+                      <span className="premium-subtext">Rec: 10</span>
                     </div>
                   </div>
                 </div>
@@ -339,12 +341,17 @@ const CompetitionCreateModal = ({ closeModal, onCompetitionCreated }) => {
             <button type="button" className="btn-secondary" onClick={handleCancel} disabled={loading}>
               <LuX size={16} /> Cancel
             </button>
-            <button type="submit" className="btn-success" disabled={loading}>
-              {loading
-                ? <><LuLoader size={16} className="spinner-icon" /> Creating...</>
-                : <><LuCheck size={16} /> Create Competition</>
-              }
-            </button>
+            <ActionButton
+              type="submit"
+              className="btn-success"
+              variant="custom"
+              size="custom"
+              icon={LuCheck}
+              isLoading={loading}
+              loadingText="Creating..."
+            >
+              Create Competition
+            </ActionButton>
           </div>
         </form>
       </div>

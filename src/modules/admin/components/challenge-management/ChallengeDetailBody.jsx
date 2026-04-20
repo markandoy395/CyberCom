@@ -1,6 +1,8 @@
-import { useState, useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { FaEye, FaEyeSlash, FaLink } from '../../../../utils/icons';
 import { downloadFile } from '../../../../utils/helpers';
+
+const MASKED_FLAG = '****************';
 
 const isNavigableLink = (url) => {
   if (!url || typeof url !== 'string') {
@@ -21,42 +23,52 @@ const isNavigableLink = (url) => {
  */
 const ChallengeDetailBody = ({ challenge }) => {
   const [showFlag, setShowFlag] = useState(false);
-  
+  const rawHints = challenge.hints ?? challenge.hint;
+  const visibleFlag = typeof challenge.flag === 'string' && challenge.flag.trim()
+    ? challenge.flag
+    : 'Flag unavailable for this challenge view.';
+
   // Parse hints from LONGTEXT
   const hints = useMemo(() => {
-    return challenge.hint 
-      ? (typeof challenge.hint === 'string' 
-        ? challenge.hint.split('\n').filter(h => h.trim())
-        : Array.isArray(challenge.hint) ? challenge.hint : [])
-      : [];
-  }, [challenge.hint]);
+    if (!rawHints) {
+      return [];
+    }
+
+    if (typeof rawHints === 'string') {
+      return rawHints.split('\n').filter(hint => hint.trim());
+    }
+
+    return Array.isArray(rawHints) ? rawHints : [];
+  }, [rawHints]);
 
   // Parse resources from LONGTEXT - handle both string and object formats
   const resources = useMemo(() => {
-    if (!challenge.resources) return [];
-    
+    if (!challenge.resources) {
+      return [];
+    }
+
     let parsed = challenge.resources;
-    
+
     // If it's a string, try to parse as JSON first
     if (typeof parsed === 'string') {
       try {
         parsed = JSON.parse(parsed);
       } catch {
         // Not JSON, treat as newline-separated strings
-        return parsed.split('\n').filter(r => r.trim());
+        return parsed.split('\n').filter(resource => resource.trim());
       }
     }
-    
+
     // Handle array of resources (new object format)
     if (Array.isArray(parsed)) {
-      return parsed.filter(r => r !== null && r !== undefined);
+      return parsed.filter(resource => resource !== null && resource !== undefined);
     }
-    
+
     // Handle single object resource
     if (typeof parsed === 'object' && parsed !== null) {
       return [parsed];
     }
-    
+
     return [];
   }, [challenge.resources]);
 
@@ -81,12 +93,12 @@ const ChallengeDetailBody = ({ challenge }) => {
         <h3 className="section-title">Flag</h3>
         <div className="flag-container">
           <code className={`flag-value ${showFlag ? 'visible' : 'hidden'}`}>
-            {showFlag ? challenge.flag : '••••••••••••••••'}
+            {showFlag ? visibleFlag : MASKED_FLAG}
           </code>
           <button
             className="btn-toggle-flag"
-            onClick={() => setShowFlag(!showFlag)}
-            title={showFlag ? "Hide flag" : "Show flag"}
+            onClick={() => setShowFlag(current => !current)}
+            title={showFlag ? 'Hide flag' : 'Show flag'}
           >
             {showFlag ? <FaEye size={16} /> : <FaEyeSlash size={16} />}
           </button>
@@ -129,7 +141,12 @@ const ChallengeDetailBody = ({ challenge }) => {
                           Your browser does not support the audio element.
                         </audio>
                         <div style={{ marginTop: '6px' }}>
-                          <button className="resource-download-btn" onClick={() => downloadFile(url, name || `audio_${index + 1}`)}>Download</button>
+                          <button
+                            className="resource-download-btn"
+                            onClick={() => downloadFile(url, name || `audio_${index + 1}`)}
+                          >
+                            Download
+                          </button>
                         </div>
                       </div>
                     );
@@ -144,32 +161,32 @@ const ChallengeDetailBody = ({ challenge }) => {
                           Your browser does not support the video element.
                         </video>
                         <div style={{ marginTop: '6px' }}>
-                          <button className="resource-download-btn" onClick={() => downloadFile(url, name || `video_${index + 1}`)}>Download</button>
+                          <button
+                            className="resource-download-btn"
+                            onClick={() => downloadFile(url, name || `video_${index + 1}`)}
+                          >
+                            Download
+                          </button>
                         </div>
                       </div>
                     );
                   }
 
                   const isDownloadable = (type === 'file' || type === 'folder' || type === 'image') && url;
-                  
+
                   if (isDownloadable) {
                     // Download button for files, folders, and images
-                    const downloadFilename = type === 'folder' 
+                    const downloadFilename = type === 'folder'
                       ? `${name || `folder_${index + 1}`}.zip`
                       : (name || `${type}_${index + 1}`);
-                    
+
                     return (
-                      <button 
+                      <button
                         key={index}
                         onClick={() => downloadFile(url, downloadFilename)}
                         className="resource-download-btn"
                         title={`Download ${name || type}`}
                       >
-                        <span style={{ marginRight: '6px' }}>
-                          {type === 'file' && '📄'}
-                          {type === 'folder' && '📁'}
-                          {type === 'image' && '🖼️'}
-                        </span>
                         {name || `${type} ${index + 1}`}
                       </button>
                     );
@@ -178,9 +195,9 @@ const ChallengeDetailBody = ({ challenge }) => {
                   if (isLink) {
                     // Link for external URLs
                     return (
-                      <a 
-                        key={index} 
-                        href={url} 
+                      <a
+                        key={index}
+                        href={url}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="resource-link"
@@ -193,23 +210,22 @@ const ChallengeDetailBody = ({ challenge }) => {
                       </a>
                     );
                   }
-                  
+
                   // Unknown type or no URL
                   return (
                     <div key={index} className="resource-link resource-unavailable">
-                      <span style={{ marginRight: '6px' }}>❓</span>
                       {name || `Resource ${index + 1}`}
                     </div>
                   );
                 }
-                
+
                 // Handle string resource format (old, for backward compatibility)
                 const isLink = typeof resource === 'string' && isNavigableLink(resource);
                 return (
-                  <a 
-                    key={index} 
-                    href={isLink ? resource : '#'} 
-                    target={isLink ? "_blank" : "_self"}
+                  <a
+                    key={index}
+                    href={isLink ? resource : '#'}
+                    target={isLink ? '_blank' : '_self'}
                     rel="noopener noreferrer"
                     className="resource-link"
                     title={isLink ? 'Visit link' : 'Resource'}

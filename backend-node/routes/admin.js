@@ -1,13 +1,13 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import { query } from '../config/database.js';
+import { JWT_SECRET } from '../config/security.js';
+import ChallengeService from '../services/ChallengeService.js';
 import CompetitionStatusService from '../services/CompetitionStatusService.js';
 import TeamService from '../services/TeamService.js';
 import { handleRouteError, sendServiceResult } from '../utils/httpErrors.js';
 
 const router = new express.Router();
-
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
 // Token blacklist for logout (use Redis in production)
 const tokenBlacklist = new Set();
@@ -28,6 +28,80 @@ const getAdminTokenFromRequest = req => {
   return '';
 };
 
+const applyAdminContext = (req, decoded, adminToken) => {
+  req.adminId = decoded.id;
+  req.adminRole = decoded.role;
+  req.adminToken = adminToken;
+  req.isAdminAuthenticated = true;
+};
+
+const verifyAdminToken = adminToken => {
+  const decoded = jwt.verify(adminToken, JWT_SECRET);
+
+  if (tokenBlacklist.has(adminToken)) {
+    const error = new Error('Token has been revoked');
+    error.code = 'TOKEN_REVOKED';
+    throw error;
+  }
+
+  if (decoded?.type !== 'admin' && decoded?.role !== 'admin') {
+    const error = new Error('Admin privileges required');
+    error.code = 'ADMIN_ROLE_REQUIRED';
+    throw error;
+  }
+
+  return decoded;
+};
+
+const handleAdminAuthError = (res, error) => {
+  if (error.code === 'TOKEN_REVOKED') {
+    console.warn('[Admin Auth] Token has been revoked');
+
+    return res.status(401).json({ success: false, error: 'Token has been revoked' });
+  }
+
+  if (error.code === 'ADMIN_ROLE_REQUIRED') {
+    console.warn('[Admin Auth] Non-admin token rejected');
+
+    return res.status(403).json({ success: false, error: 'Admin privileges required' });
+  }
+
+  if (error.name === 'TokenExpiredError') {
+    console.warn('[Admin Auth] Token expired');
+
+    return res.status(401).json({ success: false, error: 'Token expired' });
+  }
+
+  if (error.name === 'JsonWebTokenError') {
+    console.warn('[Admin Auth] Invalid token signature');
+
+    return res.status(401).json({ success: false, error: 'Invalid token' });
+  }
+
+  console.error('[Admin Auth] Token verification error:', error.message);
+
+  return res.status(401).json({ success: false, error: 'Invalid admin token' });
+};
+
+const attachAdminIfPresent = (req, res, next) => {
+  const adminToken = getAdminTokenFromRequest(req);
+
+  req.isAdminAuthenticated = false;
+
+  if (!adminToken) {
+    return next();
+  }
+
+  try {
+    const decoded = verifyAdminToken(adminToken);
+    applyAdminContext(req, decoded, adminToken);
+  } catch (error) {
+    return handleAdminAuthError(res, error);
+  }
+
+  return next();
+};
+
 // Middleware to verify admin JWT token
 const isAdmin = (req, res, next) => {
   const adminToken = getAdminTokenFromRequest(req);
@@ -39,36 +113,13 @@ const isAdmin = (req, res, next) => {
   }
 
   try {
-    // Verify JWT signature and expiration
-    const decoded = jwt.verify(adminToken, JWT_SECRET);
-
-    // Check if token is blacklisted (logged out)
-    if (tokenBlacklist.has(adminToken)) {
-      console.warn('[Admin Auth] Token has been revoked');
-
-      return res.status(401).json({ success: false, error: 'Token has been revoked' });
-    }
-
-    req.adminId = decoded.id;
-    req.adminRole = decoded.role;
-    req.adminToken = adminToken;
+    const decoded = verifyAdminToken(adminToken);
+    applyAdminContext(req, decoded, adminToken);
   } catch (error) {
-    if (error.name === 'TokenExpiredError') {
-      console.warn('[Admin Auth] Token expired');
-
-      return res.status(401).json({ success: false, error: 'Token expired' });
-    }
-    if (error.name === 'JsonWebTokenError') {
-      console.warn('[Admin Auth] Invalid token signature');
-
-      return res.status(401).json({ success: false, error: 'Invalid token' });
-    }
-    console.error('[Admin Auth] Token verification error:', error.message);
-
-    return res.status(401).json({ success: false, error: 'Invalid admin token' });
+    return handleAdminAuthError(res, error);
   }
 
-  next();
+  return next();
 };
 
 // Get dashboard statistics
@@ -273,6 +324,31 @@ router.put('/admin/users/:id/status', isAdmin, async (req, res) => {
   }
 });
 
+// Get challenges for a competition
+router.get('/admin/competitions/:competition_id/challenges', isAdmin, async (req, res) => {
+  try {
+    const results = await query(
+      `SELECT c.*,
+              cc.id AS competition_challenges_id,
+              cat.name AS category_name,
+              c.category_id
+       FROM competition_challenges cc
+       JOIN challenges c ON cc.challenge_id = c.id
+       LEFT JOIN categories cat ON c.category_id = cat.id
+       WHERE cc.competition_id = ?
+       ORDER BY c.difficulty, c.title`,
+      [parseInt(req.params.competition_id, 10)]
+    );
+
+    res.json({
+      success: true,
+      data: results.map(challenge => ChallengeService.decryptChallenge(challenge)),
+    });
+  } catch (error) {
+    return handleRouteError(res, error);
+  }
+});
+
 // Add challenge to competition
 router.post('/admin/competitions/:competition_id/challenges', isAdmin, async (req, res) => {
   try {
@@ -378,5 +454,259 @@ router.post('/logout/admin', isAdmin, (req, res) => {
   }
 });
 
+// ── Overall Competition Rankings ─────────────────────────────────────────────
+router.get('/admin/rankings/competition', isAdmin, async (req, res) => {
+  try {
+    const competitionId = req.query.competition_id
+      ? parseInt(req.query.competition_id, 10)
+      : null;
+    const hasFilter = Number.isFinite(competitionId) && competitionId > 0;
+
+    // Build WHERE clauses for the optional competition filter
+    const submissionFilter = hasFilter
+      ? 'AND s.competition_id = ?'
+      : 'AND s.competition_id IS NOT NULL';
+    const teamFilter = hasFilter
+      ? 'WHERE t.competition_id = ?'
+      : 'WHERE t.competition_id IS NOT NULL';
+    const submissionParams = hasFilter ? [competitionId] : [];
+    const teamParams = hasFilter ? [competitionId] : [];
+
+    const [teamRows, memberRows, metaRows, competitionListRows] = await Promise.all([
+      query(`
+        SELECT
+          t.id,
+          t.name AS team_name,
+          COALESCE(team_scores.total_points, 0) AS total_points,
+          COALESCE(team_scores.total_solves, 0) AS total_solves,
+          COALESCE(team_members.member_count, 0) AS member_count,
+          team_scores.last_submission_at
+        FROM teams t
+        LEFT JOIN (
+          SELECT
+            grouped_scores.team_id,
+            SUM(grouped_scores.points) AS total_points,
+            COUNT(*) AS total_solves,
+            MAX(grouped_scores.last_submission_at) AS last_submission_at
+          FROM (
+            SELECT
+              s.team_id,
+              s.competition_id,
+              s.challenge_id,
+              MAX(s.awarded_points) AS points,
+              MAX(s.submitted_at) AS last_submission_at
+            FROM submissions s
+            WHERE s.is_correct = 1
+              ${submissionFilter}
+            GROUP BY s.team_id, s.competition_id, s.challenge_id
+          ) grouped_scores
+          GROUP BY grouped_scores.team_id
+        ) team_scores
+          ON team_scores.team_id = t.id
+        LEFT JOIN (
+          SELECT
+            tm.team_id,
+            COUNT(*) AS member_count
+          FROM team_members tm
+          GROUP BY tm.team_id
+        ) team_members
+          ON team_members.team_id = t.id
+        ${teamFilter}
+        ORDER BY total_points DESC, total_solves DESC, team_name ASC
+        LIMIT 100
+      `, [...submissionParams, ...teamParams]),
+      query(`
+        SELECT
+          tm.id,
+          tm.username,
+          t.name AS team_name,
+          COALESCE(member_scores.total_points, 0) AS total_points,
+          COALESCE(member_scores.total_solves, 0) AS total_solves,
+          member_scores.last_submission_at
+        FROM team_members tm
+        INNER JOIN teams t ON t.id = tm.team_id
+        LEFT JOIN (
+          SELECT
+            grouped_scores.team_member_id,
+            SUM(grouped_scores.points) AS total_points,
+            COUNT(*) AS total_solves,
+            MAX(grouped_scores.last_submission_at) AS last_submission_at
+          FROM (
+            SELECT
+              s.team_member_id,
+              s.competition_id,
+              s.challenge_id,
+              MAX(s.awarded_points) AS points,
+              MAX(s.submitted_at) AS last_submission_at
+            FROM submissions s
+            WHERE s.is_correct = 1
+              ${submissionFilter}
+              AND s.team_member_id IS NOT NULL
+            GROUP BY s.team_member_id, s.competition_id, s.challenge_id
+          ) grouped_scores
+          GROUP BY grouped_scores.team_member_id
+        ) member_scores
+          ON member_scores.team_member_id = tm.id
+        ${teamFilter}
+        ORDER BY total_points DESC, total_solves DESC, tm.username ASC
+        LIMIT 100
+      `, [...submissionParams, ...teamParams]),
+      query(`
+        SELECT
+          (SELECT COUNT(*) FROM teams t ${teamFilter}) AS total_teams,
+          (
+            SELECT COUNT(*)
+            FROM team_members tm
+            INNER JOIN teams t ON t.id = tm.team_id
+            ${teamFilter}
+          ) AS total_members,
+          (SELECT COUNT(*) FROM competitions) AS total_competitions,
+          (
+            SELECT COUNT(*)
+            FROM submissions s
+            WHERE s.is_correct = 1
+              ${submissionFilter}
+          ) AS total_correct_submissions
+      `, [...teamParams, ...teamParams, ...submissionParams]),
+      query(`
+        SELECT id, name, status, start_date, end_date
+        FROM competitions
+        ORDER BY created_at DESC
+      `),
+    ]);
+
+    res.json({
+      success: true,
+      data: {
+        teams: teamRows.map((r, i) => ({
+          rank: i + 1,
+          id: r.id,
+          name: r.team_name,
+          totalPoints: Number(r.total_points) || 0,
+          totalSolves: Number(r.total_solves) || 0,
+          memberCount: Number(r.member_count) || 0,
+          lastSubmissionAt: r.last_submission_at || null,
+        })),
+        members: memberRows.map((r, i) => ({
+          rank: i + 1,
+          id: r.id,
+          username: r.username,
+          teamName: r.team_name || '—',
+          totalPoints: Number(r.total_points) || 0,
+          totalSolves: Number(r.total_solves) || 0,
+          lastSubmissionAt: r.last_submission_at || null,
+        })),
+        competitions: competitionListRows.map(c => ({
+          id: c.id,
+          name: c.name,
+          status: c.status,
+          startDate: c.start_date || null,
+          endDate: c.end_date || null,
+        })),
+        meta: {
+          totalTeams: Number(metaRows[0]?.total_teams) || 0,
+          totalMembers: Number(metaRows[0]?.total_members) || 0,
+          totalCompetitions: Number(metaRows[0]?.total_competitions) || 0,
+          totalCorrectSubmissions: Number(metaRows[0]?.total_correct_submissions) || 0,
+        },
+      },
+    });
+  } catch (error) {
+    return handleRouteError(res, error);
+  }
+});
+
+// ── Overall Practice Rankings ────────────────────────────────────────────────
+router.get('/admin/rankings/practice', isAdmin, async (req, res) => {
+  try {
+    const [userRows, metaRows] = await Promise.all([
+      query(`
+        SELECT
+          pu.id,
+          pu.username,
+          pu.email,
+          COALESCE(user_scores.total_points, 0) AS total_points,
+          COALESCE(user_scores.total_solves, 0) AS total_solves,
+          user_scores.last_submission_at,
+          pu.created_at AS joined_at
+        FROM practice_users pu
+        LEFT JOIN (
+          SELECT
+            grouped_scores.practice_user_id,
+            SUM(grouped_scores.points) AS total_points,
+            COUNT(*) AS total_solves,
+            MAX(grouped_scores.last_submission_at) AS last_submission_at
+          FROM (
+            SELECT
+              s.team_member_id AS practice_user_id,
+              s.challenge_id,
+              MAX(s.awarded_points) AS points,
+              MAX(s.submitted_at) AS last_submission_at
+            FROM submissions s
+            WHERE s.is_correct = 1
+              AND s.competition_id IS NULL
+              AND s.team_member_id IS NOT NULL
+            GROUP BY s.team_member_id, s.challenge_id
+          ) grouped_scores
+          GROUP BY grouped_scores.practice_user_id
+        ) user_scores
+          ON user_scores.practice_user_id = pu.id
+        ORDER BY total_points DESC, total_solves DESC, pu.username ASC
+        LIMIT 100
+      `),
+      query(`
+        SELECT
+          (SELECT COUNT(*) FROM practice_users) AS total_users,
+          (
+            SELECT COUNT(*)
+            FROM practice_users pu
+            INNER JOIN (
+              SELECT DISTINCT s.team_member_id AS practice_user_id
+              FROM submissions s
+              WHERE s.is_correct = 1
+                AND s.competition_id IS NULL
+                AND s.team_member_id IS NOT NULL
+            ) active_users
+              ON active_users.practice_user_id = pu.id
+          ) AS active_users,
+          (
+            SELECT COUNT(*)
+            FROM (
+              SELECT s.team_member_id, s.challenge_id
+              FROM submissions s
+              WHERE s.is_correct = 1
+                AND s.competition_id IS NULL
+                AND s.team_member_id IS NOT NULL
+              GROUP BY s.team_member_id, s.challenge_id
+            ) solved_practice_challenges
+          ) AS total_solves
+      `),
+    ]);
+
+    res.json({
+      success: true,
+      data: {
+        users: userRows.map((r, i) => ({
+          rank: i + 1,
+          id: r.id,
+          username: r.username,
+          email: r.email,
+          totalPoints: Number(r.total_points) || 0,
+          totalSolves: Number(r.total_solves) || 0,
+          lastSubmissionAt: r.last_submission_at || null,
+          joinedAt: r.joined_at || null,
+        })),
+        meta: {
+          totalUsers: Number(metaRows[0]?.total_users) || 0,
+          activeUsers: Number(metaRows[0]?.active_users) || 0,
+          totalSolves: Number(metaRows[0]?.total_solves) || 0,
+        },
+      },
+    });
+  } catch (error) {
+    return handleRouteError(res, error);
+  }
+});
+
 export default router;
-export { getAdminTokenFromRequest, isAdmin, tokenBlacklist };
+export { attachAdminIfPresent, getAdminTokenFromRequest, isAdmin, tokenBlacklist };

@@ -70,13 +70,6 @@ export const PRE_COMPETITION_VALIDATION_RULES = [
     validate: ({ teams }) => teams.length > 0,
   },
   {
-    id: "descriptionPresent",
-    label: "Description added",
-    category: "Core Setup",
-    level: "recommended",
-    validate: ({ competition }) => Boolean(competition?.description?.trim()),
-  },
-  {
     id: "maxParticipantsSet",
     label: "Max participants set",
     category: "Core Setup",
@@ -113,7 +106,7 @@ export const buildPreCompetitionValidation = ({ competition, challenges, teams }
   const failedItems = items.filter(item => !item.passed);
   const requiredFailedItems = requiredItems.filter(item => !item.passed);
   const recommendedFailedItems = recommendedItems.filter(item => !item.passed);
-  const startReady = failedItems.length === 0;
+  const startReady = requiredFailedItems.length === 0;
 
   return {
     items,

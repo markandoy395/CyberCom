@@ -9,6 +9,7 @@ import TeamService from './TeamService.js';
 import { calculateLinearExponentialDecayScore } from '../scoring/linear-exponential-decay/index.js';
 
 const MAX_SUBMISSION_ATTEMPTS = 10;
+const COMPETITION_SUBMISSION_LOCK_TIMEOUT_SECONDS = 15;
 const SUBMISSION_STATUS = {
   CORRECT: 'correct',
   INCORRECT: 'incorrect',
@@ -23,6 +24,53 @@ const safeDecrypt = value => {
   } catch {
     return value;
   }
+};
+const toRoundedNumber = (value, digits = 4) => {
+  const numericValue = Number(value);
+
+  return Number.isFinite(numericValue)
+    ? Number(numericValue.toFixed(digits))
+    : 0;
+};
+const serializeScoreBreakdown = scoreBreakdown => {
+  if (!scoreBreakdown) {
+    return null;
+  }
+
+  return {
+    model: scoreBreakdown.model,
+    final_score: scoreBreakdown.finalScore,
+    hybrid_score: toRoundedNumber(scoreBreakdown.hybridScore),
+    max_score: scoreBreakdown.maxScore,
+    min_score: scoreBreakdown.minScore,
+    solve_count: scoreBreakdown.solveCount,
+    solve_time_minutes: toRoundedNumber(scoreBreakdown.solveTimeMinutes, 2),
+    attempts: scoreBreakdown.attempts,
+    competition_duration_minutes: toRoundedNumber(
+      scoreBreakdown.competitionDurationMinutes,
+      2
+    ),
+    parameters: {
+      origin_minutes: toRoundedNumber(scoreBreakdown.parameters?.originMinutes, 2),
+      offset_minutes: toRoundedNumber(scoreBreakdown.parameters?.offsetMinutes, 2),
+      scale_minutes: toRoundedNumber(scoreBreakdown.parameters?.scaleMinutes, 2),
+      time_decay: toRoundedNumber(scoreBreakdown.parameters?.timeDecay, 4),
+      solver_decay_constant: toRoundedNumber(scoreBreakdown.parameters?.solverDecayConstant, 4),
+      attempt_penalty_constant: toRoundedNumber(
+        scoreBreakdown.parameters?.attemptPenaltyConstant,
+        4
+      ),
+      solver_weight: toRoundedNumber(scoreBreakdown.parameters?.solverWeight, 4),
+      time_weight: toRoundedNumber(scoreBreakdown.parameters?.timeWeight, 4),
+    },
+    components: {
+      solver_component: toRoundedNumber(scoreBreakdown.components?.solverComponent),
+      time_component: toRoundedNumber(scoreBreakdown.components?.timeComponent, 6),
+      attempt_penalty: toRoundedNumber(scoreBreakdown.components?.attemptPenalty, 6),
+      scaling_factor: toRoundedNumber(scoreBreakdown.components?.scalingFactor, 4),
+      time_delta: toRoundedNumber(scoreBreakdown.components?.timeDelta, 2),
+    },
+  };
 };
 const buildAttemptSummary = (attemptsUsed, options = {}) => {
   const { lastStatus = null, teamSolved = false } = options;
@@ -71,6 +119,50 @@ const firstCorrectSubmissionSql = `
 `;
 
 export class SubmissionService {
+  static buildCompetitionChallengeLockName(competitionId, challengeId) {
+    return `competition:${competitionId}:challenge:${challengeId}`;
+  }
+
+  static async acquireCompetitionChallengeLock(connection, competitionId, challengeId) {
+    if (!competitionId || !challengeId) {
+      return { success: true, lockName: null };
+    }
+
+    const lockName = this.buildCompetitionChallengeLockName(
+      competitionId,
+      challengeId
+    );
+    const [lockRows] = await connection.execute(
+      'SELECT GET_LOCK(?, ?) AS acquired',
+      [lockName, COMPETITION_SUBMISSION_LOCK_TIMEOUT_SECONDS]
+    );
+
+    if (lockRows[0]?.acquired !== 1) {
+      return {
+        success: false,
+        error: 'Another submission is currently being processed for this challenge. Please try again.',
+        errorCode: 'submission_lock_timeout',
+      };
+    }
+
+    return {
+      success: true,
+      lockName,
+    };
+  }
+
+  static async releaseCompetitionChallengeLock(connection, lockName) {
+    if (!lockName) {
+      return;
+    }
+
+    try {
+      await connection.execute('SELECT RELEASE_LOCK(?) AS released', [lockName]);
+    } catch {
+      // Ignore advisory lock release failures; the connection close will still clean up.
+    }
+  }
+
   static getMinutesBetween(startValue, endValue) {
     if (!startValue || !endValue) {
       return 0;
@@ -335,6 +427,7 @@ export class SubmissionService {
   static async submitFlag(submissionData) {
     const connection = await getConnection();
     const connectionQuery = createConnectionQuery(connection);
+    let competitionChallengeLockName = null;
 
     try {
       const {
@@ -353,6 +446,52 @@ export class SubmissionService {
           success: false,
           error: 'team_id, team_member_id, challenge_id, and flag are required',
         };
+      }
+
+      const [preflightMemberRows] = await connection.execute(
+        `SELECT tm.id, tm.team_id, tm.status, t.competition_id
+         FROM team_members tm
+         INNER JOIN teams t ON tm.team_id = t.id
+         WHERE tm.id = ?
+         LIMIT 1`,
+        [teamMemberId]
+      );
+      const [preflightMember] = preflightMemberRows;
+
+      if (!preflightMember || preflightMember.team_id !== teamId) {
+        return { success: false, error: 'Participant does not belong to the specified team' };
+      }
+
+      if (TeamService.isBlockedMemberStatus(preflightMember.status)) {
+        return {
+          success: false,
+          error: TeamService.buildBlockedMemberMessage(preflightMember.status),
+          errorCode: 'competition_access_revoked',
+          memberStatus: preflightMember.status,
+        };
+      }
+
+      const effectiveCompetitionId = competitionId ?? preflightMember.competition_id ?? null;
+
+      if (
+        effectiveCompetitionId
+        && preflightMember.competition_id !== effectiveCompetitionId
+      ) {
+        return { success: false, error: 'Participant is not assigned to the specified competition' };
+      }
+
+      if (effectiveCompetitionId) {
+        const lockResult = await this.acquireCompetitionChallengeLock(
+          connection,
+          effectiveCompetitionId,
+          challengeId
+        );
+
+        if (!lockResult.success) {
+          return lockResult;
+        }
+
+        competitionChallengeLockName = lockResult.lockName;
       }
 
       await connection.beginTransaction();
@@ -384,7 +523,6 @@ export class SubmissionService {
         };
       }
 
-      const effectiveCompetitionId = competitionId ?? member.competition_id ?? null;
       let competition = null;
 
       if (effectiveCompetitionId && member.competition_id !== effectiveCompetitionId) {
@@ -519,6 +657,7 @@ export class SubmissionService {
           success: false,
           status: SUBMISSION_STATUS.ALREADY_SOLVED,
           error: 'This challenge is already solved by your team',
+          first_solver: firstCorrectSubmission,
           data: {
             ...buildAttemptSummary(existingAttemptCountRows[0]?.attempts_used || 0, {
               lastStatus: SUBMISSION_STATUS.ALREADY_SOLVED,
@@ -615,6 +754,19 @@ export class SubmissionService {
           deviceFingerprint,
         ]
       );
+      const firstCorrectSubmission = isCorrect
+        ? await this.getFirstCorrectSubmission(
+          connection,
+          teamId,
+          challengeId,
+          effectiveCompetitionId
+        )
+        : null;
+      const isFirstSolverForTeamChallenge = Boolean(
+        isCorrect
+        && firstCorrectSubmission
+        && firstCorrectSubmission.submission_id === result.insertId
+      );
       await ParticipantMonitoringService.recordEvent(
         {
           type: isCorrect ? 'submission_correct' : 'submission_incorrect',
@@ -633,6 +785,7 @@ export class SubmissionService {
             awardedPoints,
             scoringModel: scoreBreakdown?.model || null,
             submissionStatus,
+            isFirstSolverForTeamChallenge,
           },
         },
         connection
@@ -682,6 +835,7 @@ export class SubmissionService {
           attemptNumber,
           awardedPoints,
           scoringModel: scoreBreakdown?.model || null,
+          isFirstSolverForTeamChallenge,
         },
       });
 
@@ -689,6 +843,7 @@ export class SubmissionService {
         lastStatus: submissionStatus,
         teamSolved: isCorrect,
       });
+      const scoringBreakdown = serializeScoreBreakdown(scoreBreakdown);
 
       return {
         success: isCorrect,
@@ -704,9 +859,12 @@ export class SubmissionService {
           attempt_number: attemptNumber,
           submission_status: submissionStatus,
           scoring_model: scoreBreakdown?.model || null,
-          is_first_solver_for_team_challenge: isCorrect,
+          scoring_breakdown: scoringBreakdown,
+          is_first_solver_for_team_challenge: isFirstSolverForTeamChallenge,
         },
+        first_solver: firstCorrectSubmission,
         points: updatedPoints,
+        scoring: scoringBreakdown,
         data: summary,
         error: isCorrect ? null : 'Incorrect flag',
       };
@@ -719,6 +877,10 @@ export class SubmissionService {
 
       return fail(error);
     } finally {
+      await this.releaseCompetitionChallengeLock(
+        connection,
+        competitionChallengeLockName
+      );
       connection.release();
     }
   }

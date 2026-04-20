@@ -1,14 +1,14 @@
 import express from 'express';
+import { isAdmin } from './admin.js';
 import { requireCompetitionMember } from '../middleware/competitionAuth.js';
 import TeamService from '../services/TeamService.js';
 import LiveMonitorService from '../live-monitor/LiveMonitorService.js';
-import { isDatabaseUnavailableError } from '../utils/databaseErrors.js';
 import { handleRouteError, sendServiceResult } from '../utils/httpErrors.js';
 
 const router = new express.Router();
 
 // Get all teams
-router.get('/teams', async (req, res) => {
+router.get('/teams', isAdmin, async (req, res) => {
   try {
     const filters = {
       competition_id: req.query.competition_id ? parseInt(req.query.competition_id) : null,
@@ -22,7 +22,7 @@ router.get('/teams', async (req, res) => {
 });
 
 // Get team by ID
-router.get('/teams/:id', async (req, res) => {
+router.get('/teams/:id', isAdmin, async (req, res) => {
   try {
     const result = await TeamService.getTeamById(parseInt(req.params.id));
     return sendServiceResult(res, result);
@@ -32,7 +32,7 @@ router.get('/teams/:id', async (req, res) => {
 });
 
 // Get team members
-router.get('/teams/:id/members', async (req, res) => {
+router.get('/teams/:id/members', isAdmin, async (req, res) => {
   try {
     const result = await TeamService.getTeamMembers(parseInt(req.params.id));
     return sendServiceResult(res, result);
@@ -42,19 +42,9 @@ router.get('/teams/:id/members', async (req, res) => {
 });
 
 // Create team with members
-router.post('/teams', async (req, res) => {
+router.post('/teams', isAdmin, async (req, res) => {
   try {
     const { teamName, members, competition_id } = req.body;
-
-    // Validate required fields
-    if (!teamName || typeof teamName !== 'string' || !teamName.trim()) {
-      return res.status(400).json({ success: false, error: 'Team name is required' });
-    }
-
-    // Validate members
-    if (!Array.isArray(members) || members.length === 0) {
-      return res.status(400).json({ success: false, error: 'At least one member is required' });
-    }
 
     // Check 2-team limit per competition
     if (competition_id) {
@@ -70,82 +60,15 @@ router.post('/teams', async (req, res) => {
       }
     }
 
-    // Create team first
-    const teamResult = await TeamService.createTeam({
-      name: teamName.trim(),
-      description: null,
-      max_members: Math.min(members.length, 10),
-      competition_id: competition_id ? parseInt(competition_id) : null,
+    const result = await TeamService.createTeamWithMembers({
+      name: teamName,
+      members,
+      competition_id,
     });
 
-    if (!teamResult.success) {
-      return sendServiceResult(res, teamResult, { defaultErrorStatus: 400 });
-    }
-
-    const teamId = teamResult.team.id;
-    let membersCount = 0;
-    const memberErrors = [];
-
-    // Create team members if provided
-    for (let i = 0; i < members.length; i++) {
-      const member = members[i];
-
-      // Validate member fields
-      if (!member || typeof member !== 'object') {
-        continue;
-      }
-
-      const { username } = member;
-      const { name } = member;
-      const { email } = member;
-      const { password } = member;
-      const { role } = member;
-
-      // Skip if missing required fields
-      if (!username || !name || !email || !password) {
-        continue;
-      }
-
-      const memberData = {
-        username: String(username).trim(),
-        name: String(name).trim(),
-        email: String(email).trim(),
-        password: String(password),
-        team_id: teamId,
-        role: role ? String(role).trim() : 'member',
-      };
-
-      const memberResult = await TeamService.createTeamMember(memberData);
-
-      if (!memberResult.success && isDatabaseUnavailableError(memberResult)) {
-        throw new Error(memberResult.error);
-      }
-
-      if (memberResult.success) {
-        membersCount++;
-      } else {
-        memberErrors.push(`${name}: ${memberResult.error}`);
-      }
-    }
-
-    if (membersCount === 0) {
-      // No members were created, delete the team
-      await TeamService.deleteTeam(teamId);
-
-      return res.status(400).json({
-        success: false,
-        error: `Failed to create any team members: ${memberErrors.join('; ')}`
-      });
-    }
-
-    return res.json({
-      success: true,
-      data: {
-        teamId,
-        teamName: teamName.trim(),
-        membersCount,
-        message: `Team created with ${membersCount} members`,
-      },
+    return sendServiceResult(res, result, {
+      successStatus: 201,
+      defaultErrorStatus: 400,
     });
   } catch (error) {
     return handleRouteError(res, error);
@@ -153,7 +76,7 @@ router.post('/teams', async (req, res) => {
 });
 
 // Update team
-router.put('/teams/:id', async (req, res) => {
+router.put('/teams/:id', isAdmin, async (req, res) => {
   try {
     const result = await TeamService.updateTeam(parseInt(req.params.id), req.body);
     return sendServiceResult(res, result);
@@ -163,7 +86,7 @@ router.put('/teams/:id', async (req, res) => {
 });
 
 // Delete team
-router.delete('/teams/:id', async (req, res) => {
+router.delete('/teams/:id', isAdmin, async (req, res) => {
   try {
     const result = await TeamService.deleteTeam(parseInt(req.params.id));
     return sendServiceResult(res, result);
@@ -173,7 +96,7 @@ router.delete('/teams/:id', async (req, res) => {
 });
 
 // Link team to competition
-router.post('/teams/:id/link-competition', async (req, res) => {
+router.post('/teams/:id/link-competition', isAdmin, async (req, res) => {
   try {
     const { competition_id } = req.body;
     if (!competition_id) {
@@ -188,7 +111,7 @@ router.post('/teams/:id/link-competition', async (req, res) => {
 });
 
 // Update team member
-router.put('/teams/:teamId/members/:memberId', async (req, res) => {
+router.put('/teams/:teamId/members/:memberId', isAdmin, async (req, res) => {
   try {
     const { username, email, role, is_online, status } = req.body;
 
@@ -217,7 +140,7 @@ router.put('/teams/:teamId/members/:memberId', async (req, res) => {
 });
 
 // Reset team member password
-router.post('/teams/:teamId/members/:memberId/reset-password', async (req, res) => {
+router.post('/teams/:teamId/members/:memberId/reset-password', isAdmin, async (req, res) => {
   try {
     const { newPassword } = req.body;
 
@@ -233,7 +156,7 @@ router.post('/teams/:teamId/members/:memberId/reset-password', async (req, res) 
 });
 
 // Delete team member
-router.delete('/teams/:teamId/members/:memberId', async (req, res) => {
+router.delete('/teams/:teamId/members/:memberId', isAdmin, async (req, res) => {
   try {
     const result = await TeamService.deleteTeamMember(parseInt(req.params.memberId));
     return sendServiceResult(res, result);
@@ -301,15 +224,9 @@ router.post('/teams/member/confirm-online', requireCompetitionMember, async (req
 });
 
 // Logout - set member status to 'offline'
-router.post('/teams/logout', async (req, res) => {
+router.post('/teams/logout', requireCompetitionMember, async (req, res) => {
   try {
-    const { memberId } = req.body;
-
-    if (!memberId) {
-      return res.status(400).json({ success: false, error: 'memberId is required' });
-    }
-
-    const parsedMemberId = parseInt(memberId, 10);
+    const parsedMemberId = req.competitionMemberId;
     const result = await TeamService.updateMemberLoginStatus(parsedMemberId, false);
     await LiveMonitorService.markMemberOffline(parsedMemberId);
     return sendServiceResult(res, result);

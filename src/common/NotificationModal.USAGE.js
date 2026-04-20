@@ -99,35 +99,29 @@ export default function ExampleComponent() {
  * ============ ADVANCED USAGE ============
  */
 
-// Usage with custom duration
-const showAutoDismiss = () => {
-  setNotification({
-    type: 'success',
-    title: 'Quick Alert',
-    message: 'This will disappear in 2 seconds',
-  });
-};
+// Usage with custom duration:
+// setNotification({
+//   type: 'success',
+//   title: 'Quick Alert',
+//   message: 'This will disappear in 2 seconds',
+// });
 // Render with duration={2000}
 
-// Usage with longer auto-dismiss
-const showLongDismiss = () => {
-  setNotification({
-    type: 'info',
-    title: 'Important',
-    message: 'This will dismiss in 6 seconds',
-  });
-};
+// Usage with longer auto-dismiss:
+// setNotification({
+//   type: 'info',
+//   title: 'Important',
+//   message: 'This will dismiss in 6 seconds',
+// });
 // Render with duration={6000}
 
-// Usage with different positions
-const positions = {
-  center: 'center',
-  topCenter: 'top-center',
-  topRight: 'top-right',
-  bottomRight: 'bottom-right',  // DEFAULT
-  topLeft: 'top-left',
-  bottomLeft: 'bottom-left',
-};
+// Usage with different positions:
+// 'center'
+// 'top-center'
+// 'top-right'
+// 'bottom-right' // DEFAULT
+// 'top-left'
+// 'bottom-left'
 
 /**
  * ============ API ============
@@ -158,7 +152,7 @@ const positions = {
  *   - Only shows if onAction is provided
  * 
  * Features:
- *   - Uses elegant icons (checkmark, X, warning, info)
+ *   - Uses elegant icons (check mark, X, warning, info)
  *   - Auto-dismisses without user action
  *   - No close button - dismisses automatically
  *   - Overlays all other modals (z-index: 99999)

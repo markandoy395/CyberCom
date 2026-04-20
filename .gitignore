@@ -1,1 +1,11 @@
 node_modules
+dist
+dist-competition
+tmp
+uploads
+backend-node/uploads
+*.log
+.env
+backend-node/.env
+!.env.example
+!backend-node/.env.example

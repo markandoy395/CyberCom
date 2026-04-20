@@ -3,8 +3,6 @@ import { ThemeProvider } from "./context/ThemeContext";
 import Layout from "./modules/practice/layout/Layout";
 import Practice from "./modules/practice/pages/Practice";
 import PracticeLogin from "./modules/practice/pages/PracticeAuthPage";
-import CompetitionLogin from "./modules/competition/pages/CompetitionLogin";
-import CompetitionDashboard from "./modules/competition/pages/CompetitionDashboard";
 import { Leaderboard } from "./modules/practice/pages/leaderboard/Leaderboard";
 import { Profile } from "./modules/practice/pages/profile/Profile";
 import ChallengeDetail from "./modules/practice/pages/ChallengeDetail";
@@ -14,6 +12,8 @@ import { HelpSupport } from "./modules/practice/pages/HelpSupport";
 import { Admin } from "./modules/admin/pages/Admin";
 import AdminLogin from "./modules/admin/pages/AdminLogin";
 import AdminRegister from "./modules/admin/pages/AdminRegister";
+import CompetitionLogin from "./modules/competition/pages/CompetitionLogin";
+import CompetitionDashboard from "./modules/competition/pages/CompetitionDashboard";
 import DatabaseStatusBanner from "./common/DatabaseStatusBanner";
 import { clearAdminAuth, hasValidAdminSession } from "./utils/api";
 
@@ -44,7 +44,6 @@ const AdminProtectedRoute = ({ children }) => {
   return children;
 };
 
-// Competition Protected Route
 const CompetitionProtectedRoute = ({ children }) => {
   const competitionSession = localStorage.getItem("competitionSession");
 
@@ -73,14 +72,22 @@ function App() {
           />
 
           {/* Competition Routes */}
+          <Route
+            path="/competition"
+            element={<Navigate to="/competition/login" replace />}
+          />
           <Route path="/competition/login" element={<CompetitionLogin />} />
           <Route
             path="/competition/dashboard"
-            element={
+            element={(
               <CompetitionProtectedRoute>
                 <CompetitionDashboard />
               </CompetitionProtectedRoute>
-            }
+            )}
+          />
+          <Route
+            path="/competition/*"
+            element={<Navigate to="/competition/login" replace />}
           />
 
           {/* Practice Login */}
@@ -107,13 +114,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
-            {/* Redirect /competition to login */}
-            <Route
-              path="/competition"
-              element={<Navigate to="/competition/login" replace />}
-            />
-
             {/* Redirect /admin to dashboard or login */}
             <Route
               path="/admin"

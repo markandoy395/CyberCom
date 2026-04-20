@@ -1,6 +1,7 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { apiPost, API_ENDPOINTS } from '../../../../utils/api';
+import ActionButton from '../../../../common/ActionButton';
 import { CATEGORY_NAMES, CATEGORY_ID_TO_KEY, CATEGORIES } from '../../../../utils/constants';
 import { FaXmark, FaCircleCheck, FaCircleXmark, FaTriangleExclamation } from '../../../../utils/icons';
 import './AddChallengesModal.css';
@@ -364,22 +365,19 @@ const AddChallengesModal = ({
             disabled={isLoading}
             className="btn btn-secondary"
           >
-            {isLoading ? 'Processing...' : 'Cancel'}
+            Cancel
           </button>
-          <button
+          <ActionButton
             onClick={handleBulkAdd}
-            disabled={selectedChallenges.size === 0 || isLoading}
+            disabled={selectedChallenges.size === 0}
             className="btn btn-primary"
+            variant="custom"
+            size="custom"
+            isLoading={isLoading}
+            loadingText="Adding..."
           >
-            {isLoading ? (
-              <>
-                <span style={{ display: 'inline-block', animation: 'spin 1s linear infinite', marginRight: '4px' }}>⟳</span>
-                Adding...
-              </>
-            ) : (
-              <>Add {selectedChallenges.size > 0 ? `(${selectedChallenges.size})` : ''} Challenge{selectedChallenges.size !== 1 ? 's' : ''}</>
-            )}
-          </button>
+            Add {selectedChallenges.size > 0 ? `(${selectedChallenges.size})` : ''} Challenge{selectedChallenges.size !== 1 ? 's' : ''}
+          </ActionButton>
         </div>
       </div>
     </div>,

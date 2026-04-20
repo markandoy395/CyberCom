@@ -31,6 +31,14 @@ const SHUTDOWN_TIMEOUT_MS = parseInt(process.env.SHUTDOWN_TIMEOUT_MS || '10000',
 let isShuttingDown = false;
 let server;
 let shutdownPromise = null;
+const allowedOrigins = (
+  process.env.CORS_ORIGIN
+  || process.env.FRONTEND_URL
+  || 'http://localhost:5174,http://localhost:5175'
+)
+  .split(',')
+  .map(origin => origin.trim())
+  .filter(Boolean);
 
 // ==================== SECURITY MIDDLEWARE ====================
 // Add security headers using Helmet
@@ -76,7 +84,14 @@ const loginLimiter = rateLimit({
 // ==================== CORS CONFIGURATION ====================
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+        return;
+      }
+
+      callback(new Error('Not allowed by CORS'));
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Admin-Token', 'X-Competition-Token'],
@@ -119,6 +134,8 @@ app.use('/api', webExploitationRoutes);
 // Apply rate limiting to login endpoints (strict)
 app.use('/api/login/admin', loginLimiter);
 app.use('/api/login/team', loginLimiter);
+app.use('/api/login/user', loginLimiter);
+app.use('/api/login/practice', loginLimiter);
 app.use('/api/login/competition', loginLimiter);
 
 // Apply decryption middleware BEFORE sanitization

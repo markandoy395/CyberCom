@@ -3,6 +3,7 @@
  */
 import React from 'react';
 import { FaEye, FaEyeSlash } from '../../../../utils/icons';
+import ActionButton from '../../../../common/ActionButton';
 
 const TeamForm = ({
   formData,
@@ -13,6 +14,7 @@ const TeamForm = ({
   showPassword,
   onSubmit,
   onCancel,
+  isSubmitting = false,
 }) => {
   return (
     <div className="team-form">
@@ -85,10 +87,18 @@ const TeamForm = ({
       </div>
 
       <div className="form-actions">
-        <button type="button" onClick={onSubmit} className="btn btn-primary">
+        <ActionButton
+          type="button"
+          onClick={onSubmit}
+          className="btn btn-primary"
+          variant="custom"
+          size="custom"
+          isLoading={isSubmitting}
+          loadingText="Creating Team..."
+        >
           Create Team
-        </button>
-        <button type="button" onClick={onCancel} className="btn btn-secondary">
+        </ActionButton>
+        <button type="button" onClick={onCancel} className="btn btn-secondary" disabled={isSubmitting}>
           Cancel
         </button>
       </div>

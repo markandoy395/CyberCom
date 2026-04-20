@@ -13,12 +13,16 @@ const DEFAULT_MEMBER = {
   roleMode: 'auto',
 };
 const AUTO_EMAIL_DOMAIN = 'cybercom.local';
+const MEMBER_INPUT_FIELDS = ['username', 'name', 'email', 'password'];
 const createDefaultMembers = () => Array.from({ length: 4 }, () => ({ ...DEFAULT_MEMBER }));
 const toTitleCase = value => value
   .split(/\s+/)
   .filter(Boolean)
   .map(part => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
   .join(' ');
+const hasMemberInput = member => MEMBER_INPUT_FIELDS
+  .some(field => String(member?.[field] ?? '').trim());
+const normalizeIdentityValue = value => String(value || '').trim().toLowerCase();
 const getParticipantNameSegment = username => {
   const trimmedUsername = String(username || '').trim();
 
@@ -165,21 +169,50 @@ export const useTeamForm = () => {
 
   const validateForm = () => {
     const errors = [];
-    
+
     if (!formData.teamName.trim()) {
       errors.push('Team name is required');
     }
 
-    const validMembers = formData.members.filter(m => m.name || m.email || m.password);
-    if (validMembers.length === 0) {
+    const populatedMembers = formData.members
+      .map((member, index) => ({ member, index }))
+      .filter(({ member }) => hasMemberInput(member));
+
+    if (populatedMembers.length === 0) {
       errors.push('At least one team member is required');
     }
 
-    validMembers.forEach((member, index) => {
-      if (!member.username) errors.push(`Member ${index + 1}: Username is required`);
-      if (!member.name) errors.push(`Member ${index + 1}: Full name is required`);
-      if (!member.email) errors.push(`Member ${index + 1}: Email is required`);
-      if (!member.password) errors.push(`Member ${index + 1}: Password is required`);
+    const seenUsernames = new Map();
+    const seenEmails = new Map();
+
+    populatedMembers.forEach(({ member, index }) => {
+      const rowNumber = index + 1;
+      const trimmedUsername = String(member.username || '').trim();
+      const trimmedName = String(member.name || '').trim();
+      const trimmedEmail = String(member.email || '').trim();
+
+      if (!trimmedUsername) errors.push(`Member ${rowNumber}: Username is required`);
+      if (!trimmedName) errors.push(`Member ${rowNumber}: Full name is required`);
+      if (!trimmedEmail) errors.push(`Member ${rowNumber}: Email is required`);
+      if (!member.password) errors.push(`Member ${rowNumber}: Password is required`);
+
+      const normalizedUsername = normalizeIdentityValue(trimmedUsername);
+      if (normalizedUsername) {
+        if (seenUsernames.has(normalizedUsername)) {
+          errors.push(`Member ${rowNumber}: Username "${trimmedUsername}" is duplicated`);
+        } else {
+          seenUsernames.set(normalizedUsername, rowNumber);
+        }
+      }
+
+      const normalizedEmail = normalizeIdentityValue(trimmedEmail);
+      if (normalizedEmail) {
+        if (seenEmails.has(normalizedEmail)) {
+          errors.push(`Member ${rowNumber}: Email "${trimmedEmail}" is duplicated`);
+        } else {
+          seenEmails.set(normalizedEmail, rowNumber);
+        }
+      }
     });
 
     return errors;

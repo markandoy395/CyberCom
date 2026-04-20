@@ -1,5 +1,19 @@
 @echo off
+setlocal
 REM Start CyberCom - Both Frontend and Backend
+
+set FRONTEND_PORT=5174
+set COMPETITION_FRONTEND_PORT=5174
+set BACKEND_PORT=3000
+
+if exist ".env" (
+  for /f "usebackq tokens=1,* delims==" %%A in (".env") do (
+    if /I "%%A"=="FRONTEND_PORT" set FRONTEND_PORT=%%B
+    if /I "%%A"=="BACKEND_PORT" set BACKEND_PORT=%%B
+  )
+)
+
+set COMPETITION_FRONTEND_PORT=%FRONTEND_PORT%
 
 echo.
 echo ========================================
@@ -27,10 +41,10 @@ echo.
 echo ========================================
 echo CyberCom is starting!
 echo ========================================
-echo - Frontend: http://localhost:5173
-echo - Admin Login: http://localhost:5173/admin
-echo - Competition Login: http://localhost:5173/competition/login
-echo - Backend API: http://localhost:3000
+echo - Frontend: http://localhost:%FRONTEND_PORT%
+echo - Admin Login: http://localhost:%FRONTEND_PORT%/admin
+echo - Competition Login: http://localhost:%COMPETITION_FRONTEND_PORT%/competition/login
+echo - Backend API: http://localhost:%BACKEND_PORT%
 echo - XAMPP MySQL: localhost:3306
 echo ========================================
 echo.

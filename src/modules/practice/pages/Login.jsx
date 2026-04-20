@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import PracticeRules from "../components/PracticeRules";
 import NotificationModal from "../../../common/NotificationModal";
+import ActionButton from "../../../common/ActionButton";
 import logo from "../../../assets/images/logo.png";
 import "./Login.css";
 
@@ -16,6 +17,7 @@ const Login = () => {
   const [password, setPassword] = useState(TEST_PASSWORD);
   const [notification, setNotification] = useState(null);
   const [checkboxChecked, setCheckboxChecked] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(typeof window !== 'undefined' && !!localStorage.getItem("rememberedEmail"));
   const [showRules, setShowRules] = useState(false);
   
@@ -54,6 +56,8 @@ const Login = () => {
 
     // Mock login - replace with actual API call
     if (email && password) {
+      setLoading(true);
+
       const mockUser = {
         id: 1,
         name: "John Doe",
@@ -77,6 +81,7 @@ const Login = () => {
         title: 'Error',
         message: "Please enter both email and password"
       });
+      setLoading(false);
       isSubmittingRef.current = false;
     }
   };
@@ -163,13 +168,18 @@ const Login = () => {
               </div>
             </div>
 
-            <button 
-              type="submit" 
-              className="btn btn-primary btn-block btn-lg"
+            <ActionButton
+              type="submit"
+              className="btn btn-primary btn-lg"
+              variant="custom"
+              size="custom"
+              fullWidth
+              isLoading={loading}
+              loadingText="Signing In..."
               disabled={!checkboxChecked}
             >
               Sign In
-            </button>
+            </ActionButton>
           </form>
 
           <div className="login-footer">

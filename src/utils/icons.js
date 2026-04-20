@@ -50,6 +50,9 @@ export {
   FaCoins,
   FaKey,
   FaBan,
+  FaCheck,
+  FaRotateLeft,
+  FaListUl,
 } from "react-icons/fa6";
 
 export { GrAchievement } from "react-icons/gr";

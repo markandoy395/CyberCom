@@ -46,7 +46,9 @@ const ChallengeSelector = ({
     if (!competitionId) return;
     
     try {
-      const response = await apiGet(API_ENDPOINTS.COMPETITIONS_CHALLENGES(competitionId));
+      const response = await apiGet(
+        API_ENDPOINTS.ADMIN_COMPETITION_CHALLENGES_LIST(competitionId)
+      );
       if (response.success) {
         // Backend now sends pre-decrypted challenges
         setAssignedChallenges(response.data || []);

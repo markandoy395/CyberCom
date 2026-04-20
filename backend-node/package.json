@@ -7,7 +7,9 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "populate-second-team": "node scripts/populate-second-team.js"
+    "populate-second-team": "node scripts/populate-second-team.js",
+    "seed:dont-use-client-side": "node scripts/seed-dont-use-client-side.js",
+    "seed:operator-mischief": "node scripts/seed-operator-mischief.js"
   },
   "dependencies": {
     "archiver": "^5.3.1",

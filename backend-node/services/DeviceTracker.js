@@ -247,6 +247,8 @@ class DeviceTracker {
          WHERE competition_id = ?
          AND user_type = 'team_member'
          AND login_status = 'success'
+         AND is_active = 1
+         AND logout_time IS NULL
          AND ${deviceMatch.clause}
          ORDER BY login_time DESC, id DESC
          LIMIT 1`,
@@ -447,6 +449,8 @@ class DeviceTracker {
       const deviceMatch = competitionId ? this.getDeviceMatchQuery(deviceInfo) : null;
       const identity = this.getIdentityValues(userType, userId);
 
+      const logoutTime = isActive ? null : new Date();
+
       if (deviceMatch && loginStatus !== 'success') {
         const existingAttempts = await queryFn(
           `SELECT id
@@ -470,7 +474,7 @@ class DeviceTracker {
              SET admin_id = ?, team_member_id = ?, user_type = ?, device_fingerprint = ?, device_name = ?,
              ip_address = ?, user_agent = ?, browser = ?, os = ?, mac_address = ?,
              session_token = NULL, login_status = ?, failure_reason = ?, is_active = 0,
-             login_time = NOW(), logout_time = NULL
+             login_time = NOW(), logout_time = NOW()
              WHERE id = ?`,
             [
               identity.adminId,
@@ -552,8 +556,8 @@ class DeviceTracker {
         `INSERT INTO login_history
         (admin_id, team_member_id, username, user_type, competition_id, device_fingerprint,
         device_name, ip_address, user_agent, browser, os, mac_address,
-        session_token, login_status, failure_reason, is_active)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        session_token, login_status, failure_reason, is_active, logout_time)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           identity.adminId,
           identity.teamMemberId,
@@ -571,6 +575,7 @@ class DeviceTracker {
           loginStatus,
           failureReason,
           isActive ? 1 : 0,
+          logoutTime,
         ]
       );
 

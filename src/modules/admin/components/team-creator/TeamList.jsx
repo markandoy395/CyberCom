@@ -135,7 +135,7 @@ const TeamList = ({ teams, onDelete, isLoading, onMembersUpdated }) => {
                           <span className="col-member-actions">Actions</span>
                         </div>
                         {team.members.map((member, idx) => (
-                          <div key={idx} className="member-item">
+                          <div key={member.id || `${team.id}-${idx}`} className="member-item">
                             <span className="col-member-username">{member.username || member.name || 'N/A'}</span>
                             <span className="col-member-email">{member.email}</span>
                             <span className="col-member-role">{member.role || 'member'}</span>

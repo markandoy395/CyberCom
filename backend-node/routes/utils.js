@@ -1,16 +1,55 @@
 import express from 'express';
 import { exec, spawn } from 'child_process';
 import os from 'os';
+import { attachAdminIfPresent } from './admin.js';
+import { attachCompetitionMemberIfPresent } from '../middleware/competitionAuth.js';
+import { isFeatureEnabled, isLoopbackAddress } from '../config/security.js';
 
 const router = new express.Router();
+const getRequestIp = req => {
+  const forwardedFor = req.headers['x-forwarded-for'];
+
+  if (typeof forwardedFor === 'string' && forwardedFor.trim()) {
+    return forwardedFor.split(',')[0].trim();
+  }
+
+  return req.ip || req.socket?.remoteAddress || '';
+};
 
 /**
  * POST /api/open-powershell
  * Opens PowerShell terminal on the user's machine
  * NOTE: This only works when user has necessary permissions
  */
-router.post('/open-powershell', (req, res) => {
+router.post(
+  '/open-powershell',
+  attachAdminIfPresent,
+  attachCompetitionMemberIfPresent,
+  (req, res) => {
   try {
+    if (!isFeatureEnabled('ENABLE_LOCAL_TERMINAL_LAUNCH')) {
+      return res.status(403).json({
+        success: false,
+        error: 'Local terminal launch is disabled',
+      });
+    }
+
+    if (!req.adminId && !req.competitionMemberId) {
+      return res.status(401).json({
+        success: false,
+        error: 'Admin or competition token required',
+      });
+    }
+
+    const requestIp = getRequestIp(req);
+
+    if (!isLoopbackAddress(requestIp)) {
+      return res.status(403).json({
+        success: false,
+        error: 'Local terminal launch is restricted to loopback requests',
+      });
+    }
+
     const platform = os.platform();
 
     // Determine the appropriate command based on OS

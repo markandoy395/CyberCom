@@ -1,4 +1,11 @@
-import React, { useMemo, useState, useEffect, useCallback } from "react";
+import React, {
+  startTransition,
+  useMemo,
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+} from "react";
 import {
   FaUser,
   FaUsers,
@@ -10,6 +17,8 @@ import {
 } from "react-icons/fa6";
 import { apiGet, API_ENDPOINTS } from "../../../../../utils/api";
 import "./RankingsTab.css";
+
+const RANKINGS_REFRESH_INTERVAL_MS = 2000;
 
 const getInitials = (name) =>
   name
@@ -30,6 +39,12 @@ const RankingsTab = ({
   const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(false);
   const [expandedTeams, setExpandedTeams] = useState({});
+  const [refreshError, setRefreshError] = useState("");
+  const [lastUpdatedAt, setLastUpdatedAt] = useState(null);
+  const hasLoadedRankingsRef = useRef(false);
+  const isRefreshingRef = useRef(false);
+  const activeRequestIdRef = useRef(0);
+  const currentCompetitionIdRef = useRef(null);
   const selectedCompetition = useMemo(
     () => competitions.find((competition) => Number(competition.id) === Number(selectedCompId))
       || competitions.find((competition) => competition.status === "active")
@@ -37,52 +52,149 @@ const RankingsTab = ({
       || null,
     [competitions, selectedCompId]
   );
+  const selectedCompetitionId = selectedCompetition?.id || null;
 
   const toggleTeam = (id) =>
     setExpandedTeams((prev) => ({ ...prev, [id]: !prev[id] }));
 
-  const loadRankings = useCallback(async () => {
-    if (!selectedCompetition?.id) {
+  const loadRankings = useCallback(async ({ initialLoad = false } = {}) => {
+    if (!selectedCompetitionId) {
       setUsers([]);
       setTeams([]);
+      setRefreshError("");
+      setLastUpdatedAt(null);
+      hasLoadedRankingsRef.current = false;
       return;
     }
 
-    setLoading(true);
+    if (isRefreshingRef.current) {
+      return;
+    }
+
+    isRefreshingRef.current = true;
+    const requestId = activeRequestIdRef.current + 1;
+    const requestedCompetitionId = selectedCompetitionId;
+
+    activeRequestIdRef.current = requestId;
+
+    if (initialLoad) {
+      setLoading(true);
+    }
 
     try {
       const response = await apiGet(
-        API_ENDPOINTS.COMPETITIONS_RANKINGS(selectedCompetition.id)
+        API_ENDPOINTS.COMPETITIONS_RANKINGS(selectedCompetitionId),
+        {
+          cache: "no-store",
+        }
       );
       const payload = response.data || {};
 
-      setUsers(
-        (payload.members || []).map((member) => ({
+      const nextUsers = (payload.members || []).map((member) => ({
+        ...member,
+        score: Number(member.points) || 0,
+        solves: Number(member.challenges_solved) || 0,
+      }));
+      const nextTeams = (payload.teams || []).map((team) => ({
+        ...team,
+        points: Number(team.points) || 0,
+        challenges_solved: Number(team.challenges_solved) || 0,
+        member_count: Number(team.member_count) || 0,
+        membersData: (team.members || []).map((member) => ({
           ...member,
-          score: member.points,
-          solves: member.challenges_solved,
-        }))
+          score: Number(member.points) || 0,
+        })),
+      }));
+
+      if (
+        activeRequestIdRef.current !== requestId
+        || currentCompetitionIdRef.current !== requestedCompetitionId
+      ) {
+        return;
+      }
+
+      startTransition(() => {
+        setUsers(nextUsers);
+        setTeams(nextTeams);
+        setRefreshError("");
+        setLastUpdatedAt(Date.now());
+      });
+      hasLoadedRankingsRef.current = true;
+    } catch (error) {
+      if (
+        activeRequestIdRef.current !== requestId
+        || currentCompetitionIdRef.current !== requestedCompetitionId
+      ) {
+        return;
+      }
+
+      setRefreshError(
+        error?.message || "Unable to refresh rankings right now."
       );
-      setTeams(
-        (payload.teams || []).map((team) => ({
-          ...team,
-          membersData: (team.members || []).map((member) => ({
-            ...member,
-            score: member.points,
-          })),
-        }))
-      );
-    } catch {
-      setUsers([]);
-      setTeams([]);
+
+      if (!hasLoadedRankingsRef.current) {
+        setUsers([]);
+        setTeams([]);
+      }
     } finally {
-      setLoading(false);
+      if (activeRequestIdRef.current === requestId) {
+        isRefreshingRef.current = false;
+      }
+
+      if (currentCompetitionIdRef.current === requestedCompetitionId) {
+        setLoading(false);
+      }
     }
-  }, [selectedCompetition]);
+  }, [selectedCompetitionId]);
 
   useEffect(() => {
-    loadRankings();
-  }, [loadRankings]);
+    currentCompetitionIdRef.current = selectedCompetitionId;
+    isRefreshingRef.current = false;
+    setExpandedTeams({});
+    setUsers([]);
+    setTeams([]);
+    setRefreshError("");
+    setLastUpdatedAt(null);
+    hasLoadedRankingsRef.current = false;
+
+    if (!selectedCompetitionId) {
+      setLoading(false);
+      return undefined;
+    }
+
+    const refreshNow = () => {
+      if (document.visibilityState === "hidden") {
+        return;
+      }
+
+      void loadRankings({
+        initialLoad: !hasLoadedRankingsRef.current,
+      });
+    };
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        refreshNow();
+      }
+    };
+
+    refreshNow();
+
+    const interval = window.setInterval(
+      refreshNow,
+      RANKINGS_REFRESH_INTERVAL_MS
+    );
+
+    window.addEventListener("focus", refreshNow);
+    window.addEventListener("online", refreshNow);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      window.clearInterval(interval);
+      window.removeEventListener("focus", refreshNow);
+      window.removeEventListener("online", refreshNow);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [loadRankings, selectedCompetitionId]);
 
   const sortedUsers = useMemo(
     () => users.slice().sort((a, b) => b.score - a.score || b.solves - a.solves),
@@ -114,7 +226,16 @@ const RankingsTab = ({
           <FaTrophy className="rankings-title-icon" />
           <div>
             <h3>Rankings</h3>
-            <p>{loading ? "Loading rankings..." : `Live leaderboard for ${selectedCompetition.name}`}</p>
+            <p>
+              {loading && !lastUpdatedAt
+                ? "Loading rankings..."
+                : `Live leaderboard for ${selectedCompetition.name}`}
+            </p>
+            {refreshError ? (
+              <p>Showing the last successful rankings while a refresh retries.</p>
+            ) : lastUpdatedAt ? (
+              <p>Updated at {new Date(lastUpdatedAt).toLocaleTimeString()}</p>
+            ) : null}
           </div>
         </div>
 
@@ -141,7 +262,9 @@ const RankingsTab = ({
             className="rankings-refresh-btn"
             title="Refresh Rankings"
             type="button"
-            onClick={loadRankings}
+            onClick={() => {
+              void loadRankings();
+            }}
           >
             <FaArrowsRotate />
           </button>

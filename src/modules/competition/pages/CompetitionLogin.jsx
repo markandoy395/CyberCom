@@ -3,8 +3,10 @@ import { useLocation, useNavigate } from "react-router-dom";
 import CompetitionRules from "../components/info/CompetitionRules";
 import CompetitionEndedLoginModal from "../components/modals/CompetitionEndedLoginModal";
 import NotificationModal from "../../../common/NotificationModal";
+import ActionButton from "../../../common/ActionButton";
 import { apiPost, API_ENDPOINTS } from "../../../utils/api";
 import DeviceFingerprintGenerator from "../../../utils/DeviceFingerprinter";
+import { getMainAppUrl } from "../../../config/appUrls";
 import { useCompetitionScreenShare } from "../live-monitor";
 import CompetitionScreenShareManager from "../live-monitor/CompetitionScreenShareManager";
 import "./CompetitionLogin.css";
@@ -179,7 +181,7 @@ const CompetitionLogin = () => {
   };
 
   const handleCancel = () => {
-    navigate("/");
+    window.location.assign(getMainAppUrl("/"));
   };
 
   const handleCompetitionEndedClose = () => {
@@ -189,7 +191,7 @@ const CompetitionLogin = () => {
   };
 
   const handleGoHome = () => {
-    navigate("/");
+    window.location.assign(getMainAppUrl("/"));
   };
 
   useEffect(() => {
@@ -302,15 +304,17 @@ const CompetitionLogin = () => {
               >
                 Cancel
               </button>
-              <button
+              <ActionButton
                 type="submit"
                 className="btn btn-primary"
-                disabled={loading || !checkboxChecked}
+                variant="custom"
+                size="custom"
+                isLoading={loading}
+                loadingText={isStartingRequiredShare ? "Share Entire Screen..." : "Validating..."}
+                disabled={!checkboxChecked}
               >
-                {loading
-                  ? (isStartingRequiredShare ? "Share Entire Screen..." : "Validating...")
-                  : "Enter Competition"}
-              </button>
+                Enter Competition
+              </ActionButton>
             </div>
           </form>
         </div>

@@ -1,11 +1,13 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
+import { isAdmin } from './admin.js';
 import AuthService from '../services/AuthService.js';
 import CompetitionStatusService from '../services/CompetitionStatusService.js';
 import CompetitionStartValidationService from '../services/CompetitionStartValidationService.js';
 import DeviceTracker from '../services/DeviceTracker.js';
 import TeamService from '../services/TeamService.js';
 import { getConnection, query } from '../config/database.js';
+import { JWT_SECRET } from '../config/security.js';
 import LiveMonitorService from '../live-monitor/LiveMonitorService.js';
 import ScreenShareService from '../services/ScreenShareService.js';
 import LiveMonitorActivityService from '../services/LiveMonitorActivityService.js';
@@ -16,9 +18,7 @@ import {
 import { handleRouteError, sendServiceResult } from '../utils/httpErrors.js';
 
 const router = new express.Router();
-const JWT_SECRET = process.env.JWT_SECRET || 'secret-key';
 const LOGIN_MESSAGE = 'Login successful';
-const OFFLINE_STATUS = 'offline';
 const ONLINE_STATUS = 'online';
 const DEVICE_BUSY_MESSAGE = 'Please wait for the other user to logout or go offline';
 const DEVICE_OWNER_MESSAGE = 'This device can only be used by one participant account in this competition';
@@ -62,7 +62,7 @@ const getTeamCompetition = async teamId => {
 };
 const buildCompetitionReadinessError = failedItems => ({
   status: 403,
-  error: `This competition is not ready for participant login yet. Complete all pre-competition validation items first. Missing: ${failedItems.join(', ')}`,
+  error: `This competition is not ready for participant login yet. Complete all required pre-competition validation items first. Missing: ${failedItems.join(', ')}`,
   details: {
     failedItems,
   },
@@ -138,10 +138,14 @@ const getTeamMemberLoginEligibility = async (
   }
 
   if (!readinessResult.validation.startReady) {
+    const blockingItems = readinessResult.validation.requiredFailedItems?.length
+      ? readinessResult.validation.requiredFailedItems
+      : readinessResult.validation.failedItems;
+
     return {
       success: false,
       ...buildCompetitionReadinessError(
-        readinessResult.validation.failedItems.map(item => item.label)
+        blockingItems.map(item => item.label)
       ),
     };
   }
@@ -361,7 +365,7 @@ router.post('/register/practice', async (req, res) => {
   }
 });
 
-router.post('/register/team', async (req, res) => {
+router.post('/register/team', isAdmin, async (req, res) => {
   try {
     const { username, email, password, team_id = null, role = 'member' } = req.body;
 
@@ -648,24 +652,28 @@ router.post('/logout/competition', async (req, res) => {
   try {
     const { memberId, sessionToken } = req.body;
 
-    if (!memberId && !sessionToken) {
-      return respondError(res, 400, 'memberId or sessionToken required');
+    if (!sessionToken) {
+      return respondError(res, 400, 'sessionToken required');
     }
 
-    if (memberId) {
-      await TeamService.updateMemberLoginStatus(memberId, false);
-      await LiveMonitorService.markMemberOffline(memberId);
-      ScreenShareService.stopSession(memberId, 'logout');
+    const activeSession = await DeviceTracker.getActiveSessionByToken(sessionToken, query);
+    const resolvedMemberId = Number.parseInt(
+      memberId || activeSession?.team_member_id,
+      10
+    );
+
+    if (Number.isFinite(resolvedMemberId) && resolvedMemberId > 0) {
+      await TeamService.updateMemberLoginStatus(resolvedMemberId, false);
+      await LiveMonitorService.markMemberOffline(resolvedMemberId);
+      ScreenShareService.stopSession(resolvedMemberId, 'logout');
       LiveMonitorActivityService.recordEvent({
         type: 'logout',
-        memberId,
+        memberId: resolvedMemberId,
         description: 'Participant left the competition session',
       });
     }
 
-    if (sessionToken) {
-      await DeviceTracker.logLogout(sessionToken, query);
-    }
+    await DeviceTracker.logLogout(sessionToken, query);
 
     return res.json({
       success: true,

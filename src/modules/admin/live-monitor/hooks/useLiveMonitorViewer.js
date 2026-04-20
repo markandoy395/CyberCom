@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { apiGet, API_ENDPOINTS } from "../../../../utils/api";
 
 const SCREEN_WALL_POLL_INTERVAL_MS = 1500;
-const SELECTED_SCREEN_POLL_INTERVAL_MS = 600;
+const SELECTED_SCREEN_POLL_INTERVAL_MS = 2000;
 const HISTORY_POLL_INTERVAL_MS = 2000;
 
 const hasSnapshotChanged = (currentSnapshot, nextSnapshot) => (
@@ -102,7 +102,7 @@ export const useLiveMonitorViewer = liveParticipants => {
 
       try {
         const response = await apiGet(
-          API_ENDPOINTS.ADMIN_LIVE_MONITOR_SCREEN_SHARE(selectedMemberId),
+          `${API_ENDPOINTS.ADMIN_LIVE_MONITOR_SCREEN_SHARE(selectedMemberId)}?include_image=0`,
           { cache: "no-store" }
         );
         const nextSnapshot = response?.data || null;
@@ -110,17 +110,24 @@ export const useLiveMonitorViewer = liveParticipants => {
         if (!disposed && nextSnapshot) {
           setScreenSnapshotsByMemberId(currentSnapshots => {
             const currentSnapshot = currentSnapshots[selectedMemberId];
+            const mergedSnapshot = {
+              ...currentSnapshot,
+              ...nextSnapshot,
+            };
 
             if (
-              currentSnapshot?.lastFrameAt === nextSnapshot.lastFrameAt
-              && currentSnapshot?.imageDataUrl === nextSnapshot.imageDataUrl
+              currentSnapshot?.lastFrameAt === mergedSnapshot.lastFrameAt
+              && currentSnapshot?.startedAt === mergedSnapshot.startedAt
+              && currentSnapshot?.width === mergedSnapshot.width
+              && currentSnapshot?.height === mergedSnapshot.height
+              && currentSnapshot?.displaySurface === mergedSnapshot.displaySurface
             ) {
               return currentSnapshots;
             }
 
             return {
               ...currentSnapshots,
-              [selectedMemberId]: nextSnapshot,
+              [selectedMemberId]: mergedSnapshot,
             };
           });
         }

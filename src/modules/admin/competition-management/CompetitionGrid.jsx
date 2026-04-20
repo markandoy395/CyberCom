@@ -123,14 +123,14 @@ const CompetitionCard = ({
           <span className="comp-readiness-label">
             <span>Start Readiness</span>
             <span
-              aria-label="Make sure to complete the Pre-Competition Validation to start the competition"
+              aria-label="Make sure to complete the required Pre-Competition Validation items to start the competition"
               className="comp-readiness-help"
               role="img"
               tabIndex={0}
             >
               <FaCircleInfo aria-hidden="true" />
               <span className="comp-readiness-tooltip" role="tooltip">
-                Make sure to complete the Pre-Competition Validation to start the competition
+                Make sure to complete the required Pre-Competition Validation items to start the competition
               </span>
             </span>
           </span>

@@ -1,4 +1,5 @@
 import express from 'express';
+import { isAdmin } from './admin.js';
 import { attachCompetitionMemberIfPresent } from '../middleware/competitionAuth.js';
 import { serializeSubmissionByChallenge } from '../middleware/submissionOrdering.js';
 import SubmissionService from '../services/SubmissionService.js';
@@ -9,7 +10,7 @@ const router = new express.Router();
 const toInt = value => parseInt(value, 10);
 
 // Get all submissions
-router.get('/submissions', async (req, res) => {
+router.get('/submissions', isAdmin, async (req, res) => {
   try {
     const filters = {
       sanitize: req.query.sanitize === '1',
@@ -63,7 +64,7 @@ router.get('/submissions/attempt-summary', attachCompetitionMemberIfPresent, asy
 });
 
 // Get submissions by team
-router.get('/teams/:team_id/submissions', async (req, res) => {
+router.get('/teams/:team_id/submissions', isAdmin, async (req, res) => {
   try {
     const result = await SubmissionService.getSubmissions({
       team_id: toInt(req.params.team_id),
@@ -75,7 +76,7 @@ router.get('/teams/:team_id/submissions', async (req, res) => {
 });
 
 // Get team score
-router.get('/teams/:team_id/score', async (req, res) => {
+router.get('/teams/:team_id/score', isAdmin, async (req, res) => {
   try {
     const result = await SubmissionService.getTeamScore(toInt(req.params.team_id));
     return sendServiceResult(res, result);
@@ -130,6 +131,7 @@ router.post(
       if (result && typeof result === 'object' && req.submissionOrdering) {
         result.request_order = {
           key: req.submissionOrdering.key,
+          scope: req.submissionOrdering.scope,
           sequence: req.submissionOrdering.sequence,
           received_at: req.submissionOrdering.receivedAt,
           processing_started_at: req.submissionOrdering.processingStartedAt,
@@ -139,6 +141,10 @@ router.post(
 
       if (!result.success && result.errorCode === 'competition_access_revoked') {
         return res.status(403).json(result);
+      }
+
+      if (!result.success && result.errorCode === 'submission_lock_timeout') {
+        return res.status(409).json(result);
       }
 
       return sendServiceResult(res, result);

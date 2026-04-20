@@ -9,6 +9,7 @@ export const ADMIN_TABS = {
   CHALLENGES: "challenges",
   TEAMS: "teams",
   COMPETITIONS: "competitions",
+  SCORING_SIMULATOR: "scoring-simulator",
   STATS: "stats",
 };
 
@@ -68,7 +69,7 @@ export const DEFAULT_COMPETITION_FORM = {
     timeWeight: 0.20,
     solverDecayConstant: 0.12,
     attemptPenaltyConstant: 0.05,
-    minScoreFloor: 20
+    minScoreFloor: 10
   }
 };
 

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import ActionButton from "../../../common/ActionButton";
 import "./AdminLogin.css";
 
 const AdminRegister = () => {
@@ -169,13 +170,16 @@ const AdminRegister = () => {
             />
           </div>
 
-          <button
+          <ActionButton
             type="submit"
             className="admin-login-button"
-            disabled={loading}
+            variant="custom"
+            size="custom"
+            isLoading={loading}
+            loadingText="Creating account..."
           >
-            {loading ? "Creating account..." : "Create Account"}
-          </button>
+            Create Account
+          </ActionButton>
         </form>
 
         <div className="admin-login-footer">

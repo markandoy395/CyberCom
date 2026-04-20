@@ -16,6 +16,9 @@ import {
   FaBroadcastTower,
   FaGavel,
   FaDumbbell,
+  FaChartBar,
+  FaUser,
+  FaCalculator,
 } from "react-icons/fa";
 
 export const getAdminSidebarNavItems = (hasManageableCompetitions = false) => {
@@ -43,6 +46,7 @@ export const getAdminSidebarNavItems = (hasManageableCompetitions = false) => {
           ? [
               { id: "select-challenges", label: "Select Challenges", icon: FaCheckSquare },
               { id: "team-accounts", label: "Team Accounts", icon: FaUsers },
+              { id: "scoring-simulator", label: "Scoring Insights", icon: FaCalculator },
               { id: "rankings", label: "Rankings", icon: FaMedal },
               { id: "liveMonitor", label: "Live Monitor", icon: FaBroadcastTower },
             ]
@@ -64,6 +68,16 @@ export const getAdminSidebarNavItems = (hasManageableCompetitions = false) => {
       subItems: [
         { id: "rules", label: "Competition", icon: FaGavel },
         { id: "practiceRules", label: "Practice", icon: FaDumbbell },
+      ],
+    },
+    {
+      id: "overall-rankings",
+      label: "Overall Rankings",
+      icon: FaChartBar,
+      submenu: true,
+      subItems: [
+        { id: "overallCompetitionRankings", label: "Competition", icon: FaTrophy },
+        { id: "overallPracticeRankings",    label: "Practice",    icon: FaUser },
       ],
     },
   ];

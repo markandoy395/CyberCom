@@ -8,3 +8,5 @@ export { default as LiveMonitorTab } from "./live-monitor/LiveMonitorTab";
 export { default as RulesTab } from "./rules/RulesTab";
 export { default as PracticeRulesTab } from "./practice-rules/PracticeRulesTab";
 export { default as SelectChallengesTab } from "./select-challenges/SelectChallengesTab";
+export { default as OverallRankingTab } from "./overall-ranking/OverallRankingTab";
+export { default as ScoringSimulatorTab } from "./scoring-simulator/ScoringSimulatorTab";

@@ -2,7 +2,7 @@ import React from 'react';
 import { CATEGORIES } from '../../../../utils/constants';
 import { FaTriangleExclamation } from '../../../../utils/icons';
 
-const ChallengeForm = ({ formData, setFormData, fieldErrors }) => {
+const ChallengeForm = ({ formData, setFormData, fieldErrors, titleConflict = null }) => {
   const titleInputRef = React.useRef(null);
   const categorySelectRef = React.useRef(null);
   const pointsInputRef = React.useRef(null);  
@@ -43,8 +43,8 @@ const ChallengeForm = ({ formData, setFormData, fieldErrors }) => {
     return min + (randomSteps * step);
   };
 
-  const getFieldStyle = (fieldName) => ({
-    backgroundColor: fieldErrors[fieldName] ? 'rgba(239, 68, 68, 0.05)' : undefined
+  const getFieldStyle = (fieldName, hasExtraError = false) => ({
+    backgroundColor: (fieldErrors[fieldName] || hasExtraError) ? 'rgba(239, 68, 68, 0.05)' : undefined
   });
 
   const getErrorMessage = (fieldName) => {
@@ -64,23 +64,39 @@ const ChallengeForm = ({ formData, setFormData, fieldErrors }) => {
     ) : null;
   };
 
+  const hasTitleConflict = Boolean(titleConflict);
+  const titleErrorMessage = hasTitleConflict ? (
+    <span style={{ 
+      color: '#ef4444', 
+      fontSize: '12px', 
+      marginTop: '4px', 
+      display: 'flex',
+      alignItems: 'center',
+      gap: '6px',
+      fontWeight: '500'
+    }}>
+      <FaTriangleExclamation size={12} />
+      This title is already used by another challenge.
+    </span>
+  ) : null;
+
   return (
     <div style={{ marginBottom: '20px' }}>
       <div className="form-row">
         <div className="form-group" style={{ flex: '1', minWidth: '200px' }}>
-          <label style={{ fontWeight: '600', color: fieldErrors.title ? '#ef4444' : '#1f2937' }}>
-            Title {fieldErrors.title && '*'} 
+          <label style={{ fontWeight: '600', color: (fieldErrors.title || hasTitleConflict) ? '#ef4444' : '#1f2937' }}>
+            Title {(fieldErrors.title || hasTitleConflict) && '*'} 
           </label>
           <input
             ref={titleInputRef}
             type="text"
-            className={`form-input ${fieldErrors.title ? 'input-error' : ''}`}
+            className={`form-input ${(fieldErrors.title || hasTitleConflict) ? 'input-error' : ''}`}
             placeholder="e.g., SQL Injection Challenge"
             value={formData.title}
             onChange={(e) => setFormData({...formData, title: e.target.value})}
-            style={getFieldStyle('title')}
+            style={getFieldStyle('title', hasTitleConflict)}
           />
-          {getErrorMessage('title')}
+          {getErrorMessage('title') || titleErrorMessage}
         </div>
         <div className="form-group" style={{ flex: '1', minWidth: '200px' }}>
           <label style={{ fontWeight: '600', color: fieldErrors.category_id ? '#ef4444' : '#1f2937' }}>

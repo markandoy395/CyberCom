@@ -24,6 +24,8 @@ import {
   RulesTab,
   PracticeRulesTab,
   SelectChallengesTab,
+  OverallRankingTab,
+  ScoringSimulatorTab,
 } from "./tabs";
 import { PauseDialog } from "../components";
 import CompetitionCreateModal from "../components/modals/CompetitionCreateModal";
@@ -112,18 +114,26 @@ const mapCompetitionSummary = comp => {
     id: comp.id,
     name: comp.name,
     status: normalizedStatus,
+    rawStatus: comp.status,
     participants: currentParticipants,
     currentParticipants,
     totalParticipants,
     teamCount: Number(comp.team_count) || 0,
+    team_count: Number(comp.team_count) || 0,
+    total_member_count: totalParticipants,
+    online_member_count: currentParticipants,
     startDate: comp.start_date,
     endDate: comp.end_date,
+    start_date: comp.start_date,
+    end_date: comp.end_date,
     timeRemaining,
     secondsUntilStart,
     secondsUntilEnd,
     description: comp.description || "",
     maxParticipants,
     challengeCount: Number(comp.challenge_count) || 0,
+    challenge_count: Number(comp.challenge_count) || 0,
+    scoring_settings: comp.scoring_settings || null,
   };
 };
 const normalizeOptionalId = value => {
@@ -596,10 +606,10 @@ export const Admin = () => {
 
         <div className="admin-header">
           <h1 className="admin-title">Admin Control Panel</h1>
-          {[ADMIN_TABS.COMPETITIONS, "competition-challenges", "rankings", "rules"].includes(activeTab) && (
+          {[ADMIN_TABS.COMPETITIONS, "competition-challenges", "scoring-simulator", "rankings", "rules"].includes(activeTab) && (
             <div className="admin-header-right">
-              <button 
-                className="btn-icon btn-secondary" 
+              <button
+                className="btn-icon btn-secondary"
                 title={isCompetitionFullscreen ? "Exit Fullscreen" : "Fullscreen"}
                 onClick={() => setIsCompetitionFullscreen(!isCompetitionFullscreen)}
               >
@@ -630,6 +640,13 @@ export const Admin = () => {
                 />
               )}
               {activeTab === ADMIN_TABS.CHALLENGES && <PracticeChallengesTab />}
+              {activeTab === ADMIN_TABS.SCORING_SIMULATOR && (
+                <ScoringSimulatorTab
+                  competitions={competitions}
+                  selectedCompId={resolvedCompetitionId}
+                  onSelectCompetition={selectCompetition}
+                />
+              )}
               {activeTab === "competition-challenges" && <CompetitionChallengesTab />}
               {activeTab === "team-accounts" && (
                 <UsersTab
@@ -664,6 +681,12 @@ export const Admin = () => {
               )}
               {activeTab === "rules" && <RulesTab />}
               {activeTab === "practiceRules" && <PracticeRulesTab />}
+              {activeTab === "overallCompetitionRankings" && (
+                <OverallRankingTab type="competition" />
+              )}
+              {activeTab === "overallPracticeRankings" && (
+                <OverallRankingTab type="practice" />
+              )}
               {activeTab === "select-challenges" && (
                 <SelectChallengesTab
                   competitions={competitions}
@@ -675,7 +698,7 @@ export const Admin = () => {
         </div>
 
         {modals.pauseDialog && (
-          <PauseDialog 
+          <PauseDialog
             closeModal={closeModal}
             pauseMinutes={pauseMinutes}
             setPauseMinutes={setPauseMinutes}
@@ -686,7 +709,7 @@ export const Admin = () => {
         )}
 
         {modals.createCompetition && (
-          <CompetitionCreateModal 
+          <CompetitionCreateModal
             closeModal={closeModal}
             onCompetitionCreated={() => {
               void refreshAdminDashboard();

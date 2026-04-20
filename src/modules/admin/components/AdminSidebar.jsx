@@ -13,11 +13,15 @@ const SUBMENU_TAB_GROUPS = {
     "competitions-dashboard",
     "select-challenges",
     "team-accounts",
+    "scoring-simulator",
     "rankings",
     "liveMonitor",
   ]),
   rules: new Set(["rules", "practiceRules"]),
+  "overall-rankings": new Set(["overallCompetitionRankings", "overallPracticeRankings"]),
 };
+
+const SIDEBAR_ID = "admin-sidebar-navigation";
 
 // Sidebar Toggle Component
 const SidebarToggle = ({ isCollapsed, onToggle, isHidden = false }) => (
@@ -28,6 +32,7 @@ const SidebarToggle = ({ isCollapsed, onToggle, isHidden = false }) => (
     title={isCollapsed ? "Expand" : "Collapse"}
     aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
     aria-expanded={!isCollapsed}
+    aria-controls={SIDEBAR_ID}
     style={{ display: isHidden ? "none" : "flex" }}
   >
     {isCollapsed ? <FaChevronRight /> : <FaChevronLeft />}
@@ -133,15 +138,11 @@ const AdminSidebar = ({
 
   return (
     <>
-      {/* Sidebar Toggle - Independent Component */}
-      <SidebarToggle 
-        isCollapsed={isCollapsed} 
-        onToggle={handleToggleSidebar}
-        isHidden={isModalOpen}
-      />
-
-      {/* Sidebar */}
-      <aside className={`admin-sidebar ${isCollapsed ? "collapsed" : "expanded"}`}>
+      <div className={`admin-sidebar-group ${isCollapsed ? "collapsed" : "expanded"}`}>
+        <aside
+          id={SIDEBAR_ID}
+          className={`admin-sidebar ${isCollapsed ? "collapsed" : "expanded"}`}
+        >
         {/* Profile Section */}
         <div className="sidebar-profile">
           <div className="profile-avatar">
@@ -158,7 +159,7 @@ const AdminSidebar = ({
           )}
         </div>
 
-        {/* Main Navigation */}
+        {/* Unified Navigation */}
         <nav className="sidebar-nav">
           <div className="nav-section">
             {!isCollapsed && <span key="main-label" className="section-label">MAIN</span>}
@@ -219,41 +220,50 @@ const AdminSidebar = ({
               );
             })}
           </div>
+
+          {/* ── Utility Items (inline) ────────────────── */}
+          <div className="nav-divider" />
+          <div className="nav-section nav-section--utility">
+            {!isCollapsed && <span key="settings-label" className="section-label">SETTINGS</span>}
+            <button
+              className="nav-item"
+              title="Settings"
+            >
+              <span className="nav-icon">
+                <FaGear />
+              </span>
+              {!isCollapsed && <span className="nav-label">Settings</span>}
+            </button>
+            <button
+              className="nav-item"
+              title="Help"
+            >
+              <span className="nav-icon">
+                <FaCircleQuestion />
+              </span>
+              {!isCollapsed && <span className="nav-label">Help</span>}
+            </button>
+            <button
+              className="nav-item nav-item--logout"
+              onClick={handleLogout}
+              title="Logout Account"
+            >
+              <span className="nav-icon">
+                <FaRightFromBracket />
+              </span>
+              {!isCollapsed && <span className="nav-label">Logout Account</span>}
+            </button>
+          </div>
         </nav>
 
-        {/* Settings Section */}
-        <div className="sidebar-footer">
-          {!isCollapsed && <span key="settings-label" className="section-label">SETTINGS</span>}
-          <button
-            className="footer-item"
-            title="Settings"
-          >
-            <span className="footer-icon">
-              <FaGear />
-            </span>
-            {!isCollapsed && <span>Settings</span>}
-          </button>
-          <button
-            className="footer-item"
-            title="Help"
-          >
-            <span className="footer-icon">
-              <FaCircleQuestion />
-            </span>
-            {!isCollapsed && <span>Help</span>}
-          </button>
-          <button
-            className="footer-item logout"
-            onClick={handleLogout}
-            title="Logout Account"
-          >
-            <span className="footer-icon">
-              <FaRightFromBracket />
-            </span>
-            {!isCollapsed && <span>Logout Account</span>}
-          </button>
-        </div>
-      </aside>
+        </aside>
+
+        <SidebarToggle 
+          isCollapsed={isCollapsed} 
+          onToggle={handleToggleSidebar}
+          isHidden={isModalOpen}
+        />
+      </div>
 
       {/* Sidebar Overlay for Mobile */}
       <div

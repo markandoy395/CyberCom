@@ -36,6 +36,13 @@ body.admin-module-active * {
   display: none;
 }
 
+.admin-layout.admin-layout--fullscreen .admin-sidebar-group {
+  position: static;
+  width: 100%;
+  height: auto;
+  pointer-events: auto;
+}
+
 .admin-layout.admin-layout--fullscreen .admin-sidebar {
   width: 100%;
   height: auto;

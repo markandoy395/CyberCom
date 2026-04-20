@@ -9,6 +9,29 @@ const MAX_RESOURCE_PAYLOAD_BYTES = parseInt(process.env.MAX_RESOURCE_PAYLOAD_BYT
 const uploadsDir = path.join(process.cwd(), 'uploads');
 
 export class ChallengeService {
+  static normalizeTitle(value) {
+    return String(value || '').trim().toLowerCase();
+  }
+
+  static async findChallengeByTitle(title, excludeId = null) {
+    const normalizedTitle = this.normalizeTitle(title);
+
+    if (!normalizedTitle) {
+      return null;
+    }
+
+    const rows = await query('SELECT id, title FROM challenges');
+    const decryptedRows = this.decryptChallenges(rows);
+    const normalizedExcludeId = excludeId === null || excludeId === undefined
+      ? null
+      : Number.parseInt(excludeId, 10);
+
+    return decryptedRows.find(row => (
+      this.normalizeTitle(row.title) === normalizedTitle
+      && (normalizedExcludeId === null || Number.parseInt(row.id, 10) !== normalizedExcludeId)
+    )) || null;
+  }
+
   static getUploadMetadata(uploadId) {
     const normalizedUploadId = String(uploadId || '').trim();
 
@@ -314,6 +337,16 @@ export class ChallengeService {
         return { success: false, error: `Missing required fields: ${missing}` };
       }
 
+      const duplicateChallenge = await this.findChallengeByTitle(title);
+
+      if (duplicateChallenge) {
+        return {
+          success: false,
+          error: 'A challenge with this title already exists.',
+          status: 409,
+        };
+      }
+
       const normalizedCategoryId = parseInt(category_id, 10);
 
       if (isNaN(normalizedCategoryId) || normalizedCategoryId < 1) {
@@ -377,6 +410,18 @@ export class ChallengeService {
 
   static async updateChallenge(id, data) {
     try {
+      if (data && data.title !== undefined) {
+        const duplicateChallenge = await this.findChallengeByTitle(data.title, id);
+
+        if (duplicateChallenge) {
+          return {
+            success: false,
+            error: 'A challenge with this title already exists.',
+            status: 409,
+          };
+        }
+      }
+
       // If resources are being updated, validate size before any DB work
       if (data && data.resources !== undefined && data.resources !== null) {
         data.resources = this.normalizeResources(data.resources);

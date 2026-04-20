@@ -1,4 +1,6 @@
 import express from 'express';
+import crypto from 'crypto';
+import multer from 'multer';
 import LiveMonitorService from './LiveMonitorService.js';
 import { isAdmin } from '../routes/admin.js';
 import { requireCompetitionMember } from '../middleware/competitionAuth.js';
@@ -7,6 +9,14 @@ import TeamService from '../services/TeamService.js';
 import { handleRouteError } from '../utils/httpErrors.js';
 
 const router = new express.Router();
+const screenFrameUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 1536 * 1024,
+  },
+});
+const SCREEN_STREAM_TICKET_TTL_MS = 2 * 60 * 1000;
+const screenStreamTickets = new Map();
 const toIntOrNull = value => {
   if (value === undefined || value === null || value === '') {
     return null;
@@ -15,6 +25,55 @@ const toIntOrNull = value => {
   const parsed = parseInt(value, 10);
 
   return Number.isFinite(parsed) ? parsed : null;
+};
+const pruneExpiredScreenStreamTickets = () => {
+  const currentTime = Date.now();
+
+  for (const [token, ticket] of screenStreamTickets.entries()) {
+    if (!ticket || ticket.expiresAt <= currentTime) {
+      screenStreamTickets.delete(token);
+    }
+  }
+};
+const createScreenStreamTicket = ({ adminId, memberId }) => {
+  pruneExpiredScreenStreamTickets();
+
+  const token = crypto.randomBytes(24).toString('hex');
+  const expiresAt = Date.now() + SCREEN_STREAM_TICKET_TTL_MS;
+
+  screenStreamTickets.set(token, {
+    adminId,
+    memberId,
+    expiresAt,
+  });
+
+  return {
+    token,
+    expiresAt: new Date(expiresAt).toISOString(),
+  };
+};
+const isValidScreenStreamTicket = (streamToken, memberId) => {
+  pruneExpiredScreenStreamTickets();
+
+  const normalizedMemberId = toIntOrNull(memberId);
+  const ticket = screenStreamTickets.get(streamToken);
+
+  if (!ticket || !normalizedMemberId) {
+    return false;
+  }
+
+  return ticket.memberId === normalizedMemberId;
+};
+const authorizeScreenShareStream = (req, res, next) => {
+  const streamToken = typeof req.query?.stream_token === 'string'
+    ? req.query.stream_token.trim()
+    : '';
+
+  if (streamToken && isValidScreenStreamTicket(streamToken, req.params.memberId)) {
+    return next();
+  }
+
+  return isAdmin(req, res, next);
 };
 const refreshParticipantPresence = async ({
   memberId,
@@ -50,8 +109,8 @@ router.post('/competition/live-monitor/activity', requireCompetitionMember, asyn
 
     const result = await LiveMonitorService.recordClientActivity({
       memberId: req.competitionMemberId,
-      teamId: req.body.teamId,
-      competitionId: req.body.competitionId,
+      teamId: req.competitionSessionTeamId,
+      competitionId: req.competitionSessionCompetitionId,
       currentChallengeId: req.body.currentChallengeId,
       eventChallengeId: req.body.eventChallengeId,
       clientEventType: req.body.clientEventType,
@@ -89,15 +148,15 @@ router.post('/competition/live-monitor/screen-share/start', requireCompetitionMe
   try {
     const result = ScreenShareService.startSession({
       memberId: req.competitionMemberId,
-      teamId: req.body.teamId,
-      competitionId: req.body.competitionId,
+      teamId: req.competitionSessionTeamId,
+      competitionId: req.competitionSessionCompetitionId,
       displaySurface: req.body.displaySurface,
       sourceLabel: req.body.sourceLabel,
     });
     await refreshParticipantPresence({
       memberId: req.competitionMemberId,
-      teamId: req.body.teamId,
-      competitionId: req.body.competitionId,
+      teamId: req.competitionSessionTeamId,
+      competitionId: req.competitionSessionCompetitionId,
     });
 
     return res.json({ success: true, data: result });
@@ -106,24 +165,29 @@ router.post('/competition/live-monitor/screen-share/start', requireCompetitionMe
   }
 });
 
-router.post('/competition/live-monitor/screen-share/frame', requireCompetitionMember, async (req, res) => {
+router.post(
+  '/competition/live-monitor/screen-share/frame',
+  requireCompetitionMember,
+  screenFrameUpload.single('frame'),
+  async (req, res) => {
   try {
     const snapshot = ScreenShareService.recordFrame({
       memberId: req.competitionMemberId,
-      teamId: req.body.teamId,
-      competitionId: req.body.competitionId,
+      teamId: req.competitionSessionTeamId,
+      competitionId: req.competitionSessionCompetitionId,
       capturedAt: req.body.capturedAt,
       displaySurface: req.body.displaySurface,
       sourceLabel: req.body.sourceLabel,
       width: req.body.width,
       height: req.body.height,
-      mimeType: req.body.mimeType,
+      mimeType: req.file?.mimetype || req.body.mimeType,
+      imageBuffer: req.file?.buffer || null,
       imageDataUrl: req.body.imageDataUrl,
     });
     await refreshParticipantPresence({
       memberId: req.competitionMemberId,
-      teamId: req.body.teamId,
-      competitionId: req.body.competitionId,
+      teamId: req.competitionSessionTeamId,
+      competitionId: req.competitionSessionCompetitionId,
     });
 
     return res.json({
@@ -135,6 +199,44 @@ router.post('/competition/live-monitor/screen-share/frame', requireCompetitionMe
   } catch (error) {
     return res.status(400).json({ success: false, error: error.message });
   }
+});
+
+router.get('/admin/live-monitor/screen-share-stream/:memberId/ticket', isAdmin, (req, res) => {
+  const memberId = toIntOrNull(req.params.memberId);
+
+  if (!memberId) {
+    return res.status(400).json({ success: false, error: 'Invalid memberId' });
+  }
+
+  const ticket = createScreenStreamTicket({
+    adminId: req.adminId || null,
+    memberId,
+  });
+
+  return res.json({
+    success: true,
+    data: {
+      streamToken: ticket.token,
+      expiresAt: ticket.expiresAt,
+    },
+  });
+});
+
+router.get('/admin/live-monitor/screen-share-stream/:memberId', authorizeScreenShareStream, (req, res) => {
+  const streamResult = ScreenShareService.openStream(req.params.memberId, res);
+
+  if (!streamResult.success) {
+    return res.status(404).json({ success: false, error: streamResult.error });
+  }
+
+  const cleanup = () => {
+    streamResult.cleanup?.();
+  };
+
+  req.on('close', cleanup);
+  req.on('aborted', cleanup);
+
+  return undefined;
 });
 
 router.post('/competition/live-monitor/screen-share/stop', requireCompetitionMember, async (req, res) => {
@@ -152,7 +254,9 @@ router.post('/competition/live-monitor/screen-share/stop', requireCompetitionMem
 
 router.get('/admin/live-monitor/screen-share/:memberId', isAdmin, async (req, res) => {
   try {
-    const snapshot = ScreenShareService.getSnapshot(req.params.memberId);
+    const snapshot = ScreenShareService.getSnapshot(req.params.memberId, {
+      includeImageDataUrl: req.query.include_image !== '0',
+    });
 
     if (!snapshot) {
       return res.status(404).json({ success: false, error: 'Participant is not sharing their screen' });

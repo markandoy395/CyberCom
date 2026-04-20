@@ -1,7 +1,9 @@
 import { BiTrophy } from "../../../../utils/icons";
+import { getCompetitionSessionToken } from "../../../../utils/api";
 import "./CompetitionTopBar.css";
 
 const CompetitionTopBar = ({ data, onExit, isSystemLocked = false }) => {
+  const terminalLaunchEnabled = import.meta.env.VITE_ENABLE_LOCAL_TERMINAL_LAUNCH === "true";
   const normalizedCompetitionStatus = typeof data?.competitionStatus === "string"
     ? data.competitionStatus.trim().toLowerCase()
     : "";
@@ -13,10 +15,12 @@ const CompetitionTopBar = ({ data, onExit, isSystemLocked = false }) => {
 
   const handleOpenGitBash = async () => {
     try {
+      const competitionToken = getCompetitionSessionToken();
       const response = await fetch("/api/open-powershell", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          ...(competitionToken ? { "x-competition-token": competitionToken } : {}),
         },
       });
       const result = await response.json();
@@ -62,16 +66,18 @@ const CompetitionTopBar = ({ data, onExit, isSystemLocked = false }) => {
         </div>
 
         <div className="topbar-right">
-          <button
-            type="button"
-            className="powershell-button"
-            onClick={handleOpenGitBash}
-            title="Open Git Bash Terminal"
-            disabled={isSystemLocked}
-          >
-            <span style={{ marginRight: "6px", fontSize: "16px" }}>{">_"}</span>
-            <span>Git Bash</span>
-          </button>
+          {terminalLaunchEnabled && (
+            <button
+              type="button"
+              className="powershell-button"
+              onClick={handleOpenGitBash}
+              title="Open Git Bash Terminal"
+              disabled={isSystemLocked}
+            >
+              <span style={{ marginRight: "6px", fontSize: "16px" }}>{">_"}</span>
+              <span>Git Bash</span>
+            </button>
+          )}
           <button type="button" className="exit-button" onClick={onExit}>
             <span>Exit</span>
           </button>

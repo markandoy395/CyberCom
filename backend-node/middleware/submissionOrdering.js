@@ -14,6 +14,19 @@ const getNextSubmissionSequence = () => {
 
   return nextSubmissionSequence;
 };
+const getSubmissionLockDetails = scope => {
+  if (scope.competitionId) {
+    return {
+      key: `competition:${scope.competitionId}:challenge:${scope.challengeId}`,
+      scope: 'competition-challenge',
+    };
+  }
+
+  return {
+    key: `${scope.competitionId ?? 'practice'}:${scope.teamId}:${scope.challengeId}`,
+    scope: 'team-challenge',
+  };
+};
 
 const resolveSubmissionScope = req => {
   const teamId = req.competitionMemberId
@@ -42,7 +55,10 @@ export const serializeSubmissionByChallenge = async (req, res, next) => {
     return next();
   }
 
-  const lockKey = `${scope.competitionId ?? 'practice'}:${scope.teamId}:${scope.challengeId}`;
+  const {
+    key: lockKey,
+    scope: lockScope,
+  } = getSubmissionLockDetails(scope);
   const previousLock = activeSubmissionLocks.get(lockKey) || null;
   let releaseCurrentLock = () => {};
   const currentLock = new Promise(resolve => {
@@ -53,6 +69,7 @@ export const serializeSubmissionByChallenge = async (req, res, next) => {
 
   const ordering = {
     key: lockKey,
+    scope: lockScope,
     sequence: getNextSubmissionSequence(),
     receivedAt: new Date().toISOString(),
     waitedForLock: Boolean(previousLock),

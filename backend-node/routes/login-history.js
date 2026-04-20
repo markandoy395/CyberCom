@@ -1,4 +1,5 @@
 import express from 'express';
+import { isAdmin } from './admin.js';
 import DeviceTracker from '../services/DeviceTracker.js';
 import { query } from '../config/database.js';
 import { handleRouteError, sendServiceResult } from '../utils/httpErrors.js';
@@ -9,7 +10,7 @@ const router = new express.Router();
  * GET /api/admin/login-history
  * Get all login history (admin only)
  */
-router.get('/login-history', async (req, res) => {
+router.get('/login-history', isAdmin, async (req, res) => {
   try {
     const limit = parseInt(req.query.limit, 10) || 100;
     const results = await query(
@@ -32,7 +33,7 @@ router.get('/login-history', async (req, res) => {
  * GET /api/admin/login-history/:memberId
  * Get login history for a specific member
  */
-router.get('/login-history/:memberId', async (req, res) => {
+router.get('/login-history/:memberId', isAdmin, async (req, res) => {
   try {
     const { memberId } = req.params;
     const limit = parseInt(req.query.limit, 10) || 50;
@@ -53,7 +54,7 @@ router.get('/login-history/:memberId', async (req, res) => {
  * GET /api/admin/active-sessions/:memberId
  * Get currently active sessions for a member
  */
-router.get('/active-sessions/:memberId', async (req, res) => {
+router.get('/active-sessions/:memberId', isAdmin, async (req, res) => {
   try {
     const { memberId } = req.params;
 
@@ -72,7 +73,7 @@ router.get('/active-sessions/:memberId', async (req, res) => {
  * POST /api/admin/terminate-session/:sessionId
  * Force logout a user from a specific device/session
  */
-router.post('/terminate-session/:sessionId', async (req, res) => {
+router.post('/terminate-session/:sessionId', isAdmin, async (req, res) => {
   try {
     const { sessionId } = req.params;
 
@@ -95,7 +96,7 @@ router.post('/terminate-session/:sessionId', async (req, res) => {
  * POST /api/admin/check-multiple-logins/:memberId
  * Check if a member has active sessions on multiple devices
  */
-router.post('/check-multiple-logins/:memberId', async (req, res) => {
+router.post('/check-multiple-logins/:memberId', isAdmin, async (req, res) => {
   try {
     const { memberId } = req.params;
     const { currentDeviceFingerprint, currentDeviceInfo, competitionId } = req.body;

@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import { query } from '../config/database.js';
+import { getConnection, query } from '../config/database.js';
 import LiveMonitorService from '../live-monitor/LiveMonitorService.js';
 import DeviceTracker from './DeviceTracker.js';
 import ScreenShareService from './ScreenShareService.js';
@@ -22,10 +22,86 @@ const fail = (error, duplicateMessage = null) => ({
   error: error.code === 'ER_DUP_ENTRY' && duplicateMessage ? duplicateMessage : error.message,
 });
 const text = value => String(value ?? '').trim();
+const lowerText = value => text(value).toLowerCase();
 const intOrNull = value => (
   value === undefined || value === null || value === '' ? null : parseInt(value, 10)
 );
 const PRESENCE_LAST_SEEN_SQL = 'COALESCE(last_seen_at, last_login)';
+const createConnectionQuery = connection => async (sql, params = []) => {
+  const [result] = await connection.execute(sql, params);
+
+  return result;
+};
+const hasMemberInput = member => ['username', 'name', 'email', 'password']
+  .some(field => text(member?.[field]));
+const normalizeTeamMemberDraft = (member, index) => ({
+  rowNumber: index + 1,
+  username: text(member?.username),
+  name: text(member?.name),
+  email: text(member?.email),
+  password: String(member?.password || ''),
+  role: text(member?.role || 'member') || 'member',
+});
+const validateTeamMembers = members => {
+  if (!Array.isArray(members)) {
+    return invalid('At least one member is required');
+  }
+
+  const preparedMembers = members
+    .map((member, index) => (
+      hasMemberInput(member)
+        ? normalizeTeamMemberDraft(member, index)
+        : null
+    ))
+    .filter(Boolean);
+
+  if (!preparedMembers.length) {
+    return invalid('At least one member is required');
+  }
+
+  const seenUsernames = new Map();
+  const seenEmails = new Map();
+
+  for (const member of preparedMembers) {
+    if (!member.username) {
+      return invalid(`Member ${member.rowNumber}: Username is required`);
+    }
+
+    if (!member.name) {
+      return invalid(`Member ${member.rowNumber}: Full name is required`);
+    }
+
+    if (!member.email) {
+      return invalid(`Member ${member.rowNumber}: Email is required`);
+    }
+
+    if (!member.password) {
+      return invalid(`Member ${member.rowNumber}: Password is required`);
+    }
+
+    const normalizedUsername = lowerText(member.username);
+
+    if (seenUsernames.has(normalizedUsername)) {
+      return invalid(
+        `Member ${member.rowNumber}: Username "${member.username}" is already used in this team form`
+      );
+    }
+
+    seenUsernames.set(normalizedUsername, member.rowNumber);
+
+    const normalizedEmail = lowerText(member.email);
+
+    if (seenEmails.has(normalizedEmail)) {
+      return invalid(
+        `Member ${member.rowNumber}: Email "${member.email}" is already used in this team form`
+      );
+    }
+
+    seenEmails.set(normalizedEmail, member.rowNumber);
+  }
+
+  return ok({ members: preparedMembers });
+};
 const getPresenceTimeoutMs = () => {
   const configured = parseInt(
     process.env.COMPETITION_PRESENCE_TIMEOUT_MS
@@ -246,7 +322,7 @@ export class TeamService {
     } catch (error) { return fail(error); }
   }
 
-  static async createTeam(data) {
+  static async createTeam(data, queryFn = query) {
     try {
       if (!data) {
         return invalid('Team data is required');
@@ -260,7 +336,7 @@ export class TeamService {
         return invalid('Team name is required');
       }
 
-      const result = await query(
+      const result = await queryFn(
         'INSERT INTO teams (name, max_members, competition_id) VALUES (?, ?, ?)',
         [name, max_members, competition_id]
       );
@@ -269,7 +345,7 @@ export class TeamService {
     } catch (error) { return fail(error, 'Team name already exists'); }
   }
 
-  static async createTeamMember(data) {
+  static async createTeamMember(data, queryFn = query) {
     try {
       if (!data) {
         return invalid('Member data is required');
@@ -287,13 +363,112 @@ export class TeamService {
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
-      const result = await query(
+      const result = await queryFn(
         'INSERT INTO team_members (username, name, email, password, team_id, role) VALUES (?, ?, ?, ?, ?, ?)',
         [username, name, email, hashedPassword, team_id, role]
       );
 
       return ok({ member: { id: result.insertId, username, name, email, team_id, role } });
     } catch (error) { return fail(error, 'Username or email already exists'); }
+  }
+
+  static async createTeamWithMembers(data) {
+    let connection = null;
+    let transactionStarted = false;
+
+    try {
+      if (!data) {
+        return invalid('Team data is required');
+      }
+
+      const name = text(data.name);
+
+      if (!name) {
+        return invalid('Team name is required');
+      }
+
+      const membersValidation = validateTeamMembers(data.members);
+
+      if (!membersValidation.success) {
+        return membersValidation;
+      }
+
+      const preparedMembers = membersValidation.members;
+      const max_members = Math.min(preparedMembers.length, 10);
+      const competition_id = intOrNull(data.competition_id);
+
+      connection = await getConnection();
+      const queryFn = createConnectionQuery(connection);
+
+      await connection.beginTransaction();
+      transactionStarted = true;
+
+      const teamResult = await this.createTeam(
+        {
+          name,
+          max_members,
+          competition_id,
+        },
+        queryFn
+      );
+
+      if (!teamResult.success) {
+        await connection.rollback();
+        transactionStarted = false;
+
+        return teamResult;
+      }
+
+      const createdMembers = [];
+
+      for (const member of preparedMembers) {
+        const memberResult = await this.createTeamMember(
+          {
+            ...member,
+            team_id: teamResult.team.id,
+          },
+          queryFn
+        );
+
+        if (!memberResult.success) {
+          await connection.rollback();
+          transactionStarted = false;
+
+          return invalid(
+            `Member ${member.rowNumber} (${member.username}): ${memberResult.error}`
+          );
+        }
+
+        createdMembers.push(memberResult.member);
+      }
+
+      await connection.commit();
+      transactionStarted = false;
+
+      const message = `Team created with ${createdMembers.length} member${createdMembers.length === 1 ? '' : 's'}`;
+
+      return ok({
+        message,
+        data: {
+          teamId: teamResult.team.id,
+          teamName: teamResult.team.name,
+          membersCount: createdMembers.length,
+          members: createdMembers,
+        },
+      });
+    } catch (error) {
+      if (transactionStarted && connection) {
+        try {
+          await connection.rollback();
+        } catch {
+          // Keep the original error when rollback fails.
+        }
+      }
+
+      return fail(error);
+    } finally {
+      connection?.release();
+    }
   }
 
   static async updateTeam(id, data) {

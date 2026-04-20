@@ -62,12 +62,6 @@ const START_VALIDATION_RULES = [
     validate: ({ teams }) => teams.length > 0,
   },
   {
-    id: 'descriptionPresent',
-    label: 'Description added',
-    level: 'recommended',
-    validate: ({ competition }) => Boolean(competition?.description?.trim()),
-  },
-  {
     id: 'maxParticipantsSet',
     label: 'Max participants set',
     level: 'recommended',
@@ -97,7 +91,6 @@ class CompetitionStartValidationService {
       id: competitionRow.id,
       startDate: competitionRow.start_date,
       endDate: competitionRow.end_date,
-      description: competitionRow.description || '',
       maxParticipants: Number(competitionRow.max_participants) || 0,
       status: competitionRow.status || null,
     };
@@ -110,17 +103,26 @@ class CompetitionStartValidationService {
       level: rule.level,
       passed: rule.validate({ competition, challenges, teams }),
     }));
+    const requiredItems = items.filter(item => item.level === 'required');
+    const recommendedItems = items.filter(item => item.level === 'recommended');
+    const failedItems = items.filter(item => !item.passed);
+    const requiredFailedItems = requiredItems.filter(item => !item.passed);
+    const recommendedFailedItems = recommendedItems.filter(item => !item.passed);
+    const startReady = requiredFailedItems.length === 0;
 
     return {
       items,
-      startReady: items.every(item => item.passed),
-      failedItems: items.filter(item => !item.passed),
+      startReady,
+      requiredReady: startReady,
+      failedItems,
+      requiredFailedItems,
+      recommendedFailedItems,
     };
   }
 
   static async getValidation(competitionId, queryFn = query) {
     const competitionRows = await queryFn(
-      'SELECT id, status, start_date, end_date, description, max_participants FROM competitions WHERE id = ?',
+      'SELECT id, status, start_date, end_date, max_participants FROM competitions WHERE id = ?',
       [competitionId]
     );
     const [competitionRow] = competitionRows;
@@ -177,9 +179,13 @@ class CompetitionStartValidationService {
     }
 
     if (!result.validation.startReady) {
+      const blockingItems = result.validation.requiredFailedItems.length > 0
+        ? result.validation.requiredFailedItems
+        : result.validation.failedItems;
+
       return {
         success: false,
-        error: `Competition cannot be started until all pre-competition validation items pass. Missing: ${result.validation.failedItems.map(item => item.label).join(', ')}`,
+        error: `Competition cannot be started until all required pre-competition validation items pass. Missing: ${blockingItems.map(item => item.label).join(', ')}`,
         validation: result.validation,
       };
     }

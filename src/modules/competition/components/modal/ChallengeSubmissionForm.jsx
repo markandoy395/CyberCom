@@ -1,5 +1,6 @@
 import { memo } from "react";
 import { FaCircleCheck, FaCircleXmark, BiFlag, BiHelpCircle } from "../../../../utils/icons";
+import ActionButton from "../../../../common/ActionButton";
 
 const ChallengeSubmissionForm = memo(({
   flag,
@@ -49,20 +50,17 @@ const ChallengeSubmissionForm = memo(({
             <div className="attempt-reminder" title={`Team attempts: ${attempts}/${maxAttempts}`}>
               <BiHelpCircle className="attempt-icon" />
             </div>
-            <button
+            <ActionButton
               type="submit"
               className="btn btn-primary"
-              disabled={!flag || submitting || resultSuccess}
+              variant="custom"
+              size="custom"
+              isLoading={submitting}
+              loadingText="Checking"
+              disabled={!flag || resultSuccess}
             >
-              {submitting ? (
-                <>
-                  <span className="loading-spinner"></span>
-                  Checking
-                </>
-              ) : (
-                "Submit"
-              )}
-            </button>
+              Submit
+            </ActionButton>
           </div>
           <p className="attempts-info">
             Team attempts: <span className={attempts >= maxAttempts * 0.8 ? "text-warning" : ""}>

@@ -8,6 +8,8 @@ import { ChallengeForm, ResourceUploader, ChallengesFilters, ChallengesList, use
 import { FaPlus, FaPencil } from '../../../../utils/icons';
 import './CompetitionChallengeUploader.css';
 
+const normalizeTitle = value => String(value || '').trim().toLowerCase();
+
 const CompetitionChallengeUploader = () => {
   const [challenges, setChallenges] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -52,11 +54,12 @@ const CompetitionChallengeUploader = () => {
     return (
       formData.title !== defaultValues.title ||
       formData.category_id !== defaultValues.category_id ||
+      formData.difficulty !== defaultValues.difficulty ||
       formData.points !== defaultValues.points ||
       formData.description !== defaultValues.description ||
       formData.flag !== defaultValues.flag ||
       (Array.isArray(formData.resources) && formData.resources.length > 0) ||
-      (formData.hints && formData.hints.some(h => h.trim()))
+      (Array.isArray(formData.hints) && formData.hints.some(h => String(h || '').trim()))
     );
   }, [formData]);
 
@@ -91,21 +94,21 @@ const CompetitionChallengeUploader = () => {
       }
     };
 
-    const scrollY = window.scrollY;
+    const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
+
+    document.body.classList.add('modal-active');
+    document.documentElement.style.overflow = 'hidden';
     document.body.style.overflow = "hidden";
-    document.body.style.position = "fixed";
-    document.body.style.width = "100%";
-    document.body.style.top = `-${scrollY}px`;
+    document.body.style.paddingRight = scrollBarWidth > 0 ? `${scrollBarWidth}px` : '';
 
     window.addEventListener("keydown", handleEsc);
 
     return () => {
-      document.body.style.overflow = "auto";
-      document.body.style.position = "static";
-      document.body.style.width = "auto";
-      document.body.style.top = "auto";
+      document.body.classList.remove('modal-active');
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = "";
+      document.body.style.paddingRight = '';
       window.removeEventListener("keydown", handleEsc);
-      window.scrollTo(0, scrollY);
     };
   }, [showForm, handleCloseForm]);
 
@@ -114,6 +117,19 @@ const CompetitionChallengeUploader = () => {
       handleCloseForm();
     }
   };
+
+  const duplicateTitleChallenge = useMemo(() => {
+    const normalizedTitle = normalizeTitle(formData.title);
+
+    if (!normalizedTitle) {
+      return null;
+    }
+
+    return challenges.find(challenge => (
+      challenge.id !== editingId
+      && normalizeTitle(challenge.title) === normalizedTitle
+    )) || null;
+  }, [challenges, editingId, formData.title]);
 
   const fetchChallenges = useCallback(async () => {
     try {
@@ -137,18 +153,25 @@ const CompetitionChallengeUploader = () => {
     // Prevent multiple submissions
     if (loading) return;
 
-    if (!validateForm()) {
+    const validationErrors = validateForm();
+
+    if (Object.keys(validationErrors).length > 0) {
       // Build error message for specific empty fields
       const errorFields = [];
-      if (fieldErrors.title) errorFields.push('Title');
-      if (fieldErrors.category_id) errorFields.push('Category');
-      if (fieldErrors.points) errorFields.push('Points');
-      if (fieldErrors.flag) errorFields.push('Flag');
-      if (fieldErrors.description) errorFields.push('Description');
-      if (fieldErrors.resources) errorFields.push('Resources');
+      if (validationErrors.title) errorFields.push('Title');
+      if (validationErrors.category_id) errorFields.push('Category');
+      if (validationErrors.difficulty) errorFields.push('Difficulty');
+      if (validationErrors.points) errorFields.push('Points');
+      if (validationErrors.flag) errorFields.push('Flag');
+      if (validationErrors.description) errorFields.push('Description');
 
       const errorMsg = `Please fill in: ${errorFields.join(', ')}`;
       showResult(errorMsg, false);
+      return;
+    }
+
+    if (duplicateTitleChallenge) {
+      showResult('A challenge with this title already exists. Please use a different title.', false);
       return;
     }
 
@@ -178,22 +201,6 @@ const CompetitionChallengeUploader = () => {
         hints: Array.isArray(formData.hints) ? formData.hints.filter(h => h.trim()) : [],
         resources: Array.isArray(formData.resources) ? formData.resources : []
       };
-
-      // Check for duplicates only when creating new challenges
-      if (!editingId) {
-        const isDuplicate = challenges.some(challenge => 
-          challenge.title.toLowerCase().trim() === payload.title.toLowerCase().trim() &&
-          challenge.category_id === payload.category_id &&
-          challenge.description.toLowerCase().trim() === payload.description.toLowerCase().trim() &&
-          challenge.difficulty === payload.difficulty
-        );
-
-        if (isDuplicate) {
-          showResult('A challenge with the same title, category, description, and difficulty level already exists.', false);
-          setLoading(false);
-          return;
-        }
-      }
 
       const url = editingId ? `/challenges/${editingId}` : `/challenges`;
       const method = editingId ? 'PUT' : 'POST';
@@ -290,29 +297,23 @@ const CompetitionChallengeUploader = () => {
     }}>
       <NotificationModal notification={notification} onDismiss={handleDismissNotification} duration={3000} />
 
-      <div className="uploader-header" style={{ display: 'flex', flexDirection: 'column', gap: '16px', flexShrink: 0, padding: '0' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px' }}>
+      <div className="uploader-header">
+        <div className="uploader-header-top">
           <h2 className="uploader-title">CyberCom Challenges</h2>
-          <button className="btn btn-primary" onClick={() => { resetForm(); setEditingId(null); setShowForm(!showForm); }}>
+          <button
+            className="btn btn-primary uploader-header-action"
+            onClick={() => { resetForm(); setEditingId(null); setShowForm(!showForm); }}
+          >
             {showForm ? 'Cancel' : '+ Create Challenge'}
           </button>
         </div>
-        <div style={{ padding: '0 16px 16px 16px' }}>
+        <div className="uploader-header-search">
           <input
+            className="uploader-search-input"
             type="text"
             placeholder="Search challenges..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            style={{
-              padding: '8px 12px',
-              borderRadius: '6px',
-              border: '1px solid #d1d5db',
-              fontSize: '14px',
-              width: '100%',
-              maxWidth: '400px',
-              fontFamily: 'inherit',
-              boxSizing: 'border-box',
-            }}
           />
         </div>
       </div>
@@ -331,14 +332,7 @@ const CompetitionChallengeUploader = () => {
             <div style={{ padding: '24px', color: '#666' }}>
               <p>You have unsaved changes. Do you want to discard them?</p>
             </div>
-            <div style={{
-              padding: '24px',
-              borderTop: '1px solid #e5e7eb',
-              display: 'flex',
-              gap: '12px',
-              justifyContent: 'flex-end',
-              backgroundColor: '#f9fafb'
-            }}>
+            <div className="challenge-form-modal-footer">
               <button 
                 className="btn btn-ghost" 
                 onClick={() => setShowConfirmation(false)}
@@ -364,37 +358,16 @@ const CompetitionChallengeUploader = () => {
       )}
 
       {showForm && ReactDOM.createPortal(
-        <div className="challenge-detail-modal-backdrop" onClick={handleBackdropClick} style={{ zIndex: 10000 }}>
-          <div className="challenge-detail-modal" style={{ maxWidth: '900px' }}>
+        <div className="challenge-detail-modal-backdrop challenge-form-modal-backdrop" onClick={handleBackdropClick} style={{ zIndex: 10000 }}>
+          <div className="challenge-detail-modal challenge-form-modal">
             {/* Modal Header */}
-            <div style={{
-              padding: '24px',
-              borderBottom: '1px solid #e5e7eb',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center'
-            }}>
-              <h3 style={{ margin: 0, fontSize: '20px', fontWeight: '600', color: '#1f2937' }}>
+            <div className="challenge-form-modal-header">
+              <h3 className="challenge-form-modal-title">
                 {editingId ? 'Edit Challenge' : 'Create New Challenge'}
               </h3>
               <button
+                className="challenge-form-modal-close"
                 onClick={handleCloseForm}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  fontSize: '28px',
-                  cursor: 'pointer',
-                  color: '#999',
-                  padding: '0',
-                  width: '32px',
-                  height: '32px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  transition: 'color 0.2s ease'
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.color = '#1f2937'}
-                onMouseLeave={(e) => e.currentTarget.style.color = '#999'}
                 title="Close modal (ESC)"
               >
                 ×
@@ -402,18 +375,15 @@ const CompetitionChallengeUploader = () => {
             </div>
 
             {/* Modal Body - Scrollable */}
-            <div style={{
-              padding: '24px',
-              overflowY: 'auto',
-              flex: 1
-            }}>
+            <div className="challenge-form-modal-body">
               <ChallengeForm 
                 formData={formData} 
                 setFormData={setFormData} 
                 fieldErrors={fieldErrors}
+                titleConflict={duplicateTitleChallenge}
               />
-              <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid #e5e7eb' }}>
-                <h4 style={{ margin: '0 0 8px 0', fontSize: '14px', fontWeight: '600', color: '#1f2937' }}>
+              <div className="challenge-form-resources">
+                <h4 className="challenge-form-resources-title">
                   Resources
                 </h4>
                 <ResourceUploader 
@@ -424,14 +394,7 @@ const CompetitionChallengeUploader = () => {
             </div>
 
             {/* Modal Footer */}
-            <div style={{
-              padding: '24px',
-              borderTop: '1px solid #e5e7eb',
-              display: 'flex',
-              gap: '12px',
-              justifyContent: 'flex-end',
-              backgroundColor: '#f9fafb'
-            }}>
+            <div className="challenge-form-modal-footer">
               <button 
                 className="btn btn-ghost" 
                 onClick={handleCloseForm}
@@ -445,6 +408,7 @@ const CompetitionChallengeUploader = () => {
                 icon={editingId ? FaPencil : FaPlus}
                 variant={editingId ? 'primary' : 'success'}
                 loadingText={editingId ? 'Updating...' : 'Creating...'}
+                disabled={Boolean(duplicateTitleChallenge)}
                 size="md"
               >
                 {editingId ? 'Update Challenge' : 'Create Challenge'}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import {
   FiAlertTriangle,
@@ -14,6 +14,11 @@ import {
   formatSnapshotTime,
   getSnapshotAspectRatio,
 } from "../utils/liveMonitorUtils";
+import {
+  API_BASE_URL,
+  API_ENDPOINTS,
+  apiGet,
+} from "../../../../utils/api";
 
 const ActivityHistoryPanel = ({ history, loading, error }) => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -140,6 +145,58 @@ const ScreenViewerModal = ({
   historyError,
   onClose,
 }) => {
+  const [failedStreamKey, setFailedStreamKey] = useState("");
+  const [streamUrl, setStreamUrl] = useState("");
+  const streamKey = `${participant?.teamMemberId || ""}:${snapshot?.startedAt || ""}:${snapshot?.lastFrameAt || ""}`;
+  const streamFailed = failedStreamKey === streamKey;
+
+  useEffect(() => {
+    let disposed = false;
+
+    const loadStreamUrl = async () => {
+      if (!participant?.teamMemberId) {
+        setStreamUrl("");
+        return;
+      }
+
+      try {
+        const response = await apiGet(
+          API_ENDPOINTS.ADMIN_LIVE_MONITOR_SCREEN_SHARE_STREAM_TICKET(participant.teamMemberId),
+          { cache: "no-store" }
+        );
+        const streamToken = response?.data?.streamToken;
+
+        if (!streamToken || disposed) {
+          if (!disposed) {
+            setStreamUrl("");
+          }
+          return;
+        }
+
+        const params = new URLSearchParams({
+          stream_token: streamToken,
+          stream_key: snapshot?.startedAt || snapshot?.lastFrameAt || String(Date.now()),
+        });
+
+        setStreamUrl(
+          `${API_BASE_URL}${API_ENDPOINTS.ADMIN_LIVE_MONITOR_SCREEN_SHARE_STREAM(
+            participant.teamMemberId
+          )}?${params.toString()}`
+        );
+      } catch {
+        if (!disposed) {
+          setStreamUrl("");
+        }
+      }
+    };
+
+    void loadStreamUrl();
+
+    return () => {
+      disposed = true;
+    };
+  }, [participant?.teamMemberId, snapshot?.lastFrameAt, snapshot?.startedAt]);
+
   if (!participant) {
     return null;
   }
@@ -205,7 +262,19 @@ const ScreenViewerModal = ({
 
           <div className="screen-viewer-layout">
             <section className="screen-viewer-main">
-              {snapshot?.imageDataUrl ? (
+              {!streamFailed && participant.isScreenSharing && streamUrl ? (
+                <div
+                  className="screen-viewer-frame"
+                  style={{ "--snapshot-aspect-ratio": getSnapshotAspectRatio(snapshot) }}
+                >
+                  <img
+                    key={streamUrl}
+                    src={streamUrl}
+                    alt={`Live screen stream for ${participant.username}`}
+                    onError={() => setFailedStreamKey(streamKey)}
+                  />
+                </div>
+              ) : snapshot?.imageDataUrl ? (
                 <div
                   className="screen-viewer-frame"
                   style={{ "--snapshot-aspect-ratio": getSnapshotAspectRatio(snapshot) }}

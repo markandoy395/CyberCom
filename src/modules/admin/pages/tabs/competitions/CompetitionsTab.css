@@ -569,3 +569,298 @@
     gap: 12px;
   }
 }
+
+/* ═══════════════════════════════════════════════════════
+   All Competitions — Sortable List
+   ═══════════════════════════════════════════════════════ */
+
+/* ── Section Container ── */
+.cl-section {
+  margin-top: 32px;
+}
+
+.cl-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.cl-section-title-group {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.cl-section-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(0, 212, 255, 0.1));
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  color: #818cf8;
+  font-size: 18px;
+  transition: all 0.3s ease;
+}
+
+.cl-section-icon:hover {
+  transform: scale(1.1) rotate(6deg);
+}
+
+.cl-section-title {
+  margin: 0 0 2px 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary, #e2e8f0);
+  letter-spacing: -0.2px;
+}
+
+.cl-section-sub {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-muted, #64748b);
+}
+
+/* ── Table Wrap ── */
+.cl-table-wrap {
+  background: linear-gradient(135deg, var(--card-bg, #1e293b) 0%, rgba(99, 102, 241, 0.02) 100%);
+  border: 1px solid var(--border-color, #334155);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+/* ── Table Header ── */
+.cl-table-header {
+  display: grid;
+  grid-template-columns: 1.4fr 100px 70px 100px 90px 100px 100px;
+  padding: 0 20px;
+  background: var(--elevated-surface, #0f172a);
+  border-bottom: 2px solid var(--border-color, #334155);
+}
+
+/* ── Sortable Header Button ── */
+.cl-sort-header {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 10px 0;
+  background: transparent;
+  border: none;
+  color: var(--text-muted, #64748b);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.cl-sort-header:hover {
+  color: var(--text-primary, #e2e8f0);
+}
+
+.cl-sort-header.cl-sort-active {
+  color: var(--primary-accent, #00d4ff);
+}
+
+.cl-sort-arrow {
+  display: inline-flex;
+  align-items: center;
+  font-size: 10px;
+  color: var(--primary-accent, #00d4ff);
+  animation: clSortBounce 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes clSortBounce {
+  0%   { transform: translateY(3px); opacity: 0; }
+  100% { transform: translateY(0);   opacity: 1; }
+}
+
+/* ── Sort Reset Button ── */
+.cl-sort-reset {
+  padding: 5px 14px;
+  background: rgba(0, 212, 255, 0.08);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: 8px;
+  color: var(--primary-accent, #00d4ff);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.cl-sort-reset:hover {
+  background: rgba(0, 212, 255, 0.15);
+  border-color: rgba(0, 212, 255, 0.4);
+}
+
+/* ── Table Body ── */
+.cl-table-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.cl-row {
+  display: grid;
+  grid-template-columns: 1.4fr 100px 70px 100px 90px 100px 100px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border-color, #334155);
+  align-items: center;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  animation: clSlideIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+.cl-row::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, #6366f1, #818cf8);
+  transform: scaleY(0);
+  transform-origin: center;
+  transition: transform 0.25s ease;
+  border-radius: 0 2px 2px 0;
+}
+
+.cl-row:hover::before { transform: scaleY(1); }
+
+.cl-row:hover {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.04) 0%, transparent 100%);
+  transform: translateX(4px);
+}
+
+.cl-row:last-child { border-bottom: none; }
+
+@keyframes clSlideIn {
+  from { opacity: 0; transform: translateX(-8px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ── Column Helpers ── */
+.cl-col-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.cl-comp-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary, #e2e8f0);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cl-col-status {
+  display: flex;
+  align-items: center;
+}
+
+.cl-col-teams,
+.cl-col-participants,
+.cl-col-challenges {
+  display: flex;
+  align-items: center;
+}
+
+.cl-col-date {
+  font-size: 12px;
+  color: var(--text-muted, #64748b);
+  white-space: nowrap;
+}
+
+.cl-num {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary, #e2e8f0);
+}
+
+/* ── Status Chips ── */
+.cl-status-chip {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  border: 1px solid transparent;
+}
+
+.cl-status-active {
+  background: rgba(59, 130, 246, 0.12);
+  color: #60a5fa;
+  border-color: rgba(59, 130, 246, 0.2);
+}
+
+.cl-status-upcoming {
+  background: rgba(148, 163, 184, 0.1);
+  color: #94a3b8;
+  border-color: rgba(148, 163, 184, 0.2);
+}
+
+.cl-status-paused {
+  background: rgba(245, 158, 11, 0.12);
+  color: #fbbf24;
+  border-color: rgba(245, 158, 11, 0.2);
+}
+
+.cl-status-done {
+  background: rgba(34, 197, 94, 0.1);
+  color: #4ade80;
+  border-color: rgba(34, 197, 94, 0.2);
+}
+
+.cl-status-cancelled {
+  background: rgba(239, 68, 68, 0.1);
+  color: #f87171;
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+/* ── Empty ── */
+.cl-empty {
+  padding: 40px 24px;
+  text-align: center;
+  color: var(--text-muted, #64748b);
+  font-size: 14px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .cl-table-header,
+  .cl-row {
+    grid-template-columns: 1.4fr 90px 80px 90px;
+  }
+
+  .cl-col-date,
+  .cl-col-challenges {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .cl-section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .cl-table-header,
+  .cl-row {
+    grid-template-columns: 1fr 80px 70px;
+  }
+
+  .cl-col-participants {
+    display: none;
+  }
+}

@@ -15,6 +15,13 @@ export const DATABASE_STATUS_EVENT = 'database-status-change';
 export const DATABASE_UNAVAILABLE_MESSAGE = 'Database unavailable. Please try again shortly.';
 export const PARTICIPANT_SERVICE_UNAVAILABLE_MESSAGE
   = 'Competition system is temporarily unavailable. Please wait for the admin.';
+const ADMIN_SESSION_ERROR_MESSAGES = new Set([
+  'Admin token required',
+  'Token has been revoked',
+  'Token expired',
+  'Invalid token',
+  'Invalid admin token',
+]);
 
 const isAdminEndpoint = endpoint =>
   endpoint.startsWith('/admin') || endpoint === ADMIN_LOGOUT_ENDPOINT;
@@ -32,6 +39,15 @@ const isCompetitionClientRoute = () => {
   const pathname = window.location.pathname || '';
 
   return pathname.includes('/competition/dashboard') || pathname.includes('/competition/login');
+};
+const isAdminClientRoute = () => {
+  if (typeof window === 'undefined') {
+    return false;
+  }
+
+  const pathname = window.location.pathname || '';
+
+  return pathname.startsWith('/admin');
 };
 
 const shouldMaskServiceUnavailableForParticipant = (endpoint, status) => (
@@ -52,6 +68,9 @@ const isTransientFetchFailure = error => {
   return error?.name === 'TypeError'
     && /failed to fetch|networkerror|load failed/i.test(message);
 };
+const isAdminSessionFailure = (status, data) => (
+  status === 401 && ADMIN_SESSION_ERROR_MESSAGES.has(data?.error)
+);
 
 const parseStoredJson = (value, scope) => {
   if (!value) {
@@ -197,18 +216,38 @@ export const apiCall = async (endpoint, options = {}) => {
   const url = `${API_BASE_URL}${endpoint}`;
   const adminToken = getAdminToken();
   const competitionToken = getCompetitionSessionToken();
+  const requestHeaders = options.headers || {};
+  const hasExplicitContentType = Object.keys(requestHeaders).some(
+    key => key.toLowerCase() === 'content-type'
+  );
+  const isFormDataBody = (
+    typeof FormData !== 'undefined'
+    && options.body instanceof FormData
+  );
+  const isCompetitionRequest = (
+    Boolean(competitionToken)
+    && isCompetitionClientRoute()
+    && isCompetitionSessionEndpoint(endpoint)
+  );
+  const shouldSendAdminToken = (
+    Boolean(adminToken)
+    && !isCompetitionRequest
+    && (isAdminEndpoint(endpoint) || isAdminClientRoute())
+  );
 
   // Retrieve the authentication token from localStorage
   const token = getAuthToken(endpoint);
 
   // Merge headers properly
   const headers = {
-    'Content-Type': 'application/json',
-    ...(adminToken && { 'x-admin-token': adminToken }),
-    ...(competitionToken && isCompetitionClientRoute() && isCompetitionSessionEndpoint(endpoint)
+    ...(!isFormDataBody && !hasExplicitContentType
+      ? { 'Content-Type': 'application/json' }
+      : {}),
+    ...(shouldSendAdminToken ? { 'x-admin-token': adminToken } : {}),
+    ...(isCompetitionRequest
       ? { 'x-competition-token': competitionToken }
       : {}),
-    ...(options.headers || {}),
+    ...requestHeaders,
   };
 
   if (token && isAdminEndpoint(endpoint)) {
@@ -276,7 +315,10 @@ export const apiRequest = async (endpoint, options = {}) => {
     data = { _raw: rawText, _parseError: e?.message || String(e) };
   }
 
-  if (response.status === 401 && isAdminEndpoint(endpoint)) {
+  if (
+    isAdminSessionFailure(response.status, data)
+    && (isAdminEndpoint(endpoint) || isAdminClientRoute())
+  ) {
     clearAdminAuth();
 
     if (typeof window !== 'undefined' && window.location.pathname !== ADMIN_LOGIN_PATH) {
@@ -429,7 +471,10 @@ export const API_ENDPOINTS = {
   ADMIN_PRACTICE_USERS_LIST: '/admin/practice-users',
   ADMIN_USER_ROLE: (id) => `/admin/users/${id}/role`,
   ADMIN_USER_STATUS: (id) => `/admin/users/${id}/status`,
+  ADMIN_COMPETITIONS_CREATE: '/admin/competitions',
   ADMIN_COMPETITION_ADD_CHALLENGE: (competitionId) =>
+    `/admin/competitions/${competitionId}/challenges`,
+  ADMIN_COMPETITION_CHALLENGES_LIST: (competitionId) =>
     `/admin/competitions/${competitionId}/challenges`,
   ADMIN_COMPETITION_REMOVE_CHALLENGE: (competitionId, challengeId) =>
     `/admin/competitions/${competitionId}/challenges/${challengeId}`,
@@ -437,10 +482,15 @@ export const API_ENDPOINTS = {
     `/admin/competitions/${competitionId}/challenges/${challengeId}`,
   ADMIN_LIVE_MONITOR_PARTICIPANTS: '/admin/live-monitor/participants',
   ADMIN_LIVE_MONITOR_SCREEN_SHARE: memberId => `/admin/live-monitor/screen-share/${memberId}`,
+  ADMIN_LIVE_MONITOR_SCREEN_SHARE_STREAM: memberId => `/admin/live-monitor/screen-share-stream/${memberId}`,
+  ADMIN_LIVE_MONITOR_SCREEN_SHARE_STREAM_TICKET: memberId =>
+    `/admin/live-monitor/screen-share-stream/${memberId}/ticket`,
   ADMIN_LIVE_MONITOR_SCREEN_SHARES: '/admin/live-monitor/screen-shares',
   ADMIN_LIVE_MONITOR_HISTORY: memberId => `/admin/live-monitor/history/${memberId}`,
   ADMIN_TEAM_MEMBER_DISQUALIFY: memberId => `/admin/team-members/${memberId}/disqualify`,
   ADMIN_LOGS: '/admin/logs',
+  ADMIN_RANKINGS_COMPETITION: '/admin/rankings/competition',
+  ADMIN_RANKINGS_PRACTICE: '/admin/rankings/practice',
 
   COMPETITION_LIVE_MONITOR_ACTIVITY: '/competition/live-monitor/activity',
   COMPETITION_SCREEN_SHARE_START: '/competition/live-monitor/screen-share/start',

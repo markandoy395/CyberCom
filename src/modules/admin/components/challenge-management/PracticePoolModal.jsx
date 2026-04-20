@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
 import ReactDOM from 'react-dom';
+import ActionButton from '../../../../common/ActionButton';
 import {
   CATEGORY_ID_TO_KEY,
   CATEGORY_NAMES,
@@ -176,17 +177,19 @@ const PracticePoolModal = ({
 
         <div className="add-challenges-modal-footer">
           <button onClick={onClose} disabled={isLoading} className="btn btn-secondary">
-            {isLoading ? 'Processing...' : 'Cancel'}
+            Cancel
           </button>
-          <button
+          <ActionButton
             onClick={onConfirm}
-            disabled={selectedChallenges.size === 0 || isLoading}
+            disabled={selectedChallenges.size === 0}
             className="btn btn-primary"
+            variant="custom"
+            size="custom"
+            isLoading={isLoading}
+            loadingText="Adding..."
           >
-            {isLoading
-              ? 'Adding...'
-              : `Add to Practice${selectedChallenges.size > 0 ? ` (${selectedChallenges.size})` : ''}`}
-          </button>
+            Add to Practice{selectedChallenges.size > 0 ? ` (${selectedChallenges.size})` : ''}
+          </ActionButton>
         </div>
       </div>
     </div>,

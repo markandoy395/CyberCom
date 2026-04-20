@@ -38,13 +38,17 @@ const validateRequest = (requiredFields = []) => (req, res, next) => {
 
 // Sanitize input to prevent injection attacks
 const sanitizeInput = (req, res, next) => {
-  const sanitize = obj => {
+  const sanitize = (obj, key = "") => {
     if (typeof obj === 'string') {
+      if (key === 'imageDataUrl' && obj.startsWith('data:image/')) {
+        return obj;
+      }
+
       return obj.trim().replace(/[<>]/g, '');
     }
     if (typeof obj === 'object' && obj !== null) {
       for (const key in obj) {
-        obj[key] = sanitize(obj[key]);
+        obj[key] = sanitize(obj[key], key);
       }
     }
 

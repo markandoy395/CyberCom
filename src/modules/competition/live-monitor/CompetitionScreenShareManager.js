@@ -4,12 +4,12 @@ import {
   PARTICIPANT_SERVICE_UNAVAILABLE_MESSAGE,
 } from "../../../utils/api";
 
-const TARGET_CAPTURE_INTERVAL_MS = 700;
-const CAPTURE_RETRY_INTERVAL_MS = 250;
-const CAPTURE_ERROR_INTERVAL_MS = 1000;
-const MAX_CAPTURE_WIDTH = 1024;
-const FRAME_IMAGE_QUALITY = 0.55;
-const DISPLAY_CAPTURE_FRAME_RATE = { ideal: 10, max: 12 };
+const TARGET_CAPTURE_INTERVAL_MS = 120;
+const CAPTURE_RETRY_INTERVAL_MS = 60;
+const CAPTURE_ERROR_INTERVAL_MS = 500;
+const MAX_CAPTURE_WIDTH = 720;
+const FRAME_IMAGE_QUALITY = 0.32;
+const DISPLAY_CAPTURE_FRAME_RATE = { ideal: 15, max: 18 };
 const listeners = new Set();
 const COMPETITION_ACCESS_REVOKED_ERROR_CODE = "competition_access_revoked";
 
@@ -92,41 +92,71 @@ const getPreferredCaptureMimeType = () => {
     return captureMimeType;
   }
 
-  const testCanvas = document.createElement("canvas");
-  captureMimeType = testCanvas.toDataURL("image/webp", FRAME_IMAGE_QUALITY).startsWith("data:image/webp")
-    ? "image/webp"
-    : "image/jpeg";
+  captureMimeType = "image/jpeg";
 
   return captureMimeType;
 };
 
-const blobToDataUrl = blob => new Promise((resolve, reject) => {
-  const reader = new FileReader();
+const dataUrlToBlob = dataUrl => {
+  const [header, base64Data = ""] = String(dataUrl || "").split(",", 2);
+  const mimeTypeMatch = header.match(/^data:([^;]+);base64$/);
+  const mimeType = mimeTypeMatch?.[1] || "image/jpeg";
+  const binary = window.atob(base64Data);
+  const bytes = new Uint8Array(binary.length);
 
-  reader.onload = () => resolve(reader.result);
-  reader.onerror = () => reject(new Error("Unable to read the captured screen frame."));
-  reader.readAsDataURL(blob);
-});
-
-const canvasToImageDataUrl = async (canvas, mimeType, quality) => {
-  if (!canvas.toBlob) {
-    return canvas.toDataURL(mimeType, quality);
+  for (let index = 0; index < binary.length; index += 1) {
+    bytes[index] = binary.charCodeAt(index);
   }
 
-  const blob = await new Promise(resolve => {
-    canvas.toBlob(resolve, mimeType, quality);
-  });
-
-  if (!blob) {
-    return canvas.toDataURL(mimeType, quality);
-  }
-
-  try {
-    return await blobToDataUrl(blob);
-  } catch {
-    return canvas.toDataURL(mimeType, quality);
-  }
+  return new Blob([bytes], { type: mimeType });
 };
+
+const canvasToBlob = async (canvas, mimeType, quality) => {
+  if (canvas.toBlob) {
+    const blob = await new Promise(resolve => {
+      canvas.toBlob(resolve, mimeType, quality);
+    });
+
+    if (blob) {
+      return blob;
+    }
+  }
+
+  return dataUrlToBlob(canvas.toDataURL(mimeType, quality));
+};
+
+const waitForVideoFrame = video => new Promise(resolve => {
+  let resolved = false;
+
+  const finish = () => {
+    if (resolved) {
+      return;
+    }
+
+    resolved = true;
+    video.removeEventListener("loadeddata", finish);
+    video.removeEventListener("loadedmetadata", finish);
+    resolve();
+  };
+
+  if (
+    video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA
+    && video.videoWidth > 0
+    && video.videoHeight > 0
+  ) {
+    finish();
+    return;
+  }
+
+  if (typeof video.requestVideoFrameCallback === "function") {
+    video.requestVideoFrameCallback(() => {
+      finish();
+    });
+  }
+
+  video.addEventListener("loadeddata", finish, { once: true });
+  video.addEventListener("loadedmetadata", finish, { once: true });
+});
 
 const emit = () => {
   const nextState = CompetitionScreenShareManager.getState();
@@ -164,6 +194,38 @@ const requestJson = async (endpoint, options = {}) => {
     headers: buildHeaders(token),
     ...(body ? { body: JSON.stringify(body) } : {}),
     keepalive,
+  });
+  let data = {};
+
+  try {
+    data = await response.json();
+  } catch {
+    data = {};
+  }
+
+  if (!response.ok) {
+    const error = new Error(
+      response.status === 503
+        ? PARTICIPANT_SERVICE_UNAVAILABLE_MESSAGE
+        : (data.error || `HTTP ${response.status}`)
+    );
+    error.status = response.status;
+    error.data = data;
+    throw error;
+  }
+
+  return data;
+};
+
+const requestFrameUpload = async (endpoint, options = {}) => {
+  const {
+    token = "",
+    formData,
+  } = options;
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    method: "POST",
+    headers: token ? { "x-competition-token": token } : {},
+    body: formData,
   });
   let data = {};
 
@@ -261,20 +323,22 @@ const captureFrame = async () => {
 
   try {
     const mimeType = getPreferredCaptureMimeType();
-    const imageDataUrl = await canvasToImageDataUrl(previewCanvas, mimeType, FRAME_IMAGE_QUALITY);
-    const response = await requestJson(API_ENDPOINTS.COMPETITION_SCREEN_SHARE_FRAME, {
+    const frameBlob = await canvasToBlob(previewCanvas, mimeType, FRAME_IMAGE_QUALITY);
+    const formData = new FormData();
+
+    formData.append("teamId", String(session.teamId));
+    formData.append("competitionId", String(session.competitionId));
+    formData.append("capturedAt", new Date().toISOString());
+    formData.append("width", String(dimensions.width));
+    formData.append("height", String(dimensions.height));
+    formData.append("mimeType", mimeType);
+    formData.append("displaySurface", state.displaySurface || "");
+    formData.append("sourceLabel", state.sourceLabel || "");
+    formData.append("frame", frameBlob, "screen-frame.jpg");
+
+    const response = await requestFrameUpload(API_ENDPOINTS.COMPETITION_SCREEN_SHARE_FRAME, {
       token: session.sessionToken,
-      body: {
-        teamId: session.teamId,
-        competitionId: session.competitionId,
-        capturedAt: new Date().toISOString(),
-        width: dimensions.width,
-        height: dimensions.height,
-        mimeType,
-        displaySurface: state.displaySurface,
-        sourceLabel: state.sourceLabel,
-        imageDataUrl,
-      },
+      formData,
     });
 
     setState({
@@ -538,13 +602,8 @@ class CompetitionScreenShareManager {
         video.srcObject = stream;
         video.muted = true;
         video.playsInline = true;
-        await video.play().catch(() => {});
 
-        track.addEventListener("ended", () => {
-          void this.handleRequiredShareLost("browser-share-ended");
-        }, { once: true });
-
-        const response = await requestJson(API_ENDPOINTS.COMPETITION_SCREEN_SHARE_START, {
+        const startSessionPromise = requestJson(API_ENDPOINTS.COMPETITION_SCREEN_SHARE_START, {
           token: nextSession.sessionToken,
           body: {
             teamId: nextSession.teamId,
@@ -553,6 +612,16 @@ class CompetitionScreenShareManager {
             sourceLabel,
           },
         });
+
+        await video.play().catch(() => {});
+        const [response] = await Promise.all([
+          startSessionPromise,
+          waitForVideoFrame(video),
+        ]);
+
+        track.addEventListener("ended", () => {
+          void this.handleRequiredShareLost("browser-share-ended");
+        }, { once: true });
 
         activeStream = stream;
         previewVideo = video;

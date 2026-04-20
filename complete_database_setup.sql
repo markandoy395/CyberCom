@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS competitions (
     time_weight DECIMAL(4,2) DEFAULT 0.20,
     solver_decay_constant DECIMAL(5,3) DEFAULT 0.120,
     attempt_penalty_constant DECIMAL(5,3) DEFAULT 0.050,
-    min_score_floor INT DEFAULT 20,
+    min_score_floor INT DEFAULT 10,
     created_by INT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

@@ -1,36 +1,50 @@
 /* Action Button - Reusable button component with loading state */
 
 .action-btn {
-  padding: 8px 12px;
-  display: inline-flex !important;
-  flex-direction: row !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 6px !important;
-  border: none;
-  border-radius: 6px;
+  display: inline-flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   cursor: pointer;
-  font-weight: 600;
-  font-size: 12px;
-  color: white;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   font-family: inherit;
-  white-space: nowrap !important;
-  flex-wrap: nowrap !important;
-  width: auto !important;
+  white-space: nowrap;
+  appearance: none;
+  max-width: 100%;
+  overflow: hidden;
 }
 
-/* Icon and text styling - keep them inline within flex row */
+.action-btn-label {
+  display: inline-block;
+  align-items: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
 .action-btn svg {
   flex-shrink: 0;
   height: 12px;
   width: 12px;
+  min-width: 12px;
   display: inline-block;
+}
+
+.action-btn-block {
+  width: 100%;
+  display: flex;
 }
 
 /* Variant - Danger (Red) */
 .action-btn-danger {
   background-color: #ef4444;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
 }
 
 .action-btn-danger:hover:not(:disabled) {
@@ -45,6 +59,10 @@
 /* Variant - Success (Green) */
 .action-btn-success {
   background-color: #22c55e;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
 }
 
 .action-btn-success:hover:not(:disabled) {
@@ -59,6 +77,10 @@
 /* Variant - Primary (Blue) */
 .action-btn-primary {
   background-color: #3b82f6;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
 }
 
 .action-btn-primary:hover:not(:disabled) {
@@ -75,6 +97,8 @@
   background-color: var(--input-bg);
   color: var(--text-primary);
   border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-weight: 600;
 }
 
 .action-btn-secondary:hover:not(:disabled) {
@@ -88,22 +112,26 @@
 
 /* Disabled and Loading states */
 .action-btn:disabled {
-  background-color: #d1d5db;
-  color: #9ca3af;
   cursor: not-allowed;
   opacity: 0.7;
 }
 
 .action-btn-loading {
-  opacity: 0.7;
+  pointer-events: none;
 }
 
 .action-btn-spinner {
   display: inline-block;
-  animation: spin 1s linear infinite;
+  width: 0.95em;
+  height: 0.95em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 999px;
+  animation: action-btn-spin 0.8s linear infinite;
+  flex-shrink: 0;
 }
 
-@keyframes spin {
+@keyframes action-btn-spin {
   from {
     transform: rotate(0deg);
   }
@@ -112,15 +140,26 @@
   }
 }
 
-/* Size variants - override width if needed */
+/* Size variants */
 .action-btn-sm {
   padding: 6px 10px;
   font-size: 11px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.action-btn-md {
+  padding: 8px 12px;
+  font-size: 12px;
+  border-radius: 6px;
+  font-weight: 600;
 }
 
 .action-btn-lg {
   padding: 10px 14px;
   font-size: 13px;
+  border-radius: 6px;
+  font-weight: 600;
 }
 
 /* Focus state for accessibility */

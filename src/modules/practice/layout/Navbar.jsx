@@ -84,9 +84,7 @@ const Navbar = () => {
           <li className="navbar-item">
             <Link
               to="/competition/login"
-              className={`navbar-link ${
-                isActive("/competition/login") ? "active" : ""
-              }`}
+              className={`navbar-link ${location.pathname.startsWith("/competition") ? "active" : ""}`}
             >
               Competition
             </Link>

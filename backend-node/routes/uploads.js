@@ -4,8 +4,12 @@ import path from 'path';
 import fs from 'fs';
 import crypto from 'crypto';
 import archiver from 'archiver';
+import { isAdmin } from './admin.js';
 
 const router = new express.Router();
+const uploadDebugLoggingEnabled = /^(1|true|yes|on)$/i.test(
+  String(process.env.UPLOAD_DEBUG_LOGGING || '').trim()
+);
 
 // Use memory storage and write files to disk ourselves so we can preserve
 // the original relative paths provided by the browser (webkitRelativePath).
@@ -44,7 +48,7 @@ const buildUploadSummary = files => {
   };
 };
 
-router.post('/uploads', upload.array('files'), async (req, res) => {
+router.post('/uploads', isAdmin, upload.array('files'), async (req, res) => {
   try {
     const files = req.files || [];
 
@@ -98,7 +102,7 @@ router.post('/uploads', upload.array('files'), async (req, res) => {
 });
 
   // List files and directories for an uploadId (metadata)
-  router.get('/uploads/:uploadId', (req, res) => {
+  router.get('/uploads/:uploadId', isAdmin, (req, res) => {
     try {
       const uploadId = req.params.uploadId;
       const uploadDir = path.join(baseUploadsDir, uploadId);
@@ -171,7 +175,7 @@ router.post('/uploads', upload.array('files'), async (req, res) => {
   });
 
   // Verify stored files against recorded checksums
-  router.get('/uploads/:uploadId/verify', async (req, res) => {
+  router.get('/uploads/:uploadId/verify', isAdmin, async (req, res) => {
     try {
       const uploadId = req.params.uploadId;
       const uploadDir = path.join(baseUploadsDir, uploadId);
@@ -286,12 +290,23 @@ router.get('/uploads/:uploadId/*', (req, res) => {
   try {
     const uploadId = req.params.uploadId;
     const relPath = req.params[0] || '';
-    console.log(`[Uploads] GET ${uploadId} /${relPath} Range=${req.headers.range}`);
-    try {
-      const dbgPath = path.join(process.cwd(), 'uploads_debug.log');
-      fs.appendFileSync(dbgPath, `${new Date().toISOString()} GET ${uploadId}/${relPath} Range=${req.headers.range} HEADERS:${JSON.stringify(req.headers)}\n`);
-    } catch (e) {
-      // ignore logging errors
+    if (uploadDebugLoggingEnabled) {
+      console.log(`[Uploads] GET ${uploadId} /${relPath} Range=${req.headers.range}`);
+
+      try {
+        const dbgPath = path.join(process.cwd(), 'uploads_debug.log');
+        const debugHeaders = {
+          range: req.headers.range || null,
+          userAgent: req.headers['user-agent'] || null,
+        };
+
+        fs.appendFileSync(
+          dbgPath,
+          `${new Date().toISOString()} GET ${uploadId}/${relPath} ${JSON.stringify(debugHeaders)}\n`
+        );
+      } catch {
+        // Ignore debug log write failures.
+      }
     }
     const uploadDir = path.join(baseUploadsDir, uploadId);
     const safeRel = path.posix.normalize(relPath).replace(/^([\.]{1,2}\/)+/, '');

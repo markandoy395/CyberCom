@@ -4,7 +4,7 @@ import { COMPETITION_STATUS } from "../constants";
 
 const VALIDATION_LOADING_MESSAGE = "Pre-Competition Validation is still loading. Please try again in a moment.";
 const VALIDATION_ERROR_MESSAGE = "Unable to verify the competition checklist right now. Please review the validation panel and try again.";
-const START_BLOCKED_MESSAGE = "Complete every Pre-Competition Validation item before starting the competition.";
+const START_BLOCKED_MESSAGE = "Complete every required Pre-Competition Validation item before starting the competition.";
 const ACTIVE_COMPETITION_MESSAGE = "Another competition is already active. Finish or pause it before starting a new one.";
 
 export const useCompetitionStartValidation = ({

@@ -8,9 +8,11 @@
   "main": "electron-main.js",
   "scripts": {
     "dev": "vite",
+    "dev:competition": "vite --config vite.competition.config.js",
     "electron-dev": "set NODE_ENV=development && vite dev & electron .",
     "electron-build": "vite build && electron-builder",
     "build": "vite build",
+    "build:competition": "vite build --config vite.competition.config.js",
     "lint": "eslint .",
     "preview": "vite preview"
   },

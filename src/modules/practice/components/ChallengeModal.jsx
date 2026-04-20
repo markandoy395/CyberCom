@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef, createElement, useCallback } from "react";
-import { FaXmark, BiFlag, FaLink } from "../../../utils/icons";
+import { FaCircleCheck, FaXmark, BiFlag, FaLink } from "../../../utils/icons";
 import { CATEGORIES } from "../../../utils/constants";
 import { encryptedFetch } from "../../../utils/encryption";
 import { downloadFile } from "../../../utils/helpers";
 import NotificationModal from "../../../common/NotificationModal";
+import ActionButton from "../../../common/ActionButton";
 import "./ChallengeModal.css";
 
 const ChallengeModal = ({ challenge, onClose }) => {
@@ -20,6 +21,7 @@ const ChallengeModal = ({ challenge, onClose }) => {
 
   const category = CATEGORIES.find((cat) => cat.id === challenge.category);
   const isAlreadySolved = challenge.status === "solved";
+  const isSubmissionLocked = submitting || wasSolved;
 
   // Cleanup on unmount and ESC key
   useEffect(() => {
@@ -257,22 +259,19 @@ const ChallengeModal = ({ challenge, onClose }) => {
                   placeholder="flag{...}"
                   value={flag}
                   onChange={(e) => setFlag(e.target.value)}
-                  disabled={submitting || result?.success}
+                  disabled={isSubmissionLocked}
                 />
-                <button
+                <ActionButton
                   type="submit"
                   className="btn btn-primary"
-                  disabled={!flag || submitting || result?.success}
+                  variant="custom"
+                  size="custom"
+                  isLoading={submitting}
+                  loadingText="Checking"
+                  disabled={!flag || wasSolved}
                 >
-                  {submitting ? (
-                    <>
-                      <span className="loading-spinner"></span>
-                      Checking
-                    </>
-                  ) : (
-                    "Submit"
-                  )}
-                </button>
+                  Submit
+                </ActionButton>
               </div>
             </form>
           )}

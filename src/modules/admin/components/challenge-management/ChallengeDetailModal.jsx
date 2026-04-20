@@ -1,7 +1,8 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ReactDOM from "react-dom";
 import ChallengeDetailHeader from "./ChallengeDetailHeader";
 import ChallengeDetailBody from "./ChallengeDetailBody";
+import { apiGet } from "../../../../utils/api";
 import "./ChallengeDetailModal.css";
 
 /**
@@ -9,6 +10,8 @@ import "./ChallengeDetailModal.css";
  * Handles: portal lifecycle, body scroll prevention, ESC key handling
  */
 const ChallengeDetailModal = ({ challenge, onClose, onEdit, onDelete, onMaintenance, onRemove, removeTitle }) => {
+  const [resolvedChallenge, setResolvedChallenge] = useState(challenge);
+
   // Initialize portal element with useMemo
   const portalElement = useMemo(() => {
     let element = document.getElementById("modal-portal");
@@ -19,6 +22,43 @@ const ChallengeDetailModal = ({ challenge, onClose, onEdit, onDelete, onMaintena
     }
     return element;
   }, []);
+
+  useEffect(() => {
+    setResolvedChallenge(challenge);
+  }, [challenge]);
+
+  useEffect(() => {
+    let isCancelled = false;
+    const shouldFetchLatestChallenge = Boolean(challenge?.id)
+      && !(typeof challenge?.flag === "string" && challenge.flag.trim());
+
+    if (!shouldFetchLatestChallenge) {
+      return undefined;
+    }
+
+    const fetchLatestChallenge = async () => {
+      try {
+        const response = await apiGet(`/challenges/${challenge.id}`);
+
+        if (!isCancelled && response?.success && response.data) {
+          setResolvedChallenge(current => ({
+            ...(current || {}),
+            ...response.data,
+          }));
+        }
+      } catch {
+        // Keep the challenge data we already have when the refresh fails.
+      }
+    };
+
+    void fetchLatestChallenge();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [challenge?.flag, challenge?.id]);
+
+  const displayChallenge = resolvedChallenge || challenge;
 
   // Close on ESC key and prevent body scroll
   useEffect(() => {
@@ -68,10 +108,10 @@ const ChallengeDetailModal = ({ challenge, onClose, onEdit, onDelete, onMaintena
 
   return ReactDOM.createPortal(
     <div className="challenge-detail-modal-backdrop" onClick={handleBackdropClick}>
-      <div className="challenge-detail-modal">
-        {/* Header with category, difficulty, and action buttons */}
-        <ChallengeDetailHeader 
-          challenge={challenge}
+        <div className="challenge-detail-modal">
+          {/* Header with category, difficulty, and action buttons */}
+          <ChallengeDetailHeader 
+          challenge={displayChallenge}
           onClose={onClose}
           onEdit={onEdit}
           onDelete={onDelete}
@@ -82,11 +122,11 @@ const ChallengeDetailModal = ({ challenge, onClose, onEdit, onDelete, onMaintena
 
         {/* Title */}
         <div className="modal-title-section">
-          <h2 className="modal-title">{challenge.title}</h2>
+          <h2 className="modal-title">{displayChallenge.title}</h2>
         </div>
 
         {/* Body with description, flag, hints, resources */}
-        <ChallengeDetailBody challenge={challenge} />
+        <ChallengeDetailBody challenge={displayChallenge} />
 
         {/* Footer */}
         <div className="modal-footer">

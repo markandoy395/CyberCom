@@ -1,11 +1,12 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { query } from '../config/database.js';
+import { JWT_SECRET } from '../config/security.js';
 import { getDatabaseClientErrorMessage } from '../utils/databaseErrors.js';
 import TeamService from './TeamService.js';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 const TOKEN_EXPIRY = '24h';
+const INVALID_CREDENTIALS_MESSAGE = 'Invalid credentials';
 const invalid = error => ({ success: false, error });
 const buildMemberToken = userId => Buffer.from(`${userId}:${Date.now()}`).toString('base64');
 const logError = (scope, error) => process.stderr.write(`[AuthService] ${scope}: ${error.message}\n`);
@@ -91,12 +92,12 @@ export class AuthService {
       const user = userRecord || await this.getTeamMemberAuthRecord(username);
 
       if (!user) {
-        return invalid('User not found');
+        return invalid(INVALID_CREDENTIALS_MESSAGE);
       }
 
       const isValidPassword = await bcrypt.compare(password, user.password);
       if (!isValidPassword) {
-        return invalid('Invalid password');
+        return invalid(INVALID_CREDENTIALS_MESSAGE);
       }
 
       if (TeamService.isBlockedMemberStatus(user.status)) {
@@ -135,16 +136,16 @@ export class AuthService {
       const user = await this.getPracticeUserByIdentity(identity);
 
       if (!user) {
-        return invalid('User not found');
+        return invalid(INVALID_CREDENTIALS_MESSAGE);
       }
 
       if (!user.password_hash) {
-        return invalid('This practice account does not have a password set yet');
+        return invalid(INVALID_CREDENTIALS_MESSAGE);
       }
 
       const isValidPassword = await bcrypt.compare(password, user.password_hash);
       if (!isValidPassword) {
-        return invalid('Invalid password');
+        return invalid(INVALID_CREDENTIALS_MESSAGE);
       }
 
       if (user.status && user.status !== 'active') {

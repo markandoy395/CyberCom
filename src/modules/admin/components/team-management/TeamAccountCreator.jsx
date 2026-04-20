@@ -140,16 +140,16 @@ const TeamAccountCreator = ({ competitionId }) => {
       });
 
       if (response.success) {
-        showResult("Team created successfully", true);
+        showResult(response.message || "Team created successfully", true);
         await fetchTeams();
         resetForm();
         setShowForm(false);
       } else {
-        showResult(response.message || "Failed to create team", false);
+        showResult(response.error || response.message || "Failed to create team", false);
       }
     } catch (error) {
       console.error("Team creation error:", error);
-      showResult("Error creating team", false);
+      showResult(error?.data?.error || "Error creating team", false);
     } finally {
       setLoading(false);
     }
@@ -254,6 +254,7 @@ const TeamAccountCreator = ({ competitionId }) => {
                 showPassword={showPassword}
                 onSubmit={handleCreateTeam}
                 onCancel={() => { setShowForm(false); resetForm(); }}
+                isSubmitting={loading}
               />
             </div>
           </div>

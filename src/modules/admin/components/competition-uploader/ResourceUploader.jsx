@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FaFolder, FaImage, FaLink, FaPlus, BiCloudUpload, BiFile, FaXmark } from '../../../../utils/icons';
+import { apiCall } from '../../../../utils/api';
 
 // Max resource payload size: 150 MB (matches MAX_RESOURCE_PAYLOAD_BYTES in backend .env)
 const MAX_RESOURCE_MB = 150;
@@ -220,7 +221,7 @@ const ResourceUploader = ({ formData, setFormData }) => {
         }
       }
 
-      const resp = await fetch('/api/uploads', {
+      const resp = await apiCall('/uploads', {
         method: 'POST',
         body: form,
       });
@@ -254,7 +255,7 @@ const ResourceUploader = ({ formData, setFormData }) => {
         form.append('files', file, file.name);
       }
 
-      const resp = await fetch('/api/uploads', {
+      const resp = await apiCall('/uploads', {
         method: 'POST',
         body: form,
       });
@@ -393,7 +394,7 @@ const ResourceUploader = ({ formData, setFormData }) => {
                   }
 
                   setUploading(true);
-                  const resp = await fetch('/api/uploads', {
+                  const resp = await apiCall('/uploads', {
                     method: 'POST',
                     body: form,
                   });
@@ -466,7 +467,7 @@ const ResourceUploader = ({ formData, setFormData }) => {
                   const form = new FormData();
                   form.append('files', file, file.name);
                   setUploading(true);
-                  const resp = await fetch('/api/uploads', {
+                  const resp = await apiCall('/uploads', {
                     method: 'POST',
                     body: form,
                   });

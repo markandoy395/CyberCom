@@ -25,7 +25,6 @@ const PreCompetitionChecklist = ({ competition }) => {
       startDate: competition.startDate,
       endDate: competition.endDate,
       maxParticipants: competition.maxParticipants,
-      description: competition.description,
       challengeCount: competition.challengeCount,
       teamCount: competition.teamCount,
       status: competition.status,
@@ -35,7 +34,6 @@ const PreCompetitionChecklist = ({ competition }) => {
     competition?.startDate,
     competition?.endDate,
     competition?.maxParticipants,
-    competition?.description,
     competition?.challengeCount,
     competition?.teamCount,
     competition?.status,
@@ -188,7 +186,7 @@ const PreCompetitionChecklist = ({ competition }) => {
             <h4>Pre-Competition Validation</h4>
           </div>
           <p className="checklist-caption">
-            Every checklist item must pass before the competition can be started.
+            Every required checklist item must pass before the competition can be started.
           </p>
         </div>
         <div className={`status-badge ${checklist.startReady ? "ready-badge" : "not-ready-badge"}`}>
@@ -240,7 +238,7 @@ const PreCompetitionChecklist = ({ competition }) => {
         <div className="warning-banner">
           <span className="warning-text">
             <FiInfo />
-            Complete every pre-competition validation item before starting the competition.
+            Complete every required pre-competition validation item before starting the competition.
           </span>
         </div>
       )}

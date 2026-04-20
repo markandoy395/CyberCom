@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import PracticeRules from "../components/PracticeRules";
 import NotificationModal from "../../../common/NotificationModal";
+import ActionButton from "../../../common/ActionButton";
 import { apiPost, API_ENDPOINTS } from "../../../utils/api";
 import logo from "../../../assets/images/logo.png";
 import "./Login.css";
@@ -21,6 +22,7 @@ const PracticeAuthPage = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [notification, setNotification] = useState(null);
   const [checkboxChecked, setCheckboxChecked] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(
     typeof window !== "undefined" && !!localStorage.getItem("rememberedEmail")
   );
@@ -35,6 +37,7 @@ const PracticeAuthPage = () => {
   const isSignUpMode = mode === SIGN_UP_MODE;
 
   const resetThrottle = () => {
+    setLoading(false);
     isSubmittingRef.current = false;
   };
 
@@ -83,6 +86,7 @@ const PracticeAuthPage = () => {
 
     isSubmittingRef.current = true;
     lastSubmitTimeRef.current = now;
+    setLoading(true);
 
     try {
       const response = isSignUpMode
@@ -245,13 +249,18 @@ const PracticeAuthPage = () => {
               </div>
             </div>
 
-            <button
+            <ActionButton
               type="submit"
-              className="btn btn-primary btn-block btn-lg"
+              className="btn btn-primary btn-lg"
+              variant="custom"
+              size="custom"
+              fullWidth
+              isLoading={loading}
+              loadingText={isSignUpMode ? "Creating Account..." : "Signing In..."}
               disabled={!checkboxChecked}
             >
               {isSignUpMode ? "Create Practice Account" : "Sign In"}
-            </button>
+            </ActionButton>
           </form>
 
           <div className="login-footer">

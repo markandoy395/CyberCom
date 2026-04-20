@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { query } from '../config/database.js';
+import { JWT_SECRET } from '../config/security.js';
 import DeviceTracker from '../services/DeviceTracker.js';
 import TeamService from '../services/TeamService.js';
 import {
@@ -7,7 +8,6 @@ import {
   isDatabaseUnavailableError,
 } from '../utils/databaseErrors.js';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'secret-key';
 const COMPETITION_ACCESS_REVOKED_ERROR_CODE = 'competition_access_revoked';
 const COMPETITION_SESSION_ENDED_MESSAGE = 'Your competition session is no longer active. Please log in again.';
 const buildDatabaseUnavailableResult = () => ({

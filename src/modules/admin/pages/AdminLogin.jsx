@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import ActionButton from "../../../common/ActionButton";
 import { parseExpiresInMs } from "../../../utils/api";
 import "./AdminLogin.css";
 
@@ -132,9 +133,16 @@ const AdminLogin = () => {
             </label>
           </div>
 
-          <button type="submit" className="admin-login-button" disabled={loading}>
-            {loading ? "Logging in..." : "Login"}
-          </button>
+          <ActionButton
+            type="submit"
+            className="admin-login-button"
+            variant="custom"
+            size="custom"
+            isLoading={loading}
+            loadingText="Logging in..."
+          >
+            Login
+          </ActionButton>
         </form>
 
         <div className="admin-login-footer">

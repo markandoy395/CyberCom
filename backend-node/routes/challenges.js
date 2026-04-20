@@ -1,4 +1,5 @@
 import express from 'express';
+import { attachAdminIfPresent, isAdmin } from './admin.js';
 import { attachCompetitionMemberIfPresent } from '../middleware/competitionAuth.js';
 import ChallengeService from '../services/ChallengeService.js';
 import { query } from '../config/database.js';
@@ -17,11 +18,13 @@ const CATEGORY_COLORS = {
 
 const toInt = value => parseInt(value, 10);
 const getCategoryColor = categoryId => CATEGORY_COLORS[categoryId] || '#6b7280';
-const addCategoryColor = challenge => {
+const addCategoryColor = (challenge, { sanitizeFlag = true } = {}) => {
   const decryptedChallenge = ChallengeService.decryptChallenge(challenge);
   const hasFlag = Boolean(decryptedChallenge.flag);
 
-  delete decryptedChallenge.flag;
+  if (sanitizeFlag) {
+    delete decryptedChallenge.flag;
+  }
 
   return {
     ...decryptedChallenge,
@@ -54,9 +57,10 @@ const buildChallengeWhereClause = filters => {
     params,
   };
 };
+const isAdminRequest = req => Boolean(req.isAdminAuthenticated);
 
 // Get all challenges
-router.get('/challenges', async (req, res) => {
+router.get('/challenges', attachAdminIfPresent, async (req, res) => {
   try {
     const sanitize = req.query.sanitize === '1';
     const mode = req.query.mode;
@@ -77,16 +81,18 @@ router.get('/challenges', async (req, res) => {
         params
       );
       const data = ChallengeService.decryptChallenges(results);
+      const shouldSanitizeResponse = sanitize || !isAdminRequest(req);
 
       return res.json({
         success: true,
-        data: sanitize ? data.map(addCategoryColor) : data,
+        data: shouldSanitizeResponse ? data.map(addCategoryColor) : data,
       });
     }
 
     const result = await ChallengeService.getChallenges(filters);
+    const shouldSanitizeResponse = sanitize || !isAdminRequest(req);
 
-    if (sanitize && result?.success && Array.isArray(result.data)) {
+    if (shouldSanitizeResponse && result?.success && Array.isArray(result.data)) {
       return res.json({
         ...result,
         data: result.data.map(addCategoryColor),
@@ -100,9 +106,17 @@ router.get('/challenges', async (req, res) => {
 });
 
 // Get challenge by ID
-router.get('/challenges/:id', async (req, res) => {
+router.get('/challenges/:id', attachAdminIfPresent, async (req, res) => {
   try {
     const result = await ChallengeService.getChallengeById(toInt(req.params.id));
+
+    if (result?.success && !isAdminRequest(req)) {
+      return res.json({
+        ...result,
+        data: addCategoryColor(result.data),
+      });
+    }
+
     return sendServiceResult(res, result);
   } catch (error) {
     return handleRouteError(res, error);
@@ -110,7 +124,7 @@ router.get('/challenges/:id', async (req, res) => {
 });
 
 // Create challenge
-router.post('/challenges', async (req, res) => {
+router.post('/challenges', isAdmin, async (req, res) => {
   try {
     const result = await ChallengeService.createChallenge(req.body);
     if (result && result.status) {
@@ -124,7 +138,7 @@ router.post('/challenges', async (req, res) => {
 });
 
 // Update challenge
-router.put('/challenges/:id', async (req, res) => {
+router.put('/challenges/:id', isAdmin, async (req, res) => {
   try {
     const challengeId = toInt(req.params.id);
     const { mode, ...challengeUpdates } = req.body || {};
@@ -179,7 +193,7 @@ router.put('/challenges/:id', async (req, res) => {
 });
 
 // Delete challenge
-router.delete('/challenges/:id', async (req, res) => {
+router.delete('/challenges/:id', isAdmin, async (req, res) => {
   try {
     const result = await ChallengeService.deleteChallenge(toInt(req.params.id));
     return sendServiceResult(res, result);
@@ -199,13 +213,18 @@ router.get('/categories', async (req, res) => {
 });
 
 // Get challenges for a specific competition
-router.get('/competitions/:competitionId/challenges', attachCompetitionMemberIfPresent, async (req, res) => {
+router.get(
+  '/competitions/:competitionId/challenges',
+  attachAdminIfPresent,
+  attachCompetitionMemberIfPresent,
+  async (req, res) => {
   try {
     const competitionId = toInt(req.params.competitionId);
-    const isParticipantCompetitionView = req.query.team_id !== undefined;
+    const adminRequest = isAdminRequest(req);
+    const isParticipantCompetitionView = req.query.team_id !== undefined || req.competitionMemberId;
 
-    if (isParticipantCompetitionView && !req.competitionMemberId) {
-      return res.status(401).json({ success: false, error: 'Competition token required' });
+    if (!adminRequest && !req.competitionMemberId) {
+      return res.status(401).json({ success: false, error: 'Admin or competition token required' });
     }
 
     if (
@@ -218,7 +237,7 @@ router.get('/competitions/:competitionId/challenges', attachCompetitionMemberIfP
 
     const teamId = req.competitionMemberId
       ? req.competitionSessionTeamId
-      : (req.query.team_id ? toInt(req.query.team_id) : null);
+      : (isParticipantCompetitionView && req.query.team_id ? toInt(req.query.team_id) : null);
 
     const results = await query(
       `SELECT c.*,
@@ -251,14 +270,17 @@ router.get('/competitions/:competitionId/challenges', attachCompetitionMemberIfP
       [teamId, teamId, competitionId]
     );
 
-    res.json({ success: true, data: results.map(addCategoryColor) });
+    res.json({
+      success: true,
+      data: results.map(challenge => addCategoryColor(challenge, { sanitizeFlag: !adminRequest })),
+    });
   } catch (error) {
     return handleRouteError(res, error);
   }
 });
 
 // Add challenge to competition
-router.post('/competitions/:competitionId/challenges', async (req, res) => {
+router.post('/competitions/:competitionId/challenges', isAdmin, async (req, res) => {
   try {
     const competitionId = toInt(req.params.competitionId);
     const { challenge_id } = req.body;
@@ -290,7 +312,7 @@ router.post('/competitions/:competitionId/challenges', async (req, res) => {
 });
 
 // Remove challenge from competition
-router.delete('/competitions/:competitionId/challenges/:challengeId', async (req, res) => {
+router.delete('/competitions/:competitionId/challenges/:challengeId', isAdmin, async (req, res) => {
   try {
     const competitionId = toInt(req.params.competitionId);
     const challengeId = toInt(req.params.challengeId);

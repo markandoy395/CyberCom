@@ -1,4 +1,5 @@
 import express from 'express';
+import { attachAdminIfPresent, isAdmin } from './admin.js';
 import { attachCompetitionMemberIfPresent } from '../middleware/competitionAuth.js';
 import { query } from '../config/database.js';
 import CompetitionStatusService from '../services/CompetitionStatusService.js';
@@ -99,9 +100,10 @@ const getPositiveLimit = (value, fallback) => {
 
   return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
 };
+const isAdminRequest = req => Boolean(req.isAdminAuthenticated);
 
 // Get all competitions
-router.get('/competitions', async (req, res) => {
+router.get('/competitions', isAdmin, async (req, res) => {
   try {
     await TeamService.cleanupStalePresence(query);
     await CompetitionStatusService.finalizeExpiredCompetitions(query);
@@ -158,9 +160,18 @@ router.get('/competitions', async (req, res) => {
 });
 
 // Get competition by ID
-router.get('/competitions/:id', attachCompetitionMemberIfPresent, async (req, res) => {
+router.get(
+  '/competitions/:id',
+  attachAdminIfPresent,
+  attachCompetitionMemberIfPresent,
+  async (req, res) => {
   try {
     const requestedCompetitionId = parseInt(req.params.id, 10);
+    const adminRequest = isAdminRequest(req);
+
+    if (!adminRequest && !req.competitionMemberId) {
+      return res.status(401).json({ success: false, error: 'Admin or competition token required' });
+    }
 
     if (
       req.competitionMemberId
@@ -216,7 +227,7 @@ router.get('/competitions/:id', attachCompetitionMemberIfPresent, async (req, re
 });
 
 // Get competition teams
-router.get('/competitions/:id/teams', async (req, res) => {
+router.get('/competitions/:id/teams', isAdmin, async (req, res) => {
   try {
     await TeamService.cleanupStalePresence(query);
 
@@ -270,7 +281,7 @@ router.get('/competitions/:id/teams', async (req, res) => {
   }
 });
 
-router.get('/competitions/:id/members', async (req, res) => {
+router.get('/competitions/:id/members', isAdmin, async (req, res) => {
   try {
     await TeamService.cleanupStalePresence(query);
 
@@ -378,7 +389,7 @@ router.get('/competitions/:id/member-rankings', async (req, res) => {
   }
 });
 
-router.get('/competitions/:id/login-history', async (req, res) => {
+router.get('/competitions/:id/login-history', isAdmin, async (req, res) => {
   try {
     const competitionId = getCompetitionId(req.params.id);
     const limit = getPositiveLimit(req.query.limit, 100);
@@ -420,7 +431,7 @@ router.get('/competitions/:id/login-history', async (req, res) => {
   }
 });
 
-router.get('/competitions/:id/live-monitor', async (req, res) => {
+router.get('/competitions/:id/live-monitor', isAdmin, async (req, res) => {
   try {
     const competitionId = getCompetitionId(req.params.id);
     const result = await LiveMonitorService.getLiveParticipants({ competitionId });
@@ -459,7 +470,7 @@ router.get('/competitions/:id/live-monitor', async (req, res) => {
 });
 
 // Create competition
-router.post('/competitions', async (req, res) => {
+router.post(['/competitions', '/admin/competitions'], isAdmin, async (req, res) => {
   try {
     const {
       name,
@@ -483,7 +494,7 @@ router.post('/competitions', async (req, res) => {
     const time_weight = scoring_settings?.timeWeight ?? 0.20;
     const solver_decay_constant = scoring_settings?.solverDecayConstant ?? 0.12;
     const attempt_penalty_constant = scoring_settings?.attemptPenaltyConstant ?? 0.05;
-    const min_score_floor = scoring_settings?.minScoreFloor ?? 20;
+    const min_score_floor = scoring_settings?.minScoreFloor ?? 10;
 
     if (!name || !rawStartDate || !rawEndDate) {
       return res
@@ -559,7 +570,7 @@ router.post('/competitions', async (req, res) => {
 });
 
 // Update competition
-router.put('/competitions/:id', async (req, res) => {
+router.put('/competitions/:id', isAdmin, async (req, res) => {
   try {
     const competitionId = parseInt(req.params.id, 10);
     const { name, description, status: rawStatus, end_date, max_participants, scoring_settings } = req.body;
@@ -597,12 +608,16 @@ router.put('/competitions/:id', async (req, res) => {
       );
 
       if (!validationResult.success) {
+        const blockingItems = validationResult.validation?.requiredFailedItems?.length
+          ? validationResult.validation.requiredFailedItems
+          : validationResult.validation?.failedItems;
+
         return res.status(validationResult.error === 'Competition not found' ? 404 : 400).json({
           success: false,
           error: validationResult.error,
           data: validationResult.validation
             ? {
-                failedItems: validationResult.validation.failedItems.map(item => item.label),
+                failedItems: (blockingItems || []).map(item => item.label),
               }
             : undefined,
         });
@@ -715,7 +730,7 @@ router.put('/competitions/:id', async (req, res) => {
 });
 
 // Get competition submissions with challenge and team details
-router.get('/competitions/:id/submissions', async (req, res) => {
+router.get('/competitions/:id/submissions', isAdmin, async (req, res) => {
   try {
     const sanitize = req.query.sanitize === '1';
     const sql = `
@@ -775,7 +790,7 @@ router.get('/competitions/:id/rankings', async (req, res) => {
 });
 
 // Delete competition
-router.delete('/competitions/:id', async (req, res) => {
+router.delete('/competitions/:id', isAdmin, async (req, res) => {
   try {
     const sql = 'DELETE FROM competitions WHERE id = ?';
     const result = await query(sql, [parseInt(req.params.id, 10)]);
